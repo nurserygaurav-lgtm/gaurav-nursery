@@ -1,9 +1,12 @@
-# Next Steps
+# Deployment Next Steps
 
-1. Install dependencies and create `.env` files from the examples.
-2. Connect MongoDB and verify `GET /health`.
-3. Replace mock frontend products with `/api/products`.
-4. Add form validation and auth state management.
-5. Add Cloudinary upload flow for seller product images.
-6. Add Razorpay checkout flow and order verification.
-7. Add admin analytics queries and seller earnings calculations.
+1. Create the MongoDB Atlas production cluster and database user.
+2. Add the Atlas `MONGO_URI` to Render.
+3. Deploy the backend from the `backend` directory on Render.
+4. Verify `GET /health` on the Render API URL.
+5. Deploy the frontend from the `frontend` directory on Vercel.
+6. Set Vercel production variables, especially `VITE_API_URL`.
+7. Connect `gauravnursery.online` and `www.gauravnursery.online` to Vercel.
+8. Optionally connect `api.gauravnursery.online` to Render.
+9. Update CORS and frontend API variables after custom domains are verified.
+10. Complete the launch verification checklist in `docs/DEPLOYMENT.md`.
