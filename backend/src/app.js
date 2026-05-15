@@ -9,6 +9,13 @@ import routes from './routes/index.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
+const allowedOrigins = [
+  'https://gaurav-nursery.vercel.app',
+  'https://www.gauravnursery.online',
+  'https://gauravnursery.online',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
@@ -21,11 +28,12 @@ app.use(compression());
 app.use(morgan(config.isProduction ? 'combined' : 'dev'));
 app.use(
   cors({
-    origin: [
-      'https://gaurav-nursery.vercel.app',
-      'http://localhost:5173',
-      'http://localhost:3000'
-    ],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true
   })
 );
