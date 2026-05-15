@@ -1,17 +1,18 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Leaf, LockKeyhole, Mail, PackageCheck, Sparkles, Star, Truck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 function AnimatedStat({ value, display }) {
+
   return (
     <div className="flex flex-col items-center">
-      <p className="text-4xl font-black tracking-tight text-leaf-950 sm:text-5xl">
-        {display}
-      </p>
+      <p className="text-4xl font-black tracking-tight text-leaf-950 sm:text-5xl">{display}</p>
       <p className="mt-1 text-xs font-bold uppercase tracking-[0.22em] text-leaf-600">{value ? 'Live' : ''}</p>
     </div>
   );
 }
-import { Link } from 'react-router-dom';
+
+
 import ProductCard from '../../components/product/ProductCard.jsx';
 import Button from '../../components/ui/Button.jsx';
 import { featuredProducts } from '../../utils/mockData.js';
