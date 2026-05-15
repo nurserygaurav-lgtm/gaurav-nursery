@@ -21,13 +21,11 @@ app.use(compression());
 app.use(morgan(config.isProduction ? 'combined' : 'dev'));
 app.use(
   cors({
-    origin(origin, callback) {
-      if (!origin || config.corsOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error('Not allowed by CORS'));
-    },
+    origin: [
+      'https://gaurav-nursery.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ],
     credentials: true
   })
 );
