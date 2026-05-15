@@ -45,9 +45,9 @@ export default function Footer() {
         <div>
           <h3 className="font-black">Contact</h3>
           <div className="mt-4 grid gap-3 text-sm text-leaf-100">
-            <span className="flex items-start gap-3"><MapPin className="mt-0.5 shrink-0" size={17} /> Local nursery marketplace, India</span>
-            <span className="flex items-center gap-3"><Phone size={17} /> +91 98765 43210</span>
-            <span className="flex items-center gap-3"><Mail size={17} /> support@gauravnursery.com</span>
+            <span className="flex items-start gap-3"><MapPin className="mt-0.5 shrink-0" size={17} /> Aliganj Bazar, Sultanpur</span>
+            <span className="flex items-center gap-3"><Phone size={17} /> +91 63520 31504</span>
+            <span className="flex items-center gap-3"><Mail size={17} /> <a href="mailto:nurserygaurav@gmail.com" className="underline decoration-white/30 hover:decoration-white">nurserygaurav@gmail.com</a></span>
           </div>
         </div>
       </div>
