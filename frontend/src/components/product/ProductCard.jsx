@@ -1,12 +1,24 @@
 import { motion } from 'framer-motion';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth.js';
 import Button from '../ui/Button.jsx';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { getProductImage, getProductTitle, getSellerName } from '../../utils/product.js';
 
 export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
   const rating = product.rating || product.averageRating || 4.8;
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  function handleBuyNow() {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
+      return;
+    }
+
+    navigate('/checkout');
+  }
 
   return (
     <motion.article
@@ -51,12 +63,27 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           </Link>
           <p className="mt-1 text-sm text-stone-600">{getSellerName(product)}</p>
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-leaf-100 pt-4">
+        <div className="flex flex-col gap-3 border-t border-leaf-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <span className="text-xl font-black text-leaf-950">{formatCurrency(product.price)}</span>
-          <Button className="h-11 px-4" onClick={() => onAddToCart?.(product)} aria-label="Add to cart">
-            <ShoppingCart className="mr-2" size={17} />
-            Add
-          </Button>
+          <div className="flex w-full items-center gap-3 sm:w-auto">
+            <Button
+              className="h-11 flex-1 px-4 sm:flex-none sm:px-4"
+              onClick={() => onAddToCart?.(product)}
+              aria-label="Add to cart"
+            >
+              <ShoppingCart className="mr-2" size={17} />
+              Add
+            </Button>
+            <Button
+              className="h-11 flex-1 px-4 sm:flex-none sm:px-4"
+              onClick={handleBuyNow}
+              aria-label="Buy now"
+              variant="secondary"
+            >
+              <Star size={17} className="mr-2" />
+              Buy Now
+            </Button>
+          </div>
         </div>
       </div>
     </motion.article>
