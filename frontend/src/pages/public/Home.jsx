@@ -1,5 +1,16 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Leaf, LockKeyhole, Mail, PackageCheck, Sparkles, Star, Truck } from 'lucide-react';
+
+function AnimatedStat({ value, display }) {
+  return (
+    <div className="flex flex-col items-center">
+      <p className="text-4xl font-black tracking-tight text-leaf-950 sm:text-5xl">
+        {display}
+      </p>
+      <p className="mt-1 text-xs font-bold uppercase tracking-[0.22em] text-leaf-600">{value ? 'Live' : ''}</p>
+    </div>
+  );
+}
 import { Link } from 'react-router-dom';
 import ProductCard from '../../components/product/ProductCard.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -45,23 +56,7 @@ const categories = [
   }
 ];
 
-const testimonials = [
-  {
-    name: 'Ananya Sharma',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
-    review: 'The plants arrived fresh, beautifully packed, and exactly like the pictures. My balcony finally feels alive.'
-  },
-  {
-    name: 'Rohan Mehta',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
-    review: 'Clean shopping experience, quick checkout, and very premium planters. The quality feels genuinely curated.'
-  },
-  {
-    name: 'Isha Kapoor',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    review: 'Loved the care notes and delivery updates. This feels like a modern plant store, not a basic marketplace.'
-  }
-];
+
 
 const gallery = [
   'https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=700&q=80',
@@ -216,30 +211,293 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Choose Us + Marketplace Premium Sections */}
       <section className="bg-white/65 py-14">
         <div className="premium-container">
-          <SectionHeader eyebrow="Testimonials" title="Loved by Plant People" text="Realistic review cards shaped like a carousel, ready to wire into a slider library later if needed." />
-          <div className="flex snap-x gap-5 overflow-x-auto pb-4">
-            {testimonials.map((item) => (
-              <motion.article
-                key={item.name}
-                className="min-w-[18rem] snap-start rounded-3xl border border-leaf-100 bg-white p-6 shadow-soft sm:min-w-[24rem]"
-                whileHover={{ y: -6 }}
+          {/* 1. Why Choose Us */}
+          <SectionHeader
+            eyebrow="Why Choose Us"
+            title="Premium Nursery Experience"
+            text="Fresh plants, secure checkout, fast delivery, expert care notes, and a healthy root guarantee — every order." 
+          />
+
+          <div className="mt-2 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              {
+                icon: Leaf,
+                title: 'Fresh Nursery Plants',
+                text: 'Packed for transit with nursery-grade freshness — no guesswork.'
+              },
+              {
+                icon: LockKeyhole,
+                title: 'Secure Payments',
+                text: 'Protected checkout that fits modern payment expectations.'
+              },
+              {
+                icon: Truck,
+                title: 'Fast Delivery',
+                text: 'Quick dispatch and careful handling from nursery to doorstep.'
+              },
+              {
+                icon: Sparkles,
+                title: 'Expert Plant Care',
+                text: 'Care guidance with every plant so it thrives at home.'
+              },
+              {
+                icon: PackageCheck,
+                title: 'Healthy Root Guarantee',
+                text: 'Confidence in every order with a root-first healthy start.'
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={item.title}
+                className="rounded-3xl border border-leaf-100 bg-white p-6 shadow-soft"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                transition={{ duration: 0.45, delay: index * 0.04 }}
               >
                 <div className="flex items-center gap-4">
-                  <img className="h-14 w-14 rounded-full object-cover" src={item.avatar} alt={item.name} />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800 shadow-sm">
+                    <item.icon size={22} />
+                  </div>
                   <div>
-                    <h3 className="font-black text-leaf-950">{item.name}</h3>
-                    <div className="mt-1 flex text-amber-400">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star key={index} size={14} fill="currentColor" />
-                      ))}
-                    </div>
+                    <h3 className="text-base font-black text-leaf-950">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
                   </div>
                 </div>
-                <p className="mt-5 leading-7 text-stone-600">{item.review}</p>
-              </motion.article>
+              </motion.div>
             ))}
+          </div>
+
+          {/* 2. Premium plant banner */}
+          <motion.div
+            className="mt-10 overflow-hidden rounded-[2rem] bg-gradient-to-br from-leaf-950 via-leaf-950 to-leaf-900 p-6 text-white shadow-card md:p-10"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55 }}
+          >
+            <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold text-white/90">
+                  <Sparkles size={16} /> Premium indoor plant picks
+                </div>
+                <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">Bring Nature Into Your Home</h2>
+                <p className="mt-3 max-w-xl leading-7 text-leaf-100/95">
+                  Shop curated indoor plants and premium planters from trusted nursery sellers.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    to="/shop?category=Indoor+Plants"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50"
+                  >
+                    Shop Indoor Plants <ArrowRight className="ml-2" size={18} />
+                  </Link>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=700&q=80',
+                    'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=700&q=80',
+                    'https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=700&q=80',
+                    'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=700&q=80'
+                  ].map((src, i) => (
+                    <motion.div
+                      key={src}
+                      className={`overflow-hidden rounded-3xl shadow-card ${i === 0 ? 'aspect-[1/1]' : 'aspect-[4/5]'} relative`}
+                      whileHover={{ y: -6 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <img
+                        src={src}
+                        alt="Premium indoor plant"
+                        loading="lazy"
+                        className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 3. Community / Instagram style gallery */}
+          <div className="mt-12">
+            <SectionHeader
+              eyebrow="Community"
+              title="Real Homes, Real Plants"
+              text="A premium community gallery inspired by Instagram — fresh styling, warm light, and thriving corners." 
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  src: 'https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Plant shelf styling in natural light'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1525498128493-380d1990a112?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Potted plants near a bright window'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Indoor plant corner with decor'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Planters and greenery on a balcony'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Indoor plant display'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1459156212016-c812468e2115?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Green leaves in a modern interior'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Succulents on a table'
+                },
+                {
+                  src: 'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=800&q=80',
+                  alt: 'Nursery plants in sunlight'
+                }
+              ].map((item, index) => (
+                <motion.figure
+                  key={item.src}
+                  className="group relative overflow-hidden rounded-[1.75rem] shadow-soft"
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.02 }}
+                  whileHover={{ y: -6 }}
+                >
+                  <img
+                    src={item.src}
+                    alt={item.alt}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+                  <figcaption className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white/90 backdrop-blur">
+                      #PlantPeople
+                    </span>
+                    <span className="text-xs font-bold text-white/90">{['cozy', 'fresh', 'green', 'home'][index % 4]}</span>
+                  </figcaption>
+                </motion.figure>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Animated stats section */}
+          <motion.div
+            className="mt-12 rounded-[2rem] bg-gradient-to-br from-white to-leaf-50 p-6 shadow-soft md:p-10"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55 }}
+          >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { label: 'Happy Customers', value: 10000, display: '10K+' },
+                { label: 'Plants Delivered', value: 25000, display: '25K+' },
+                { label: 'Sellers', value: 120, display: '120+' },
+                { label: 'Rating', value: 49, display: '4.9' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  className="rounded-3xl border border-leaf-100 bg-white p-6 text-center"
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.25, delay: index * 0.01 }}
+                >
+                  <AnimatedStat value={stat.value} display={stat.display} />
+                  <p className="mt-3 text-sm font-black text-leaf-950">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 5. Featured Sellers */}
+          <div className="mt-12">
+            <SectionHeader eyebrow="Featured Sellers" title="Trusted Nurseries on Our Marketplace" text="Top-rated sellers with specialty plants, verified care standards, and consistently great delivery outcomes." />
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                {
+                  logo: 'https://images.unsplash.com/photo-1562440499-3e86e4c5c86b?auto=format&fit=crop&w=256&q=80',
+                  name: 'Verdant Roots Nursery',
+                  city: 'Bengaluru',
+                  speciality: 'Monstera & Aroids',
+                  rating: 4.8
+                },
+                {
+                  logo: 'https://images.unsplash.com/photo-1524594154908-edd85d3bbd8d?auto=format&fit=crop&w=256&q=80',
+                  name: 'Bloom & Thrive',
+                  city: 'Pune',
+                  speciality: 'Indoor Flowering Plants',
+                  rating: 4.7
+                },
+                {
+                  logo: 'https://images.unsplash.com/photo-1523348833956-3d07d3c7e8f1?auto=format&fit=crop&w=256&q=80',
+                  name: 'Green Haven Nursery',
+                  city: 'Hyderabad',
+                  speciality: 'Succulents & Planters',
+                  rating: 4.9
+                }
+              ].map((seller, index) => (
+                <motion.article
+                  key={seller.name}
+                  className="rounded-[1.75rem] border border-leaf-100 bg-white p-6 shadow-soft"
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.45, delay: index * 0.03 }}
+                  whileHover={{ y: -6 }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-2xl bg-leaf-50 shadow-sm">
+                      <img src={seller.logo} alt={`${seller.name} logo`} className="h-full w-full object-cover" loading="lazy" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate text-base font-black text-leaf-950">{seller.name}</h3>
+                      <p className="mt-1 text-sm font-bold text-leaf-700">{seller.city}</p>
+                    </div>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-6 text-stone-600">
+                    <span className="font-black text-leaf-950">Speciality:</span> {seller.speciality}
+                  </p>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex text-amber-400">
+                        {Array.from({ length: 5 }).map((_, starIndex) => {
+                          const filled = starIndex < Math.round(seller.rating);
+                          return (
+                            <Star key={starIndex} size={15} fill={filled ? 'currentColor' : 'transparent'} />
+                          );
+                        })}
+                      </div>
+                      <p className="text-sm font-black text-leaf-950">{seller.rating.toFixed(1)}</p>
+                    </div>
+                    <span className="rounded-full bg-leaf-50 px-3 py-1 text-xs font-black text-leaf-800">Top rated</span>
+                  </div>
+
+                  <Link
+                    to="/shop"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-full border border-leaf-200 bg-white px-5 py-3 text-sm font-black text-leaf-950 transition hover:-translate-y-0.5 hover:bg-leaf-50"
+                  >
+                    Shop from seller
+                  </Link>
+                </motion.article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
