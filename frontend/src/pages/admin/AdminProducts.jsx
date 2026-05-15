@@ -1,14 +1,5 @@
-export default function AdminProducts() {
-  return <AdminPanel title="Products" text="Admin product moderation controls will appear here." />;
-}
+import AdminTablePage from './AdminTablePage.jsx';
 
-function AdminPanel({ title, text }) {
-  return (
-    <section>
-      <h1 className="text-3xl font-black text-leaf-900">{title}</h1>
-      <div className="mt-6 rounded-lg bg-white p-6 shadow-soft">
-        <p className="text-stone-600">{text}</p>
-      </div>
-    </section>
-  );
+export default function AdminProducts() {
+  return <AdminTablePage title="Products" text="Moderate listings, categories, pricing quality, inventory risk, and seller product compliance." />;
 }

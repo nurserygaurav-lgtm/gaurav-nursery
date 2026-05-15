@@ -34,7 +34,8 @@ export default function ManageProducts() {
     <section>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-leaf-900">Manage Products</h1>
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-leaf-600">Product management</p>
+          <h1 className="mt-2 text-3xl font-black text-leaf-950">Manage Products</h1>
           <p className="mt-2 text-sm text-stone-600">Edit pricing, stock, images, and availability for your listings.</p>
         </div>
         <Link to="/seller/products/new">
@@ -46,12 +47,12 @@ export default function ManageProducts() {
       </div>
       <div className="mt-6">
         {isLoading && (
-          <div className="rounded-lg bg-white p-6 text-leaf-700 shadow-soft">
+          <div className="rounded-3xl bg-white p-6 text-leaf-700 shadow-soft">
             <Spinner label="Loading products" />
           </div>
         )}
-        {error && <p className="rounded-lg bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
-        {!isLoading && !error && <SellerProductTable products={products} isDeletingId={isDeletingId} onDelete={handleDelete} />}
+        {error && <p className="rounded-3xl bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
+        {!isLoading && !error && <SellerProductTable products={products} isDeletingId={isDeletingId} onDelete={handleDelete} showToolbar />}
       </div>
     </section>
   );

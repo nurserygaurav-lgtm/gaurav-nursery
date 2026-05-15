@@ -1,9 +1,19 @@
 import crypto from 'crypto';
 import asyncHandler from '../middleware/asyncHandler.js';
-import razorpay from '../config/razorpay.js';
+import { getRazorpayClient } from '../config/razorpay.js';
 import { calculateCartTotal, createOrderFromCart, getCartForCheckout, validateShippingAddress } from '../utils/orderHelpers.js';
 
+function requireRazorpayClient(res) {
+  try {
+    return getRazorpayClient();
+  } catch (error) {
+    res.status(503);
+    throw new Error(error.message || 'Razorpay payments are temporarily unavailable');
+  }
+}
+
 export const createPaymentOrder = asyncHandler(async (req, res) => {
+  const razorpay = requireRazorpayClient(res);
   const cart = await getCartForCheckout(req.user._id);
 
   if (!cart || !cart.items.length) {
@@ -22,6 +32,7 @@ export const createPaymentOrder = asyncHandler(async (req, res) => {
 });
 
 export const verifyPayment = asyncHandler(async (req, res) => {
+  const razorpay = requireRazorpayClient(res);
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, shippingAddress } = req.body;
   const addressError = validateShippingAddress(shippingAddress);
 

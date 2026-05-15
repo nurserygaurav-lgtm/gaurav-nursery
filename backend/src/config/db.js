@@ -6,7 +6,7 @@ export default async function connectDB() {
     await mongoose.connect(config.mongoUri, {
       autoIndex: !config.isProduction
     });
-    console.log('MongoDB connected');
+    console.log('MongoDB Connected');
   } catch (error) {
     console.error(`MongoDB connection failed: ${error.message}`);
     process.exit(1);

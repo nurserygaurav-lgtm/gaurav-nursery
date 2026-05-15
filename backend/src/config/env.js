@@ -1,8 +1,20 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-dotenv.config();
+const envPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.env');
+dotenv.config({ path: envPath });
 
-const requiredInProduction = ['MONGO_URI', 'JWT_SECRET', 'CLIENT_URL'];
+const requiredInProduction = [
+  'MONGO_URI',
+  'JWT_SECRET',
+  'CLIENT_URL',
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET',
+  'RAZORPAY_KEY_ID',
+  'RAZORPAY_KEY_SECRET'
+];
 
 if (process.env.NODE_ENV === 'production') {
   const missing = requiredInProduction.filter((key) => !process.env[key]);
