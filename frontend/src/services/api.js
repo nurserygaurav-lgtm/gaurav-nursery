@@ -1,8 +1,10 @@
 import axios from 'axios';
 import env from '../config/env.js';
 
+const apiBaseUrl = `${env.apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '')}/api`;
+
 const api = axios.create({
-  baseURL: env.apiUrl,
+  baseURL: apiBaseUrl,
   timeout: 30000
 });
 
