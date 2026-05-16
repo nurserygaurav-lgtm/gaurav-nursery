@@ -74,6 +74,23 @@ const trustBadges = [
   { icon: Headphones, label: 'Support' }
 ];
 
+const premiumGuarantees = [
+  { icon: Truck, label: 'Free Delivery', text: 'On orders above ₹499' },
+  { icon: ShieldCheck, label: 'Secure Payment', text: 'Protected Razorpay checkout' },
+  { icon: RotateCcw, label: 'Easy Returns', text: 'Simple support for every order' },
+  { icon: PackageCheck, label: 'Best Quality', text: 'Fresh plants packed with care' },
+  { icon: Headphones, label: '24/7 Support', text: 'Help whenever you need it' }
+];
+
+const promiseStats = [
+  ['10,000+', 'Happy Customers'],
+  ['4.8/5', 'Customer Rating'],
+  ['100+', 'Plant Varieties'],
+  ['PAN India', 'Delivery'],
+  ['Safe', 'Packaging'],
+  ['100%', 'Satisfaction']
+];
+
 const testimonials = [
   { name: 'Priya S.', text: 'The plants arrived fresh, neatly packed, and exactly like the photos.' },
   { name: 'Amit K.', text: 'Great prices and fast delivery. My balcony garden looks beautiful now.' },
@@ -262,6 +279,28 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="premium-container py-10">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {premiumGuarantees.map((item, index) => (
+            <motion.div
+              key={item.label}
+              className="rounded-[1.25rem] border border-leaf-100 bg-white p-5 shadow-soft"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              transition={{ duration: 0.4, delay: index * 0.04 }}
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-leaf-100 text-leaf-800">
+                <item.icon size={22} />
+              </div>
+              <h3 className="mt-4 text-lg font-black text-leaf-950">{item.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       <section className="premium-container py-12">
         <SectionHeader
           eyebrow="Shop by Categories"
@@ -330,6 +369,28 @@ export default function Home() {
               <p className="mt-2 text-sm font-bold uppercase tracking-[0.18em] text-stone-500">{label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="bg-white py-12">
+        <div className="premium-container">
+          <SectionHeader eyebrow="Gaurav Nursery Promise" title="Premium Service, Every Order" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+            {promiseStats.map(([value, label], index) => (
+              <motion.div
+                key={`${value}-${label}`}
+                className="rounded-[1.25rem] border border-leaf-100 bg-[#f7faf5] p-5 text-center shadow-soft"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                transition={{ duration: 0.4, delay: index * 0.03 }}
+              >
+                <p className="text-3xl font-black text-leaf-900">{value}</p>
+                <p className="mt-2 text-xs font-black uppercase tracking-[0.16em] text-stone-500">{label}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

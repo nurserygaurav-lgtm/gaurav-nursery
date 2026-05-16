@@ -84,7 +84,7 @@ export default function Header() {
         </form>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50 xl:hidden" onClick={handleSearch} aria-label="Search">
+          <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50 xl:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Search">
             <Search size={20} />
           </button>
           <Link className="relative rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" to="/wishlist" aria-label="Wishlist">
