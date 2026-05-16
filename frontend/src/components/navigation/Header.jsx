@@ -89,8 +89,8 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="premium-container flex min-h-20 items-center justify-between gap-3 py-3">
-        <Link to="/" className="flex items-center gap-3" onClick={() => setIsMenuOpen(false)}>
+      <div className="premium-container flex min-h-20 items-center justify-between gap-2 py-3 sm:gap-3">
+        <Link to="/" className="flex min-w-0 items-center gap-3" onClick={() => setIsMenuOpen(false)}>
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-leaf-900 text-lg font-black text-white shadow-button">
             GN
           </span>
@@ -100,7 +100,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-5 xl:flex">
+        <nav className="hidden shrink-0 items-center gap-5 xl:flex">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -115,7 +115,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <form className="hidden min-w-0 flex-1 items-center xl:flex xl:max-w-sm" onSubmit={handleSearch}>
+        <form className="hidden min-w-[15rem] flex-1 items-center xl:flex xl:max-w-sm" onSubmit={handleSearch}>
           <label className="relative w-full">
             <span className="sr-only">Search products</span>
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
@@ -128,7 +128,7 @@ export default function Header() {
           </label>
         </form>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50 xl:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Search">
             <Search size={20} />
           </button>

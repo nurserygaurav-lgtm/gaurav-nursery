@@ -72,13 +72,13 @@ export default function Register() {
 
   return (
     <section className="premium-container py-10">
-      <div className="grid overflow-hidden rounded-[2rem] bg-white shadow-card lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="p-6 sm:p-10">
-          <div className="mb-7 inline-flex rounded-full bg-leaf-50 p-1">
+      <div className="grid items-stretch overflow-hidden rounded-[2rem] bg-white shadow-card lg:min-h-[720px] lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="flex min-w-0 flex-col justify-center p-6 sm:p-10">
+          <div className="mb-7 inline-flex w-fit max-w-full flex-wrap rounded-full bg-leaf-50 p-1">
             <Link className="rounded-full px-6 py-2 text-sm font-black text-leaf-900 transition hover:bg-white" to="/login">Login</Link>
             <Link className="rounded-full bg-leaf-900 px-6 py-2 text-sm font-black text-white shadow-soft" to="/register">Register</Link>
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-leaf-950">Create account</h1>
+          <h1 className="text-3xl font-black tracking-tight text-leaf-950 sm:text-4xl">Create account</h1>
           <p className="mt-3 text-sm leading-6 text-stone-600">Register to save wishlist items, checkout faster, and manage your nursery orders.</p>
 
           <form className="mt-7 space-y-4" onSubmit={handleSubmit}>
@@ -121,17 +121,18 @@ export default function Register() {
           </form>
         </div>
 
-        <div className="relative min-h-[360px] bg-gradient-to-br from-leaf-900 via-leaf-700 to-leaf-500 p-8 text-white lg:min-h-full">
+        <div className="relative min-h-[360px] overflow-hidden bg-gradient-to-br from-leaf-900 via-leaf-700 to-leaf-500 p-8 text-white lg:min-h-[720px]">
           <img
-            className="absolute inset-0 h-full w-full object-cover opacity-45"
-            src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1100&q=85"
-            alt="Green nursery plants"
+            className="absolute inset-0 h-full w-full object-cover opacity-80"
+            src="https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=1400&q=90"
+            alt="Bright nursery display with healthy indoor plants in elegant pots"
             loading="lazy"
             decoding="async"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-leaf-950/78 via-leaf-900/28 to-transparent" />
           <div className="relative z-10 flex h-full min-h-[300px] flex-col justify-end">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-leaf-100">Gaurav Nursery</p>
-            <h2 className="mt-3 max-w-md text-4xl font-black tracking-tight">Start your plant journey with a fresh account.</h2>
+            <h2 className="mt-3 max-w-md text-3xl font-black tracking-tight sm:text-4xl">Start your plant journey with a fresh account.</h2>
           </div>
         </div>
       </div>

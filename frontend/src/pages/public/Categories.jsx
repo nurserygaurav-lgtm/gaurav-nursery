@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Skeleton from '../../components/ui/Skeleton.jsx';
+import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { getProducts } from '../../services/productService.js';
 import { getApiError } from '../../utils/auth.js';
 
@@ -20,6 +21,11 @@ export default function Categories() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+
+  usePageMeta({
+    title: 'Categories',
+    description: 'Explore Gaurav Nursery plant categories, including indoor plants, flowering plants, seeds, planters, and garden tools.'
+  });
 
   useEffect(() => {
     let isMounted = true;

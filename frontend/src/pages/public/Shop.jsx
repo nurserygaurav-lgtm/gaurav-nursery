@@ -5,6 +5,7 @@ import ProductCard from '../../components/product/ProductCard.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
+import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { useToast } from '../../hooks/useToast.js';
 import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
@@ -27,6 +28,11 @@ export default function Shop() {
   const currentPage = Number(searchParams.get('page') || 1);
   const category = searchParams.get('category') || '';
   const search = searchParams.get('search') || '';
+
+  usePageMeta({
+    title: category || search ? `Shop ${category || search}` : 'Shop',
+    description: 'Browse live Gaurav Nursery plants, planters, seeds, tools, and garden essentials.'
+  });
 
   useEffect(() => {
     let isMounted = true;
