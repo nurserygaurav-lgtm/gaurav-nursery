@@ -1,8 +1,9 @@
 import { ChevronDown, Heart, LogOut, Menu, MessageCircle, Search, ShoppingCart, UserRound, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
+import { getCart, readStoredCartCount } from '../../services/cartService.js';
 import { getRoleHome } from '../../utils/auth.js';
 
 const navItems = [
@@ -22,6 +23,50 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [cartCount, setCartCount] = useState(() => readStoredCartCount());
+
+  useEffect(() => {
+    function handleCartCountUpdate(event) {
+      setCartCount(Number(event.detail?.count || 0));
+    }
+
+    function handleStorage(event) {
+      if (event.key === 'gaurav_nursery_cart_count') {
+        setCartCount(readStoredCartCount());
+      }
+    }
+
+    window.addEventListener('cart-count-updated', handleCartCountUpdate);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('cart-count-updated', handleCartCountUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCartCount() {
+      if (!isAuthenticated) {
+        localStorage.setItem('gaurav_nursery_cart_count', '0');
+        if (isMounted) setCartCount(0);
+        return;
+      }
+
+      try {
+        const data = await getCart();
+        if (isMounted) setCartCount(Number(data.summary?.itemCount || 0));
+      } catch {
+        if (isMounted) setCartCount(readStoredCartCount());
+      }
+    }
+
+    loadCartCount();
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated]);
 
   function handleLogout() {
     logout();
@@ -93,7 +138,7 @@ export default function Header() {
           <Link className="relative rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" to="/cart" aria-label="Cart">
             <ShoppingCart size={20} />
             <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-leaf-700 px-1 text-[10px] font-black text-white">
-              0
+              {cartCount}
             </span>
           </Link>
 

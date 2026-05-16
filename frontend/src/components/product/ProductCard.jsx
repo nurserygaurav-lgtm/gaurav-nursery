@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Heart, ShoppingCart, Star } from 'lucide-react';
+import { Heart, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import Button from '../ui/Button.jsx';
@@ -7,7 +7,6 @@ import { formatCurrency } from '../../utils/formatCurrency.js';
 import { getProductImage, getProductTitle, getSellerName } from '../../utils/product.js';
 
 export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
-  const rating = product.rating || product.averageRating || 4.8;
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -52,12 +51,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
       </div>
       <div className="space-y-4 p-5">
         <div>
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-leaf-600">{product.category}</p>
-            <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-500">
-              <Star size={15} fill="currentColor" /> {Number(rating).toFixed(1)}
-            </span>
-          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-leaf-600">{product.category}</p>
           <Link to={`/products/${product._id}`} className="mt-2 block text-lg font-black leading-snug text-leaf-950 transition hover:text-leaf-700">
             {getProductTitle(product)}
           </Link>
@@ -80,7 +74,6 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
               aria-label="Buy now"
               variant="secondary"
             >
-              <Star size={17} className="mr-2" />
               Buy Now
             </Button>
           </div>

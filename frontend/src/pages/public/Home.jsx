@@ -3,14 +3,18 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgePercent,
+  Clock3,
   Headphones,
+  Heart,
+  Leaf,
   Mail,
   MessageCircle,
   PackageCheck,
   RotateCcw,
   ShieldCheck,
+  ShoppingCart,
   Sparkles,
-  Star,
+  Sprout,
   Truck
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -24,6 +28,8 @@ import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
+import { formatCurrency } from '../../utils/formatCurrency.js';
+import { getProductImage, getProductTitle } from '../../utils/product.js';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 22 },
@@ -80,21 +86,6 @@ const premiumGuarantees = [
   { icon: RotateCcw, label: 'Easy Returns', text: 'Simple support for every order' },
   { icon: PackageCheck, label: 'Best Quality', text: 'Fresh plants packed with care' },
   { icon: Headphones, label: '24/7 Support', text: 'Help whenever you need it' }
-];
-
-const promiseStats = [
-  ['10,000+', 'Happy Customers'],
-  ['4.8/5', 'Customer Rating'],
-  ['100+', 'Plant Varieties'],
-  ['PAN India', 'Delivery'],
-  ['Safe', 'Packaging'],
-  ['100%', 'Satisfaction']
-];
-
-const testimonials = [
-  { name: 'Priya S.', text: 'The plants arrived fresh, neatly packed, and exactly like the photos.' },
-  { name: 'Amit K.', text: 'Great prices and fast delivery. My balcony garden looks beautiful now.' },
-  { name: 'Neha R.', text: 'Loved the plant quality and the simple checkout experience.' }
 ];
 
 function SectionHeader({ eyebrow, title, action }) {
@@ -158,6 +149,9 @@ export default function Home() {
   }, [products]);
 
   const bestSellers = useMemo(() => products.slice(0, 8), [products]);
+  const dealProduct = products[4] || products[0];
+  const dealPrice = Number(dealProduct?.salePrice || dealProduct?.discountedPrice || dealProduct?.price || 0);
+  const originalPrice = Number(dealProduct?.originalPrice || dealProduct?.mrp || Math.round(dealPrice * 1.3));
   const slide = slides[activeSlide];
 
   function goToSlide(index) {
@@ -356,57 +350,86 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="premium-container py-12">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ['10k+', 'Happy Customers'],
-            ['500+', 'Plant Varieties'],
-            ['24h', 'Quick Dispatch'],
-            ['4.8', 'Average Rating']
-          ].map(([value, label]) => (
-            <div key={label} className="rounded-[1.25rem] border border-leaf-100 bg-white p-6 text-center shadow-soft">
-              <p className="text-4xl font-black text-leaf-900">{value}</p>
-              <p className="mt-2 text-sm font-bold uppercase tracking-[0.18em] text-stone-500">{label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-white py-12">
-        <div className="premium-container">
-          <SectionHeader eyebrow="Gaurav Nursery Promise" title="Premium Service, Every Order" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-            {promiseStats.map(([value, label], index) => (
-              <motion.div
-                key={`${value}-${label}`}
-                className="rounded-[1.25rem] border border-leaf-100 bg-[#f7faf5] p-5 text-center shadow-soft"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeUp}
-                transition={{ duration: 0.4, delay: index * 0.03 }}
-              >
-                <p className="text-3xl font-black text-leaf-900">{value}</p>
-                <p className="mt-2 text-xs font-black uppercase tracking-[0.16em] text-stone-500">{label}</p>
-              </motion.div>
-            ))}
+      <section className="premium-container py-6">
+        <motion.div
+          className="grid gap-6 overflow-hidden rounded-[2rem] bg-leaf-950 p-7 text-white shadow-card md:grid-cols-[1fr_auto] md:items-center md:p-10"
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-leaf-200">Limited time offer</p>
+            <h2 className="mt-3 text-4xl font-black tracking-tight">Spring Plant Sale</h2>
+            <p className="mt-3 max-w-2xl leading-7 text-leaf-100">Refresh your balcony, living room, and garden with seasonal plants and essentials.</p>
           </div>
-        </div>
+          <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/shop">
+            Shop Now <ArrowRight className="ml-2" size={18} />
+          </Link>
+        </motion.div>
       </section>
 
-      <section className="premium-container py-12">
-        <SectionHeader eyebrow="Testimonials" title="What Customers Say" />
-        <div className="grid gap-5 md:grid-cols-3">
-          {testimonials.map((item, index) => (
-            <motion.article key={item.name} className="rounded-[1.25rem] border border-leaf-100 bg-white p-6 shadow-soft" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.05 }}>
-              <div className="flex gap-1 text-amber-500">
-                {Array.from({ length: 5 }).map((_, starIndex) => (
-                  <Star key={starIndex} size={17} fill="currentColor" />
-                ))}
+      {dealProduct && (
+        <section className="premium-container py-12">
+          <SectionHeader eyebrow="Daily Deal" title="Deal of the Day" />
+          <motion.div
+            className="grid overflow-hidden rounded-[2rem] border border-leaf-100 bg-white shadow-card md:grid-cols-[0.9fr_1.1fr]"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Link className="block bg-leaf-50" to={`/products/${dealProduct._id}`}>
+              <img className="h-full min-h-[320px] w-full object-cover" src={getProductImage(dealProduct)} alt={getProductTitle(dealProduct)} loading="lazy" />
+            </Link>
+            <div className="flex flex-col justify-center p-7 md:p-10">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-black text-amber-800">
+                <Clock3 size={16} /> Limited availability
+              </span>
+              <Link to={`/products/${dealProduct._id}`} className="mt-5 text-3xl font-black tracking-tight text-leaf-950 transition hover:text-leaf-700">
+                {getProductTitle(dealProduct)}
+              </Link>
+              <div className="mt-5 flex items-end gap-3">
+                <span className="text-lg font-bold text-stone-400 line-through">{formatCurrency(originalPrice)}</span>
+                <span className="text-4xl font-black text-leaf-900">{formatCurrency(dealPrice)}</span>
               </div>
-              <p className="mt-4 leading-7 text-stone-600">{item.text}</p>
-              <p className="mt-5 font-black text-leaf-950">{item.name}</p>
-            </motion.article>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button onClick={() => handleAddToCart(dealProduct)}>
+                  <ShoppingCart className="mr-2" size={18} />
+                  Add to Cart
+                </Button>
+                <Button onClick={() => handleWishlist(dealProduct)} variant="outline">
+                  <Heart className="mr-2" size={18} />
+                  Wishlist
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+      <section className="premium-container py-12">
+        <div className="grid gap-5 sm:grid-cols-3">
+          {[
+            { icon: Leaf, title: 'Premium Quality', text: 'Healthy plants selected for home, balcony, and garden spaces.' },
+            { icon: Sprout, title: 'Fresh Arrivals', text: 'New plants, seeds, and essentials added regularly.' },
+            { icon: ShieldCheck, title: 'Secure Checkout', text: 'Cart, wishlist, authentication, and payments stay connected.' }
+          ].map((item, index) => (
+            <motion.div
+              key={item.title}
+              className="rounded-3xl border border-leaf-100 bg-white p-6 shadow-soft"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              transition={{ duration: 0.45, delay: index * 0.05 }}
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800">
+                <item.icon size={23} />
+              </div>
+              <h3 className="mt-5 text-lg font-black text-leaf-950">{item.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
+            </motion.div>
           ))}
         </div>
       </section>
