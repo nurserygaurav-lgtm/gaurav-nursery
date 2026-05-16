@@ -10,11 +10,11 @@ export default function Footer() {
         <div className="premium-container grid gap-4 py-5 sm:grid-cols-3">
           <div className="flex min-w-0 items-center gap-3">
             <Truck className="text-leaf-200" size={22} />
-            <span className="text-sm font-black">Free delivery above ₹499</span>
+            <span className="text-sm font-black">Free Delivery on orders above ₹499</span>
           </div>
           <div className="flex min-w-0 items-center gap-3">
             <ShieldCheck className="text-leaf-200" size={22} />
-            <span className="text-sm font-black">Secure checkout</span>
+            <span className="text-sm font-black">Secure Payment</span>
           </div>
           <a className="flex min-w-0 items-center gap-3 text-sm font-black text-white transition hover:text-leaf-100" href={whatsappUrl} rel="noreferrer" target="_blank">
             <MessageCircle className="text-leaf-200" size={22} />
@@ -23,7 +23,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="premium-container grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.75fr_0.75fr_1fr]">
+      <div className="premium-container grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.7fr_0.8fr_0.9fr_1fr]">
         <div className="min-w-0">
           <Link className="flex items-center gap-3" to="/">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-black text-leaf-950">GN</span>
@@ -56,13 +56,24 @@ export default function Footer() {
         </div>
 
         <div className="min-w-0">
-          <h3 className="font-black">Collections</h3>
+          <h3 className="font-black">Categories</h3>
           <div className="mt-4 grid gap-3 text-sm text-leaf-100">
             <Link className="transition hover:text-white" to="/shop?category=Indoor+Plants">Indoor Plants</Link>
             <Link className="transition hover:text-white" to="/shop?category=Flowering+Plants">Flowering Plants</Link>
             <Link className="transition hover:text-white" to="/shop?category=Seeds">Seeds</Link>
             <Link className="transition hover:text-white" to="/shop?category=Planters">Planters</Link>
             <Link className="transition hover:text-white" to="/seller">Become a Seller</Link>
+          </div>
+        </div>
+
+        <div className="min-w-0">
+          <h3 className="font-black">Customer Service</h3>
+          <div className="mt-4 grid gap-3 text-sm text-leaf-100">
+            <Link className="transition hover:text-white" to="/contact">Help Center</Link>
+            <Link className="transition hover:text-white" to="/orders">Track Order</Link>
+            <Link className="transition hover:text-white" to="/contact">Easy Returns</Link>
+            <Link className="transition hover:text-white" to="/contact">Secure Payment</Link>
+            <a className="transition hover:text-white" href={whatsappUrl} rel="noreferrer" target="_blank">24/7 Support</a>
           </div>
         </div>
 
@@ -78,9 +89,13 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="premium-container flex flex-col gap-2 py-5 text-sm text-leaf-100 sm:flex-row sm:items-center sm:justify-between">
+        <div className="premium-container flex flex-col gap-3 py-5 text-sm text-leaf-100 lg:flex-row lg:items-center lg:justify-between">
           <p>Copyright 2026 Gaurav Nursery. All rights reserved.</p>
-          <p>Fresh plants. COD available. Razorpay secure payments.</p>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link className="transition hover:text-white" to="/contact">Privacy Policy</Link>
+            <Link className="transition hover:text-white" to="/contact">Terms & Conditions</Link>
+            <Link className="transition hover:text-white" to="/contact">Refund Policy</Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -85,7 +85,7 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-leaf-100/80 bg-white/90 backdrop-blur-xl">
       <div className="bg-leaf-900 text-white">
         <div className="premium-container flex min-h-9 items-center justify-center px-2 py-2 text-center text-xs font-black uppercase tracking-[0.16em] sm:text-sm">
-          FREE DELIVERY on orders above ₹499 | COD Available
+          FREE DELIVERY ON ORDERS ABOVE ₹499 | COD AVAILABLE
         </div>
       </div>
 

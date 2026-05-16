@@ -43,3 +43,10 @@ a {
   width: min(100% - 2rem, 80rem);
   margin-inline: auto;
 }
+
+.auth-page {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(155, 201, 145, 0.24), transparent 26rem),
+    radial-gradient(circle at 88% 18%, rgba(196, 223, 189, 0.36), transparent 24rem),
+    linear-gradient(180deg, #fbfdf9 0%, #eef7ea 100%);
+}
