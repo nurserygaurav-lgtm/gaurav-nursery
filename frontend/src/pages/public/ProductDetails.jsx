@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
+import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { useToast } from '../../hooks/useToast.js';
 import { addToCart } from '../../services/cartService.js';
 import { getProductById } from '../../services/productService.js';
@@ -21,6 +22,13 @@ export default function ProductDetails() {
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: product ? getProductTitle(product) : 'Product',
+    description: product?.description || 'View premium plants and garden essentials at Gaurav Nursery.',
+    image: product ? getProductImage(product) : '/brand.svg',
+    type: 'product'
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -71,6 +79,20 @@ export default function ProductDetails() {
     }
   }
 
+  async function handleBuyNow() {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/products/${id}` } } });
+      return;
+    }
+
+    try {
+      await addToCart(id, quantity);
+      navigate('/checkout');
+    } catch (err) {
+      showToast(getApiError(err, 'Unable to continue to checkout'), 'error');
+    }
+  }
+
   if (isLoading) {
     return (
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:px-8">
@@ -84,10 +106,31 @@ export default function ProductDetails() {
     return <p className="mx-auto mt-10 max-w-3xl rounded-lg bg-red-50 p-4 text-sm font-semibold text-red-700">{error || 'Product not found'}</p>;
   }
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: getProductTitle(product),
+    image: [getProductImage(product)],
+    description: product.description,
+    category: product.category,
+    brand: {
+      '@type': 'Brand',
+      name: 'Gaurav Nursery'
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'INR',
+      price: product.price,
+      availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: window.location.href
+    }
+  };
+
   return (
     <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:px-8">
+      <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       <div>
-        <img className="aspect-square w-full rounded-lg object-cover shadow-soft" src={getProductImage(product)} alt={getProductTitle(product)} />
+        <img className="aspect-square w-full rounded-lg object-cover shadow-soft" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" />
         {!!product.images?.length && (
           <div className="mt-3 grid grid-cols-4 gap-3">
             {product.images.slice(0, 4).map((image) => (
@@ -115,6 +158,9 @@ export default function ProductDetails() {
           <Button disabled={!product.stock} onClick={handleAddToCart}>
             <ShoppingCart className="mr-2" size={18} />
             Add to Cart
+          </Button>
+          <Button disabled={!product.stock} onClick={handleBuyNow} variant="secondary">
+            Buy Now
           </Button>
           <Button variant="outline" onClick={handleWishlist}>
             <Heart className="mr-2" size={18} />

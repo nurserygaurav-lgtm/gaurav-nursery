@@ -66,14 +66,16 @@ export default function Shop() {
   async function handleAddToCart(product) {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
-      return;
+      return false;
     }
 
     try {
       await addToCart(product._id, 1);
       showToast('Added to cart');
+      return true;
     } catch (err) {
       showToast(getApiError(err, 'Unable to add to cart'), 'error');
+      return false;
     }
   }
 

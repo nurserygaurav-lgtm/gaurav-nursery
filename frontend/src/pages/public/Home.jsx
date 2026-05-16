@@ -23,6 +23,7 @@ import ProductCard from '../../components/product/ProductCard.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
+import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { useToast } from '../../hooks/useToast.js';
 import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
@@ -71,6 +72,24 @@ const slides = [
   }
 ];
 
+const promotionalSlides = [
+  {
+    title: 'Happiness is having more plants...',
+    offer: 'Get up to 35% OFF',
+    image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1200&q=85'
+  },
+  {
+    title: 'Create your green corner today...',
+    offer: 'Fresh plants, pots, and seeds',
+    image: 'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=1200&q=85'
+  },
+  {
+    title: 'Premium plants delivered safely...',
+    offer: 'COD available on eligible orders',
+    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1200&q=85'
+  }
+];
+
 const trustBadges = [
   { icon: Truck, label: 'Fast Delivery' },
   { icon: PackageCheck, label: 'Secure Packaging' },
@@ -105,10 +124,16 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeSlide, setActiveSlide] = useState(0);
+  const [activePromoSlide, setActivePromoSlide] = useState(0);
   const [email, setEmail] = useState('');
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: 'Premium Plants and Garden Essentials',
+    description: 'Shop Gaurav Nursery for plants, planters, seeds, soil, and garden essentials with COD and free delivery offers.'
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -139,6 +164,13 @@ export default function Home() {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActivePromoSlide((current) => (current + 1) % promotionalSlides.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   const liveCategories = useMemo(() => {
     const names = [...new Set(products.map((product) => product.category).filter(Boolean))];
     return (names.length ? names : fallbackCategories).slice(0, 6).map((name, index) => ({
@@ -153,22 +185,29 @@ export default function Home() {
   const dealPrice = Number(dealProduct?.salePrice || dealProduct?.discountedPrice || dealProduct?.price || 0);
   const originalPrice = Number(dealProduct?.originalPrice || dealProduct?.mrp || Math.round(dealPrice * 1.3));
   const slide = slides[activeSlide];
+  const promotionalSlide = promotionalSlides[activePromoSlide];
 
   function goToSlide(index) {
     setActiveSlide((index + slides.length) % slides.length);
   }
 
+  function goToPromoSlide(index) {
+    setActivePromoSlide((index + promotionalSlides.length) % promotionalSlides.length);
+  }
+
   async function handleAddToCart(product) {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
-      return;
+      return false;
     }
 
     try {
       await addToCart(product._id, 1);
       showToast('Added to cart');
+      return true;
     } catch (err) {
       showToast(getApiError(err, 'Unable to add to cart'), 'error');
+      return false;
     }
   }
 
@@ -194,6 +233,66 @@ export default function Home() {
 
   return (
     <>
+      <section className="overflow-hidden bg-white">
+        <div className="premium-container pt-6">
+          <motion.div
+            className="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-[#f3f8ef] shadow-card md:min-h-[500px]"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55 }}
+          >
+            <motion.div
+              key={promotionalSlide.title}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.55 }}
+            >
+              <img className="absolute inset-y-0 right-0 h-full w-full object-cover object-center opacity-45 md:w-[62%] md:opacity-95" src={promotionalSlide.image} alt={promotionalSlide.title} />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/25" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(220,237,216,0.9),transparent_22rem)]" />
+            </motion.div>
+
+            <div className="relative z-10 flex min-h-[420px] flex-col justify-center p-7 md:min-h-[500px] md:p-12 lg:w-[56%]">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-leaf-100 px-4 py-2 text-sm font-black text-leaf-800">
+                <Sparkles size={16} />
+                Premium Plant Sale
+              </span>
+              <h1 className="mt-6 max-w-2xl text-5xl font-black leading-[1.02] tracking-tight text-leaf-950 sm:text-6xl">
+                {promotionalSlide.title}
+              </h1>
+              <p className="mt-5 text-2xl font-black text-leaf-700 sm:text-3xl">{promotionalSlide.offer}</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-leaf-900 px-7 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-700" to="/shop">
+                  Shop Now <ArrowRight className="ml-2" size={18} />
+                </Link>
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-leaf-200 bg-white/80 px-7 text-sm font-black text-leaf-950 transition hover:-translate-y-0.5 hover:bg-white" to="/categories">
+                  Explore Collections
+                </Link>
+              </div>
+            </div>
+
+            <button className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-leaf-100 bg-white/85 text-leaf-900 shadow-soft backdrop-blur transition hover:bg-leaf-900 hover:text-white" onClick={() => goToPromoSlide(activePromoSlide - 1)} aria-label="Previous promotional slide">
+              <ArrowLeft size={18} />
+            </button>
+            <button className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-leaf-100 bg-white/85 text-leaf-900 shadow-soft backdrop-blur transition hover:bg-leaf-900 hover:text-white" onClick={() => goToPromoSlide(activePromoSlide + 1)} aria-label="Next promotional slide">
+              <ArrowRight size={18} />
+            </button>
+            <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2" aria-label="Promotional slider pagination">
+              {promotionalSlides.map((item, index) => (
+                <button
+                  key={item.title}
+                  className={`h-2.5 rounded-full transition ${activePromoSlide === index ? 'w-8 bg-leaf-900' : 'w-2.5 bg-leaf-300'}`}
+                  onClick={() => goToPromoSlide(index)}
+                  aria-label={`Go to promotional slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       <section className="overflow-hidden bg-white">
         <div className="premium-container py-6 sm:py-8">
           <motion.div

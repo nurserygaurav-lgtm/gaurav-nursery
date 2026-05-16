@@ -10,12 +10,14 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  function handleBuyNow() {
+  async function handleBuyNow() {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
       return;
     }
 
+    const added = await onAddToCart?.(product);
+    if (added === false) return;
     navigate('/checkout');
   }
 
