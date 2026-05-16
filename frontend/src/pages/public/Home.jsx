@@ -3,16 +3,14 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgePercent,
-  Clock3,
   Headphones,
-  Heart,
-  Leaf,
+  Mail,
+  MessageCircle,
   PackageCheck,
   RotateCcw,
   ShieldCheck,
-  ShoppingCart,
   Sparkles,
-  Sprout,
+  Star,
   Truck
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -26,34 +24,60 @@ import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
-import { formatCurrency } from '../../utils/formatCurrency.js';
-import { getProductImage, getProductTitle } from '../../utils/product.js';
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 22 },
   visible: { opacity: 1, y: 0 }
 };
 
-const categories = [
-  { label: 'Indoor Plants', to: '/shop?category=Indoor+Plants', image: 'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Outdoor Plants', to: '/shop?category=Outdoor+Plants', image: 'https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Flowering Plants', to: '/shop?category=Flowering+Plants', image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Seeds', to: '/shop?category=Seeds', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Pots & Planters', to: '/shop?category=Planters', image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Fertilizers', to: '/shop?category=Fertilizers', image: 'https://images.unsplash.com/photo-1591955506264-3f5a6834570a?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Gardening Tools', to: '/shop?category=Garden+Tools', image: 'https://images.unsplash.com/photo-1617576683096-00fc8eecb3af?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Pebbles', to: '/shop?category=Pebbles', image: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Accessories', to: '/shop?category=Accessories', image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=400&q=80' },
-  { label: 'Offers', to: '/shop?sort=discount', image: 'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=400&q=80' }
+const categoryImages = [
+  'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1617576683096-00fc8eecb3af?auto=format&fit=crop&w=500&q=80',
+  'https://images.unsplash.com/photo-1591955506264-3f5a6834570a?auto=format&fit=crop&w=500&q=80'
 ];
 
-const features = [
+const fallbackCategories = ['Indoor Plants', 'Flowering Plants', 'Fruit Plants', 'Seeds', 'Planters', 'Garden Tools'];
+
+const slides = [
+  {
+    eyebrow: 'Premium nursery e-commerce',
+    title: 'Bring Nature Home Today',
+    text: 'Healthy plants, planters, seeds, soil, and garden essentials delivered with care from Gaurav Nursery.',
+    image: 'https://images.unsplash.com/photo-1525498128493-380d1990a112?auto=format&fit=crop&w=1300&q=85',
+    badge: '30% OFF'
+  },
+  {
+    eyebrow: 'Fresh arrivals weekly',
+    title: 'Plants for Every Corner',
+    text: 'Style your balcony, office, living room, and garden with curated indoor and outdoor collections.',
+    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1300&q=85',
+    badge: 'New'
+  },
+  {
+    eyebrow: 'Garden essentials',
+    title: 'Grow More With Less Guesswork',
+    text: 'Shop trusted soil mixes, seeds, planters, and care tools that keep every plant thriving.',
+    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1300&q=85',
+    badge: 'COD'
+  }
+];
+
+const trustBadges = [
   { icon: Truck, label: 'Fast Delivery' },
   { icon: PackageCheck, label: 'Secure Packaging' },
-  { icon: ShieldCheck, label: 'Trusted Sellers' },
+  { icon: ShieldCheck, label: 'Trusted Quality' },
   { icon: BadgePercent, label: 'COD Available' },
   { icon: RotateCcw, label: 'Easy Returns' },
-  { icon: Headphones, label: 'Customer Support' }
+  { icon: Headphones, label: 'Support' }
+];
+
+const testimonials = [
+  { name: 'Priya S.', text: 'The plants arrived fresh, neatly packed, and exactly like the photos.' },
+  { name: 'Amit K.', text: 'Great prices and fast delivery. My balcony garden looks beautiful now.' },
+  { name: 'Neha R.', text: 'Loved the plant quality and the simple checkout experience.' }
 ];
 
 function SectionHeader({ eyebrow, title, action }) {
@@ -72,6 +96,8 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [email, setEmail] = useState('');
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -83,7 +109,7 @@ export default function Home() {
       try {
         setIsLoading(true);
         setError('');
-        const data = await getProducts({ page: 1, limit: 8 });
+        const data = await getProducts({ page: 1, limit: 12 });
         if (isMounted) setProducts(data.products || []);
       } catch (err) {
         if (isMounted) setError(getApiError(err, 'Unable to load products'));
@@ -98,10 +124,28 @@ export default function Home() {
     };
   }, []);
 
-  const bestSellers = useMemo(() => products.slice(0, 4), [products]);
-  const dealProduct = products[4] || products[0];
-  const dealPrice = Number(dealProduct?.salePrice || dealProduct?.discountedPrice || dealProduct?.price || 0);
-  const originalPrice = Number(dealProduct?.originalPrice || dealProduct?.mrp || Math.round(dealPrice * 1.3));
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % slides.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const liveCategories = useMemo(() => {
+    const names = [...new Set(products.map((product) => product.category).filter(Boolean))];
+    return (names.length ? names : fallbackCategories).slice(0, 6).map((name, index) => ({
+      name,
+      image: categoryImages[index % categoryImages.length],
+      count: products.filter((product) => product.category === name).length
+    }));
+  }, [products]);
+
+  const bestSellers = useMemo(() => products.slice(0, 8), [products]);
+  const slide = slides[activeSlide];
+
+  function goToSlide(index) {
+    setActiveSlide((index + slides.length) % slides.length);
+  }
 
   async function handleAddToCart(product) {
     if (!isAuthenticated) {
@@ -131,98 +175,83 @@ export default function Home() {
     }
   }
 
+  function handleNewsletter(event) {
+    event.preventDefault();
+    setEmail('');
+    showToast('Thanks for subscribing');
+  }
+
   return (
     <>
-      <section className="overflow-hidden bg-gradient-to-br from-white via-leaf-50 to-white">
-        <div className="premium-container py-8 sm:py-12">
+      <section className="overflow-hidden bg-white">
+        <div className="premium-container py-6 sm:py-8">
           <motion.div
-            className="relative overflow-hidden rounded-[2rem] border border-leaf-100 bg-white shadow-card"
+            className="relative overflow-hidden rounded-[1.75rem] bg-leaf-950 text-white shadow-card"
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65 }}
+            transition={{ duration: 0.55 }}
           >
-            <div className="grid min-h-[540px] gap-8 p-6 sm:p-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-14">
-              <div className="relative z-10">
-                <span className="inline-flex items-center gap-2 rounded-full bg-leaf-100 px-4 py-2 text-sm font-black text-leaf-800">
+            <div className="absolute inset-0">
+              <img className="h-full w-full object-cover opacity-35" src={slide.image} alt="" />
+              <div className="absolute inset-0 bg-gradient-to-r from-leaf-950 via-leaf-950/86 to-leaf-900/25" />
+            </div>
+            <div className="relative grid min-h-[560px] gap-8 p-6 sm:p-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-14">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-sm font-black text-leaf-50 ring-1 ring-white/15">
                   <Sparkles size={16} />
-                  Gaurav Nursery
+                  {slide.eyebrow}
                 </span>
-                <h1 className="mt-6 max-w-2xl text-5xl font-black leading-[1.02] tracking-tight text-leaf-950 sm:text-6xl">
-                  Bring Nature Home Today!
+                <h1 className="mt-6 max-w-2xl text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl">
+                  {slide.title}
                 </h1>
-                <p className="mt-5 max-w-xl text-lg leading-8 text-stone-600">
-                  Shop premium quality plants, planters, seeds, and gardening essentials packed with care by trusted nursery sellers.
-                </p>
+                <p className="mt-5 max-w-xl text-lg leading-8 text-leaf-50/85">{slide.text}</p>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-leaf-900 px-7 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-700" to="/shop">
-                    Shop Plants <ArrowRight className="ml-2" size={18} />
+                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/shop">
+                    Shop Now <ArrowRight className="ml-2" size={18} />
                   </Link>
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-leaf-200 bg-white px-7 text-sm font-black text-leaf-950 transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/categories">
-                    Explore Categories
+                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 bg-white/10 px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-white/20" to="/categories">
+                    Explore Collections
                   </Link>
-                </div>
-                <div className="mt-10 flex items-center gap-4">
-                  <button className="flex h-11 w-11 items-center justify-center rounded-full border border-leaf-100 bg-white text-leaf-900 shadow-soft" aria-label="Previous slide">
-                    <ArrowLeft size={18} />
-                  </button>
-                  <div className="flex gap-2" aria-label="Slider pagination">
-                    <span className="h-2.5 w-8 rounded-full bg-leaf-800" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-leaf-200" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-leaf-200" />
-                  </div>
-                  <button className="flex h-11 w-11 items-center justify-center rounded-full border border-leaf-100 bg-white text-leaf-900 shadow-soft" aria-label="Next slide">
-                    <ArrowRight size={18} />
-                  </button>
                 </div>
               </div>
 
-              <motion.div
-                className="relative min-h-[360px]"
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
-              >
-                <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-leaf-100" />
+              <div className="relative min-h-[320px]">
                 <img
-                  className="relative ml-auto h-[360px] w-full max-w-xl rounded-[2rem] object-cover object-center shadow-card sm:h-[440px]"
-                  src="https://images.unsplash.com/photo-1525498128493-380d1990a112?auto=format&fit=crop&w=1100&q=85"
-                  alt="Large premium indoor plant arrangement"
+                  className="ml-auto h-[320px] w-full max-w-xl rounded-[1.5rem] object-cover object-center shadow-card ring-1 ring-white/20 sm:h-[420px]"
+                  src={slide.image}
+                  alt={slide.title}
                 />
-                <div className="absolute left-2 top-6 flex h-28 w-28 items-center justify-center rounded-full bg-leaf-900 text-center text-white shadow-card sm:left-8 sm:h-32 sm:w-32">
-                  <span className="text-3xl font-black leading-none">30%<span className="block text-sm">OFF</span></span>
+                <div className="absolute left-4 top-5 flex h-24 w-24 items-center justify-center rounded-full bg-white text-center text-leaf-950 shadow-card sm:h-32 sm:w-32">
+                  <span className="text-2xl font-black leading-none sm:text-3xl">{slide.badge}</span>
                 </div>
-              </motion.div>
+              </div>
+            </div>
+
+            <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between gap-4 sm:left-10 sm:right-10">
+              <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white backdrop-blur transition hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide - 1)} aria-label="Previous slide">
+                <ArrowLeft size={18} />
+              </button>
+              <div className="flex gap-2" aria-label="Slider pagination">
+                {slides.map((item, index) => (
+                  <button
+                    key={item.title}
+                    className={`h-2.5 rounded-full transition ${activeSlide === index ? 'w-8 bg-white' : 'w-2.5 bg-white/45'}`}
+                    onClick={() => goToSlide(index)}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+              <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white backdrop-blur transition hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide + 1)} aria-label="Next slide">
+                <ArrowRight size={18} />
+              </button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section className="premium-container py-10">
-        <div className="flex gap-5 overflow-x-auto pb-3">
-          {categories.map((category, index) => (
-            <motion.div
-              key={category.label}
-              className="min-w-[116px]"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              transition={{ duration: 0.4, delay: index * 0.03 }}
-            >
-              <Link className="group block text-center" to={category.to}>
-                <span className="mx-auto block h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-leaf-50 shadow-soft transition group-hover:-translate-y-1 group-hover:shadow-card">
-                  <img className="h-full w-full object-cover transition duration-500 group-hover:scale-110" src={category.image} alt={category.label} loading="lazy" />
-                </span>
-                <span className="mt-3 block text-sm font-black leading-tight text-leaf-950">{category.label}</span>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       <section className="border-y border-leaf-100 bg-white">
         <div className="premium-container grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-6">
-          {features.map((item) => (
+          {trustBadges.map((item) => (
             <div key={item.label} className="flex items-center gap-3 rounded-2xl bg-leaf-50 px-4 py-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-leaf-800 shadow-soft">
                 <item.icon size={19} />
@@ -235,114 +264,119 @@ export default function Home() {
 
       <section className="premium-container py-12">
         <SectionHeader
-          eyebrow="Best Sellers"
-          title="Loved by Plant Parents"
+          eyebrow="Shop by Categories"
+          title="Find Your Planting Style"
           action={
-            <Link className="inline-flex items-center gap-2 rounded-full border border-leaf-200 px-5 py-3 text-sm font-black text-leaf-900 transition hover:bg-leaf-50" to="/shop">
+            <Link className="inline-flex items-center gap-2 rounded-full border border-leaf-200 px-5 py-3 text-sm font-black text-leaf-900 transition hover:bg-leaf-50" to="/categories">
               View All <ArrowRight size={17} />
             </Link>
           }
         />
-        {isLoading && (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-80" />
-            ))}
-          </div>
-        )}
-        {error && <p className="rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-700">{error}</p>}
-        {!isLoading && !error && !!bestSellers.length && (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {bestSellers.map((product) => (
-              <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="premium-container py-6">
-        <motion.div
-          className="grid gap-6 overflow-hidden rounded-[2rem] bg-leaf-950 p-7 text-white shadow-card md:grid-cols-[1fr_auto] md:items-center md:p-10"
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-leaf-200">Limited time offer</p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">Spring Plant Sale</h2>
-            <p className="mt-3 max-w-2xl leading-7 text-leaf-100">Refresh your balcony, living room, and garden with seasonal plants and essentials.</p>
-          </div>
-          <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/shop">
-            Shop Now <ArrowRight className="ml-2" size={18} />
-          </Link>
-        </motion.div>
-      </section>
-
-      <section className="premium-container py-12">
-        <SectionHeader eyebrow="Daily Deal" title="Deal of the Day" />
-        {dealProduct && (
-          <motion.div
-            className="grid overflow-hidden rounded-[2rem] border border-leaf-100 bg-white shadow-card md:grid-cols-[0.9fr_1.1fr]"
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Link className="block bg-leaf-50" to={`/products/${dealProduct._id}`}>
-              <img className="h-full min-h-[320px] w-full object-cover" src={getProductImage(dealProduct)} alt={getProductTitle(dealProduct)} loading="lazy" />
-            </Link>
-            <div className="flex flex-col justify-center p-7 md:p-10">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-black text-amber-800">
-                <Clock3 size={16} /> Ends in 08:24:36
-              </span>
-              <Link to={`/products/${dealProduct._id}`} className="mt-5 text-3xl font-black tracking-tight text-leaf-950 transition hover:text-leaf-700">
-                {getProductTitle(dealProduct)}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {liveCategories.map((category, index) => (
+            <motion.div key={category.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.04 }}>
+              <Link className="group relative block overflow-hidden rounded-[1.25rem] bg-leaf-900 shadow-soft" to={`/shop?category=${encodeURIComponent(category.name)}`}>
+                <img className="h-56 w-full object-cover opacity-75 transition duration-500 group-hover:scale-105 group-hover:opacity-90" src={category.image} alt={category.name} loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-leaf-950/90 via-leaf-950/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                  <h3 className="text-2xl font-black">{category.name}</h3>
+                  <p className="mt-1 text-sm font-bold text-leaf-50/85">{category.count || 'Curated'} products</p>
+                </div>
               </Link>
-              <div className="mt-5 flex items-end gap-3">
-                <span className="text-lg font-bold text-stone-400 line-through">{formatCurrency(originalPrice)}</span>
-                <span className="text-4xl font-black text-leaf-900">{formatCurrency(dealPrice)}</span>
-              </div>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button onClick={() => handleAddToCart(dealProduct)}>
-                  <ShoppingCart className="mr-2" size={18} />
-                  Add to Cart
-                </Button>
-                <Button onClick={() => handleWishlist(dealProduct)} variant="outline">
-                  <Heart className="mr-2" size={18} />
-                  Wishlist
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </section>
-
-      <section className="premium-container pb-16">
-        <div className="grid gap-5 sm:grid-cols-3">
-          {[
-            { icon: Leaf, title: 'Premium Quality', text: 'Healthy plants selected for home, balcony, and garden spaces.' },
-            { icon: Sprout, title: 'Fresh Arrivals', text: 'New plants, seeds, and essentials added regularly.' },
-            { icon: ShieldCheck, title: 'Secure Checkout', text: 'Cart, wishlist, authentication, and payments stay connected.' }
-          ].map((item, index) => (
-            <motion.div
-              key={item.title}
-              className="rounded-3xl border border-leaf-100 bg-white p-6 shadow-soft"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              transition={{ duration: 0.45, delay: index * 0.05 }}
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800">
-                <item.icon size={23} />
-              </div>
-              <h3 className="mt-5 text-lg font-black text-leaf-950">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
             </motion.div>
           ))}
         </div>
       </section>
+
+      <section className="bg-[#f4f7ef] py-12">
+        <div className="premium-container">
+          <SectionHeader
+            eyebrow="Best Sellers"
+            title="Loved by Plant Parents"
+            action={
+              <Link className="inline-flex items-center gap-2 rounded-full border border-leaf-200 bg-white px-5 py-3 text-sm font-black text-leaf-900 transition hover:bg-leaf-50" to="/shop">
+                View All <ArrowRight size={17} />
+              </Link>
+            }
+          />
+          {isLoading && (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <Skeleton key={index} className="h-80" />
+              ))}
+            </div>
+          )}
+          {error && <p className="rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-700">{error}</p>}
+          {!isLoading && !error && !!bestSellers.length && (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {bestSellers.map((product) => (
+                <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="premium-container py-12">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ['10k+', 'Happy Customers'],
+            ['500+', 'Plant Varieties'],
+            ['24h', 'Quick Dispatch'],
+            ['4.8', 'Average Rating']
+          ].map(([value, label]) => (
+            <div key={label} className="rounded-[1.25rem] border border-leaf-100 bg-white p-6 text-center shadow-soft">
+              <p className="text-4xl font-black text-leaf-900">{value}</p>
+              <p className="mt-2 text-sm font-bold uppercase tracking-[0.18em] text-stone-500">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="premium-container py-12">
+        <SectionHeader eyebrow="Testimonials" title="What Customers Say" />
+        <div className="grid gap-5 md:grid-cols-3">
+          {testimonials.map((item, index) => (
+            <motion.article key={item.name} className="rounded-[1.25rem] border border-leaf-100 bg-white p-6 shadow-soft" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.05 }}>
+              <div className="flex gap-1 text-amber-500">
+                {Array.from({ length: 5 }).map((_, starIndex) => (
+                  <Star key={starIndex} size={17} fill="currentColor" />
+                ))}
+              </div>
+              <p className="mt-4 leading-7 text-stone-600">{item.text}</p>
+              <p className="mt-5 font-black text-leaf-950">{item.name}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      <section className="premium-container pb-16">
+        <div className="grid gap-6 overflow-hidden rounded-[1.5rem] bg-leaf-950 p-7 text-white shadow-card lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:p-10">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-leaf-200">Newsletter</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Get plant care tips and offers</h2>
+            <p className="mt-3 leading-7 text-leaf-100">Fresh arrivals, seasonal offers, and simple care reminders from Gaurav Nursery.</p>
+          </div>
+          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
+            <label className="relative flex-1">
+              <span className="sr-only">Email address</span>
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
+              <input className="form-input h-12 pl-11 text-leaf-950" onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" required type="email" value={email} />
+            </label>
+            <Button className="h-12 bg-white text-leaf-950 hover:bg-leaf-50" type="submit">Subscribe</Button>
+          </form>
+        </div>
+      </section>
+
+      <a
+        className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-card transition hover:-translate-y-1 hover:bg-[#1ebe5d]"
+        href="https://wa.me/916352031504"
+        rel="noreferrer"
+        target="_blank"
+        aria-label="Chat on WhatsApp"
+      >
+        <MessageCircle size={27} />
+      </a>
     </>
   );
 }
