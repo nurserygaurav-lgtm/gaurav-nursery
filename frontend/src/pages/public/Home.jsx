@@ -69,7 +69,8 @@ const slides = [
   }
 ];
 
-const heroStats = ['10,000+ Happy Customers', '500+ Plant Varieties', 'PAN India Delivery'];
+const heroTrustBadges = ['🌿 100% Healthy Plants', '🚚 Fast Delivery', '💰 Cash on Delivery', '🛡️ Secure Payments'];
+const heroCategoryChips = ['Indoor Plants', 'Outdoor Plants', 'Pots & Planters', 'Seeds', 'Fertilizers'];
 
 const promotionalSlides = [
   {
@@ -296,56 +297,127 @@ export default function Home() {
         <div className="premium-container py-6 sm:py-8">
           <motion.div
             className="relative overflow-hidden rounded-[1.75rem] bg-leaf-950 text-white shadow-card"
-            style={{
-              background: `linear-gradient(90deg, rgba(6,40,15,0.88) 0%, rgba(8,55,22,0.72) 45%, rgba(8,55,22,0.35) 100%), url(${slide.image}) center/cover no-repeat`
-            }}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
           >
-            <div className="relative z-10 flex min-h-[460px] items-center px-6 py-20 text-center sm:min-h-[540px] sm:px-10 lg:min-h-[600px] lg:px-14 lg:text-left">
-              <div className="mx-auto max-w-3xl lg:mx-0">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-leaf-50 ring-1 ring-white/20 backdrop-blur sm:text-sm">
+            <motion.div
+              key={slide.image}
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `linear-gradient(90deg, rgba(6,40,15,0.88) 0%, rgba(8,55,22,0.72) 45%, rgba(8,55,22,0.35) 100%), url(${slide.image})`
+              }}
+              initial={{ scale: 1 }}
+              animate={{ scale: 1.06 }}
+              transition={{ duration: 6.5, ease: 'easeOut' }}
+            />
+            <div className="pointer-events-none absolute -left-24 -top-24 hidden h-64 w-64 rounded-full bg-white/10 blur-3xl md:block" />
+            <div className="pointer-events-none absolute -bottom-28 right-10 hidden h-72 w-72 rounded-full bg-leaf-200/15 blur-3xl md:block" />
+
+            <div className="relative z-10 flex min-h-[500px] items-center px-4 pb-24 pt-12 text-center sm:min-h-[560px] sm:px-8 sm:py-20 lg:min-h-[640px] lg:px-14 lg:text-left">
+              <div
+                key={slide.title}
+                className="mx-auto w-full max-w-3xl p-6 sm:p-8 lg:mx-0 lg:p-10"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: '28px',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.25)'
+                }}
+              >
+                <motion.span
+                  className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-leaf-50 ring-1 ring-white/20 backdrop-blur sm:text-sm"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.08 }}
+                >
                   <Sparkles size={16} />
                   {slide.eyebrow}
-                </span>
-                <h1 className="mt-6 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
+                </motion.span>
+                <motion.p
+                  className="mt-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-black text-white backdrop-blur"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.14 }}
+                >
+                  Up to 30% Off on Best Sellers
+                </motion.p>
+                <motion.h1
+                  className="mt-5 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
                   {slide.title}
-                </h1>
-                <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-leaf-50/90 sm:text-lg lg:mx-0">{slide.text}</p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/shop">
+                </motion.h1>
+                <motion.p
+                  className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-leaf-50/90 sm:text-lg lg:mx-0"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.28 }}
+                >
+                  {slide.text}
+                </motion.p>
+                <motion.div
+                  className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.36 }}
+                >
+                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition duration-300 hover:-translate-y-1 hover:bg-leaf-50 hover:shadow-[0_18px_36px_rgba(0,0,0,0.28)]" to="/shop">
                     Shop Now <ArrowRight className="ml-2" size={18} />
                   </Link>
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/70 bg-transparent px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-white/15" to="/categories">
+                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/70 bg-transparent px-7 text-sm font-black text-white transition duration-300 hover:-translate-y-1 hover:bg-white hover:text-leaf-950" to="/categories">
                     Explore Collections
                   </Link>
-                </div>
-                <div className="mt-8 grid gap-3 text-sm font-black text-white/90 sm:grid-cols-3">
-                  {heroStats.map((item) => (
-                    <span key={item} className="rounded-full border border-white/20 bg-white/10 px-4 py-3 backdrop-blur">
+                </motion.div>
+                <motion.div
+                  className="mt-6 grid gap-2 text-xs font-black text-white/90 sm:grid-cols-2 lg:grid-cols-4"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.44 }}
+                >
+                  {heroTrustBadges.map((item) => (
+                    <span key={item} className="rounded-full border border-white/15 bg-white/10 px-3 py-2 backdrop-blur">
                       {item}
                     </span>
                   ))}
-                </div>
+                </motion.div>
+                <motion.div
+                  className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start"
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.52 }}
+                >
+                  {heroCategoryChips.map((category) => (
+                    <Link
+                      key={category}
+                      className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black text-white/90 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:text-leaf-950"
+                      to={`/shop?category=${encodeURIComponent(category)}`}
+                    >
+                      {category}
+                    </Link>
+                  ))}
+                </motion.div>
               </div>
             </div>
 
             <div className="absolute bottom-5 left-5 right-5 z-20 flex items-center justify-between gap-4 sm:bottom-8 sm:left-8 sm:right-8">
-              <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white backdrop-blur transition hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide - 1)} aria-label="Previous slide">
+              <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white shadow-soft backdrop-blur transition duration-300 hover:scale-105 hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide - 1)} aria-label="Previous slide">
                 <ArrowLeft size={18} />
               </button>
               <div className="flex gap-2" aria-label="Slider pagination">
                 {slides.map((item, index) => (
                   <button
                     key={item.title}
-                    className={`h-2.5 rounded-full transition ${activeSlide === index ? 'w-8 bg-white' : 'w-2.5 bg-white/45'}`}
+                    className={`h-3 rounded-full transition duration-300 ${activeSlide === index ? 'w-10 bg-white' : 'w-3 bg-white/45 hover:bg-white/70'}`}
                     onClick={() => goToSlide(index)}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
               </div>
-              <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white backdrop-blur transition hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide + 1)} aria-label="Next slide">
+              <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white shadow-soft backdrop-blur transition duration-300 hover:scale-105 hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide + 1)} aria-label="Next slide">
                 <ArrowRight size={18} />
               </button>
             </div>
