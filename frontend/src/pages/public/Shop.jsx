@@ -114,9 +114,9 @@ export default function Shop() {
 
       <div className="mb-8 grid gap-3 rounded-lg bg-white p-4 shadow-soft md:grid-cols-[1fr_220px_auto]">
         <div className="relative">
-          <Search className="absolute left-3 top-3.5 text-stone-400" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
           <input
-            className="form-input pl-10"
+            className="form-input input-with-leading-icon"
             onChange={(event) => setSearchTerm(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter') updateFilters({ search: searchTerm });

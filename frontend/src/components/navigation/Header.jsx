@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
 import { getCart, readStoredCartCount } from '../../services/cartService.js';
+import { getWishlist, readStoredWishlistCount } from '../../services/wishlistService.js';
 import { getRoleHome } from '../../utils/auth.js';
 
 const navItems = [
@@ -24,6 +25,7 @@ export default function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [cartCount, setCartCount] = useState(() => readStoredCartCount());
+  const [wishlistCount, setWishlistCount] = useState(() => readStoredWishlistCount());
 
   useEffect(() => {
     function handleCartCountUpdate(event) {
@@ -40,6 +42,25 @@ export default function Header() {
     window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('cart-count-updated', handleCartCountUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleWishlistCountUpdate(event) {
+      setWishlistCount(Number(event.detail?.count || 0));
+    }
+
+    function handleStorage(event) {
+      if (event.key === 'gaurav_nursery_wishlist_count') {
+        setWishlistCount(readStoredWishlistCount());
+      }
+    }
+
+    window.addEventListener('wishlist-count-updated', handleWishlistCountUpdate);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('wishlist-count-updated', handleWishlistCountUpdate);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);
@@ -63,6 +84,30 @@ export default function Header() {
     }
 
     loadCartCount();
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadWishlistCount() {
+      if (!isAuthenticated) {
+        localStorage.setItem('gaurav_nursery_wishlist_count', '0');
+        if (isMounted) setWishlistCount(0);
+        return;
+      }
+
+      try {
+        const data = await getWishlist();
+        if (isMounted) setWishlistCount(Number(data.summary?.itemCount || data.summary?.count || data.wishlist?.products?.length || 0));
+      } catch {
+        if (isMounted) setWishlistCount(readStoredWishlistCount());
+      }
+    }
+
+    loadWishlistCount();
     return () => {
       isMounted = false;
     };
@@ -120,11 +165,18 @@ export default function Header() {
             <span className="sr-only">Search products</span>
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
             <input
-              className="form-input h-11 pl-11 pr-4 text-sm"
+              className="form-input input-with-leading-icon input-with-search-button h-11 text-sm"
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search plants, seeds, tools"
               value={searchTerm}
             />
+            <button
+              className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-leaf-900 text-white transition hover:bg-leaf-700"
+              type="submit"
+              aria-label="Search products"
+            >
+              <Search size={16} />
+            </button>
           </label>
         </form>
 
@@ -132,9 +184,25 @@ export default function Header() {
           <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50 xl:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Search">
             <Search size={20} />
           </button>
-          <Link className="relative rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" to="/wishlist" aria-label="Wishlist">
+          <button
+            type="button"
+            className="relative rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50"
+            aria-label="Wishlist"
+            onClick={() => {
+              if (!isAuthenticated) {
+                navigate('/login');
+                return;
+              }
+              navigate('/wishlist');
+            }}
+          >
             <Heart size={20} />
-          </Link>
+            {isAuthenticated && (
+              <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-leaf-700 px-1 text-[10px] font-black text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </button>
           <Link className="relative rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" to="/cart" aria-label="Cart">
             <ShoppingCart size={20} />
             <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-leaf-700 px-1 text-[10px] font-black text-white">
@@ -208,11 +276,18 @@ export default function Header() {
             <form className="relative mb-2" onSubmit={handleSearch}>
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
               <input
-                className="form-input pl-11"
+                className="form-input input-with-leading-icon input-with-search-button"
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Search plants, seeds, tools"
                 value={searchTerm}
               />
+              <button
+                className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-leaf-900 text-white transition hover:bg-leaf-700"
+                type="submit"
+                aria-label="Search products"
+              >
+                <Search size={16} />
+              </button>
             </form>
             {navItems.map((item) => (
               <NavLink

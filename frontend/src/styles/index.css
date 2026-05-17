@@ -39,6 +39,18 @@ a {
   box-shadow: 0 0 0 4px rgba(61, 125, 54, 0.12);
 }
 
+.input-with-leading-icon {
+  padding-left: 3rem;
+}
+
+.input-with-trailing-action {
+  padding-right: 3rem;
+}
+
+.input-with-search-button {
+  padding-right: 3.25rem;
+}
+
 .premium-container {
   width: min(100% - 2rem, 80rem);
   margin-inline: auto;

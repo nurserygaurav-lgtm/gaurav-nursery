@@ -77,7 +77,7 @@ export default function Login() {
                 <label className="relative block">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-leaf-500" size={18} />
                   <input
-                    className="form-input h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 pl-11 text-sm"
+                    className="form-input input-with-leading-icon h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm"
                     name="email"
                     onChange={handleChange}
                     placeholder="Email address"
@@ -91,7 +91,7 @@ export default function Login() {
                 <label className="relative block">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-leaf-500" size={18} />
                   <input
-                    className="form-input h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 pl-11 pr-12 text-sm"
+                    className="form-input input-with-leading-icon input-with-trailing-action h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm"
                     name="password"
                     onChange={handleChange}
                     placeholder="Password"
@@ -153,12 +153,17 @@ export default function Login() {
           <div className="relative min-h-[420px] overflow-hidden bg-leaf-950 text-white lg:min-h-full">
             <img
               className="absolute inset-0 h-full w-full object-cover"
-              src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1400&q=90"
+              src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1200&q=80"
               alt="Large monstera and premium indoor plants in elegant pots"
               loading="eager"
               decoding="async"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-leaf-950/88 via-leaf-900/28 to-transparent" />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.15))'
+              }}
+            />
             <div className="absolute inset-x-0 bottom-0 z-10 p-7 sm:p-10 lg:p-12">
               <p className="inline-flex items-center gap-2 rounded-full bg-white/16 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-leaf-50 backdrop-blur">
                 <Sparkles size={14} />
