@@ -53,24 +53,23 @@ const slides = [
     eyebrow: 'Premium nursery e-commerce',
     title: 'Bring Nature Home Today',
     text: 'Healthy plants, planters, seeds, soil, and garden essentials delivered with care from Gaurav Nursery.',
-    image: 'https://images.unsplash.com/photo-1525498128493-380d1990a112?auto=format&fit=crop&w=1300&q=85',
-    badge: '30% OFF'
+    image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1600&q=80'
   },
   {
     eyebrow: 'Fresh arrivals weekly',
     title: 'Plants for Every Corner',
     text: 'Style your balcony, office, living room, and garden with curated indoor and outdoor collections.',
-    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1300&q=85',
-    badge: 'New'
+    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1600&q=85'
   },
   {
     eyebrow: 'Garden essentials',
     title: 'Grow More With Less Guesswork',
     text: 'Shop trusted soil mixes, seeds, planters, and care tools that keep every plant thriving.',
-    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1300&q=85',
-    badge: 'COD'
+    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1600&q=85'
   }
 ];
+
+const heroStats = ['10,000+ Happy Customers', '500+ Plant Varieties', 'PAN India Delivery'];
 
 const promotionalSlides = [
   {
@@ -297,47 +296,42 @@ export default function Home() {
         <div className="premium-container py-6 sm:py-8">
           <motion.div
             className="relative overflow-hidden rounded-[1.75rem] bg-leaf-950 text-white shadow-card"
+            style={{
+              background: `linear-gradient(90deg, rgba(6,40,15,0.88) 0%, rgba(8,55,22,0.72) 45%, rgba(8,55,22,0.35) 100%), url(${slide.image}) center/cover no-repeat`
+            }}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
           >
-            <div className="absolute inset-0">
-              <img className="h-full w-full object-cover opacity-35" src={slide.image} alt="" />
-              <div className="absolute inset-0 bg-gradient-to-r from-leaf-950 via-leaf-950/86 to-leaf-900/25" />
-            </div>
-            <div className="relative grid min-h-[560px] gap-8 p-6 sm:p-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:p-14">
-              <div>
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-sm font-black text-leaf-50 ring-1 ring-white/15">
+            <div className="relative z-10 flex min-h-[460px] items-center px-6 py-20 text-center sm:min-h-[540px] sm:px-10 lg:min-h-[600px] lg:px-14 lg:text-left">
+              <div className="mx-auto max-w-3xl lg:mx-0">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-leaf-50 ring-1 ring-white/20 backdrop-blur sm:text-sm">
                   <Sparkles size={16} />
                   {slide.eyebrow}
                 </span>
-                <h1 className="mt-6 max-w-2xl text-5xl font-black leading-[1.02] tracking-tight sm:text-6xl">
+                <h1 className="mt-6 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
                   {slide.title}
                 </h1>
-                <p className="mt-5 max-w-xl text-lg leading-8 text-leaf-50/85">{slide.text}</p>
-                <div className="mt-8 flex flex-wrap gap-3">
+                <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-leaf-50/90 sm:text-lg lg:mx-0">{slide.text}</p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                   <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/shop">
                     Shop Now <ArrowRight className="ml-2" size={18} />
                   </Link>
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 bg-white/10 px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-white/20" to="/categories">
+                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/70 bg-transparent px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-white/15" to="/categories">
                     Explore Collections
                   </Link>
                 </div>
-              </div>
-
-              <div className="relative min-h-[320px]">
-                <img
-                  className="ml-auto h-[320px] w-full max-w-xl rounded-[1.5rem] object-cover object-center shadow-card ring-1 ring-white/20 sm:h-[420px]"
-                  src={slide.image}
-                  alt={slide.title}
-                />
-                <div className="absolute left-4 top-5 flex h-24 w-24 items-center justify-center rounded-full bg-white text-center text-leaf-950 shadow-card sm:h-32 sm:w-32">
-                  <span className="text-2xl font-black leading-none sm:text-3xl">{slide.badge}</span>
+                <div className="mt-8 grid gap-3 text-sm font-black text-white/90 sm:grid-cols-3">
+                  {heroStats.map((item) => (
+                    <span key={item} className="rounded-full border border-white/20 bg-white/10 px-4 py-3 backdrop-blur">
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between gap-4 sm:left-10 sm:right-10">
+            <div className="absolute bottom-5 left-5 right-5 z-20 flex items-center justify-between gap-4 sm:bottom-8 sm:left-8 sm:right-8">
               <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white backdrop-blur transition hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide - 1)} aria-label="Previous slide">
                 <ArrowLeft size={18} />
               </button>
