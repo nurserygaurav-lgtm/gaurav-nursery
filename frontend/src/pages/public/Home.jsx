@@ -387,36 +387,86 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="premium-container grid gap-6 py-14 lg:grid-cols-[1fr_24rem]">
-        <div className="rounded-[2rem] bg-[#eaf7e8] p-8 shadow-soft md:p-10">
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">Newsletter</p>
-          <h2 className="mt-3 font-serif text-4xl font-black text-[#0b3d1e]">Join Our Green Family</h2>
-          <form className="mt-7 flex flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
-            <label className="relative flex-1">
-              <span className="sr-only">Email address</span>
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
-              <input className="form-input h-12 pl-11" onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" required type="email" value={email} />
-            </label>
-            <Button className="h-12 bg-[#0b3d1e] hover:bg-[#4caf50]" type="submit">Subscribe</Button>
-          </form>
-        </div>
-        <div className="overflow-hidden rounded-[2rem] border border-[#dbe8d8] bg-white shadow-soft">
-          <img className="h-52 w-full object-cover" src="https://images.unsplash.com/photo-1599685315640-0ca6d2e8f83d?auto=format&fit=crop&w=800&q=85" alt="Our nursery" loading="lazy" />
-          <div className="p-6">
-            <h2 className="font-serif text-3xl font-black text-[#0b3d1e]">Our Nursery</h2>
-            <p className="mt-2 text-sm leading-6 text-stone-600">Visit Gaurav Nursery for plants, planters, seeds, and expert guidance.</p>
-            <a className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[#0b3d1e] px-5 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#4caf50]" href="https://www.google.com/maps/search/?api=1&query=Gaurav+Nursery" rel="noreferrer" target="_blank">
-              <MapPin className="mr-2" size={17} /> Get Direction
-            </a>
+      <section className="premium-container grid gap-8 py-14 lg:grid-cols-[minmax(0,7fr)_minmax(18rem,3fr)]">
+        <motion.div
+          className="relative overflow-hidden rounded-[2rem] border border-white bg-gradient-to-br from-[#f5fff2] to-[#edf8ea] p-8 shadow-[0_28px_90px_rgba(11,61,30,0.12)] transition duration-300 md:p-14"
+          initial="hidden"
+          whileInView="visible"
+          whileHover={{ y: -6 }}
+          viewport={{ once: true }}
+          variants={fadeUp}
+          transition={{ duration: 0.45 }}
+        >
+          <div className="pointer-events-none absolute inset-0 opacity-[0.05]">
+            <Leaf className="absolute left-8 top-8 h-24 w-24 rotate-[-18deg] text-[#0b3d1e]" />
+            <Leaf className="absolute right-20 top-12 h-20 w-20 rotate-[28deg] text-[#0b3d1e]" />
+            <Leaf className="absolute bottom-16 left-1/3 h-28 w-28 rotate-[12deg] text-[#0b3d1e]" />
           </div>
-        </div>
+          <Leaf className="pointer-events-none absolute -right-10 bottom-8 h-44 w-44 rotate-[-18deg] text-[#4caf50] opacity-20" />
+          <div className="relative max-w-3xl">
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-[#4caf50]">NEWSLETTER</p>
+            <h2 className="mt-4 font-serif text-5xl font-black leading-[1.02] tracking-tight text-[#0b3d1e] md:text-[56px]">Join Our Green Family</h2>
+            <p className="mt-5 max-w-2xl text-base font-medium leading-8 text-stone-600">
+              Subscribe to get updates on new arrivals, exclusive offers, and expert gardening tips.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              {['New arrivals', 'Exclusive offers', 'Plant care tips'].map((item) => (
+                <span key={item} className="rounded-full border border-[#dbe8d8] bg-white/80 px-4 py-2 text-sm font-black text-[#0b3d1e] shadow-soft">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <form className="mt-8 flex flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
+              <label className="relative flex-1">
+                <span className="sr-only">Email address</span>
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[#4caf50]" size={20} />
+                <input className="form-input h-14 bg-white pl-14 pr-5 text-base shadow-soft" onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email address" required type="email" value={email} />
+              </label>
+              <Button className="h-14 bg-gradient-to-r from-[#0b3d1e] to-[#4caf50] px-8 font-black hover:-translate-y-1 hover:from-[#4caf50] hover:to-[#0b3d1e]" type="submit">Subscribe</Button>
+            </form>
+            <p className="mt-5 text-sm font-black text-[#0b3d1e]">Join 10,000+ plant lovers across India.</p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="overflow-hidden rounded-[1.75rem] border border-[#dbe8d8] bg-white shadow-[0_24px_70px_rgba(11,61,30,0.10)] transition duration-300"
+          initial="hidden"
+          whileInView="visible"
+          whileHover={{ y: -6 }}
+          viewport={{ once: true }}
+          variants={fadeUp}
+          transition={{ duration: 0.45, delay: 0.06 }}
+        >
+          <div className="relative h-56 overflow-hidden">
+            <img className="h-full w-full object-cover transition duration-700 hover:scale-105" src="https://images.unsplash.com/photo-1599685315640-0ca6d2e8f83d?auto=format&fit=crop&w=800&q=85" alt="Our nursery" loading="lazy" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b3d1e]/30 to-transparent" />
+            <Leaf className="absolute right-5 top-5 h-10 w-10 rotate-12 text-white/80" />
+          </div>
+          <div className="p-7">
+            <h2 className="font-serif text-3xl font-black text-[#0b3d1e]">Our Nursery</h2>
+            <p className="mt-3 text-sm leading-7 text-stone-600">Visit our nursery in Aliganj Bazar, Sultanpur and explore hundreds of healthy plants.</p>
+            <div className="mt-5 grid gap-3 text-sm font-bold text-[#1b2a1f]">
+              <span className="flex items-center gap-3"><MapPin size={17} className="text-[#4caf50]" /> Aliganj Bazar, Sultanpur</span>
+              <span className="flex items-center gap-3"><Leaf size={17} className="text-[#4caf50]" /> 500+ Plant Varieties</span>
+              <span className="flex items-center gap-3"><UserRound size={17} className="text-[#4caf50]" /> Expert Guidance</span>
+            </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+              <a className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#0b3d1e] px-5 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#4caf50]" href="https://www.google.com/maps/search/?api=1&query=Gaurav+Nursery" rel="noreferrer" target="_blank">
+                <MapPin className="mr-2" size={17} /> Get Direction
+              </a>
+              <a className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#dbe8d8] bg-[#f8fff5] px-5 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-[#eaf7e8]" href="tel:+916352031504">
+                Call Now
+              </a>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       <section className="border-y border-[#dbe8d8] bg-white">
         <div className="premium-container grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-5">
           {trustBar.map((item) => (
-            <div key={item.label} className="flex items-center gap-3 rounded-2xl bg-[#f8fff5] px-4 py-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eaf7e8] text-[#0b3d1e]"><item.icon size={19} /></span>
+            <div key={item.label} className="flex items-center gap-3 rounded-[1.25rem] bg-[#f8fff5] px-4 py-4 shadow-[0_12px_32px_rgba(11,61,30,0.06)] transition hover:-translate-y-1 hover:bg-[#eaf7e8]">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#0b3d1e] shadow-soft"><item.icon size={19} /></span>
               <span className="text-sm font-black text-[#0b3d1e]">{item.label}</span>
             </div>
           ))}
