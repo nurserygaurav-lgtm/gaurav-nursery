@@ -1,25 +1,24 @@
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft,
   ArrowRight,
   BadgePercent,
-  Clock3,
-  Headphones,
+  Check,
   Heart,
   Leaf,
   Mail,
+  MapPin,
   MessageCircle,
   PackageCheck,
   RotateCcw,
   ShieldCheck,
   ShoppingCart,
   Sparkles,
-  Sprout,
-  Truck
+  Star,
+  Truck,
+  UserRound
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ProductCard from '../../components/product/ProductCard.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -32,89 +31,105 @@ import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { getProductImage, getProductTitle } from '../../utils/product.js';
 
+const categoryArtwork = {
+  'Indoor Plants': 'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=500&q=85',
+  'Outdoor Plants': 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=500&q=85',
+  'Flowering Plants': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=500&q=85',
+  'Fruit Plants': 'https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=500&q=85',
+  'Pots & Planters': 'https://images.unsplash.com/photo-1617576683096-00fc8eecb3af?auto=format&fit=crop&w=500&q=85',
+  Seeds: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=500&q=85',
+  Fertilizers: 'https://images.unsplash.com/photo-1591955506264-3f5a6834570a?auto=format&fit=crop&w=500&q=85',
+  'Tools & Accessories': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=500&q=85'
+};
+
+const desiredCategories = Object.keys(categoryArtwork);
+
+const heroBadges = ['10K+ Happy Customers', '4.8 Rating', '100% Healthy Plants', 'Pan India Delivery'];
+const featureList = ['Hygienic Packaging', 'Fresh Plants', 'On-Time Delivery', 'Healthy Guarantee'];
+const whyChoose = ['Wide Variety of Plants', 'Best Quality Products', 'Affordable Prices', 'Expert Guidance', 'Safe Packaging', 'Pan India Delivery'];
+const trustBar = [
+  { icon: PackageCheck, label: 'Secure Packaging' },
+  { icon: ShieldCheck, label: 'Live Arrival Guarantee' },
+  { icon: BadgePercent, label: 'COD Available' },
+  { icon: RotateCcw, label: 'Easy Returns' },
+  { icon: UserRound, label: 'Expert Guidance' }
+];
+
+const testimonials = [
+  {
+    name: 'Priya Sharma',
+    review: 'The plants arrived fresh, carefully packed, and looked even better than expected.',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=85'
+  },
+  {
+    name: 'Rahul Verma',
+    review: 'Beautiful collection, quick delivery, and helpful guidance for plant care.',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=85'
+  },
+  {
+    name: 'Anjali Singh',
+    review: 'My balcony looks lovely now. The packaging and quality felt truly premium.',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=85'
+  }
+];
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 22 },
+  hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 }
 };
 
-const categoryImages = [
-  'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=500&q=80',
-  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=500&q=80',
-  'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=500&q=80',
-  'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=500&q=80',
-  'https://images.unsplash.com/photo-1617576683096-00fc8eecb3af?auto=format&fit=crop&w=500&q=80',
-  'https://images.unsplash.com/photo-1591955506264-3f5a6834570a?auto=format&fit=crop&w=500&q=80'
-];
+function getOldPrice(product) {
+  const price = Number(product?.price || 0);
+  return Number(product?.oldPrice || product?.originalPrice || product?.mrp || Math.round(price * 1.25));
+}
 
-const fallbackCategories = ['Indoor Plants', 'Flowering Plants', 'Fruit Plants', 'Seeds', 'Planters', 'Garden Tools'];
+function getDiscount(product) {
+  const price = Number(product?.price || 0);
+  const oldPrice = getOldPrice(product);
+  if (!price || oldPrice <= price) return 'Best Value';
+  return `${Math.round(((oldPrice - price) / oldPrice) * 100)}% OFF`;
+}
 
-const slides = [
-  {
-    eyebrow: 'Premium nursery e-commerce',
-    title: 'Bring Nature Home Today',
-    text: 'Healthy plants, planters, seeds, soil, and garden essentials delivered with care from Gaurav Nursery.',
-    image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1600&q=80'
-  },
-  {
-    eyebrow: 'Fresh arrivals weekly',
-    title: 'Plants for Every Corner',
-    text: 'Style your balcony, office, living room, and garden with curated indoor and outdoor collections.',
-    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1600&q=85'
-  },
-  {
-    eyebrow: 'Garden essentials',
-    title: 'Grow More With Less Guesswork',
-    text: 'Shop trusted soil mixes, seeds, planters, and care tools that keep every plant thriving.',
-    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1600&q=85'
-  }
-];
-
-const heroTrustBadges = ['🌿 100% Healthy Plants', '🚚 Fast Delivery', '💰 Cash on Delivery', '🛡️ Secure Payments'];
-const heroCategoryChips = ['Indoor Plants', 'Outdoor Plants', 'Pots & Planters', 'Seeds', 'Fertilizers'];
-
-const promotionalSlides = [
-  {
-    title: 'Happiness is having more plants...',
-    offer: 'Get up to 35% OFF',
-    image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1200&q=85'
-  },
-  {
-    title: 'Create your green corner today...',
-    offer: 'Fresh plants, pots, and seeds',
-    image: 'https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=1200&q=85'
-  },
-  {
-    title: 'Premium plants delivered safely...',
-    offer: 'COD available on eligible orders',
-    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1200&q=85'
-  }
-];
-
-const trustBadges = [
-  { icon: Truck, label: 'Fast Delivery' },
-  { icon: PackageCheck, label: 'Secure Packaging' },
-  { icon: ShieldCheck, label: 'Trusted Quality' },
-  { icon: BadgePercent, label: 'COD Available' },
-  { icon: RotateCcw, label: 'Easy Returns' },
-  { icon: Headphones, label: 'Support' }
-];
-
-const premiumGuarantees = [
-  { icon: Truck, label: 'Free Delivery', text: 'On orders above ₹499' },
-  { icon: ShieldCheck, label: 'Secure Payment', text: 'Protected Razorpay checkout' },
-  { icon: RotateCcw, label: 'Easy Returns', text: 'Simple support for every order' },
-  { icon: PackageCheck, label: 'Best Quality', text: 'Fresh plants packed with care' },
-  { icon: Headphones, label: '24/7 Support', text: 'Help whenever you need it' }
-];
-
-function SectionHeader({ eyebrow, title, action }) {
+function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
   return (
-    <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-leaf-600">{eyebrow}</p>
-        <h2 className="mt-2 text-3xl font-black tracking-tight text-leaf-950 sm:text-4xl">{title}</h2>
+    <article className="group rounded-[1.25rem] border border-[#dbe8d8] bg-white p-3 shadow-[0_18px_45px_rgba(11,61,30,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(11,61,30,0.14)]">
+      <div className="relative overflow-hidden rounded-2xl bg-[#eaf7e8]">
+        <Link to={`/products/${product._id}`}>
+          <img className="aspect-[5/4] w-full object-cover transition duration-500 group-hover:scale-110" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" />
+        </Link>
+        <span className="absolute left-3 top-3 rounded-full bg-[#4caf50] px-3 py-1 text-[11px] font-black text-white">{getDiscount(product)}</span>
+        <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#0b3d1e] shadow-soft transition hover:bg-[#0b3d1e] hover:text-white" onClick={() => onAddToWishlist(product)} aria-label="Add to wishlist">
+          <Heart size={17} />
+        </button>
       </div>
-      {action}
+      <div className="pt-4">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-[#4caf50]">{product.category || 'Plants'}</p>
+        <Link className="mt-1 line-clamp-2 block min-h-[3rem] text-base font-black leading-snug text-[#1b2a1f] transition hover:text-[#4caf50]" to={`/products/${product._id}`}>
+          {getProductTitle(product)}
+        </Link>
+        <div className="mt-2 flex items-center gap-1 text-amber-500">
+          {Array.from({ length: 5 }).map((_, index) => <Star key={index} size={14} fill="currentColor" />)}
+          <span className="ml-1 text-xs font-bold text-stone-500">4.8</span>
+        </div>
+        <div className="mt-3 flex items-end gap-2">
+          <span className="text-lg font-black text-[#0b3d1e]">{formatCurrency(product.price)}</span>
+          <span className="text-sm font-bold text-stone-400 line-through">{formatCurrency(getOldPrice(product))}</span>
+        </div>
+        <Button className="mt-4 w-full bg-[#0b3d1e] hover:bg-[#4caf50]" onClick={() => onAddToCart(product)}>
+          <ShoppingCart className="mr-2" size={17} />
+          Add to Cart
+        </Button>
+      </div>
+    </article>
+  );
+}
+
+function SectionTitle({ eyebrow, title, text }) {
+  return (
+    <div className="mx-auto mb-8 max-w-2xl text-center">
+      <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">{eyebrow}</p>
+      <h2 className="mt-3 font-serif text-4xl font-black tracking-tight text-[#0b3d1e] sm:text-5xl">{title}</h2>
+      {text && <p className="mt-3 text-sm leading-7 text-stone-600 sm:text-base">{text}</p>}
     </div>
   );
 }
@@ -123,16 +138,14 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [activePromoSlide, setActivePromoSlide] = useState(0);
   const [email, setEmail] = useState('');
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   usePageMeta({
-    title: 'Premium Plants and Garden Essentials',
-    description: 'Shop Gaurav Nursery for plants, planters, seeds, soil, and garden essentials with COD and free delivery offers.'
+    title: 'Bring Nature Home',
+    description: 'Shop healthy plants, seeds, pots, planters, fertilizers, and garden tools from Gaurav Nursery.'
   });
 
   useEffect(() => {
@@ -142,7 +155,7 @@ export default function Home() {
       try {
         setIsLoading(true);
         setError('');
-        const data = await getProducts({ page: 1, limit: 12 });
+        const data = await getProducts({ page: 1, limit: 16 });
         if (isMounted) setProducts(data.products || []);
       } catch (err) {
         if (isMounted) setError(getApiError(err, 'Unable to load products'));
@@ -157,43 +170,15 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % slides.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActivePromoSlide((current) => (current + 1) % promotionalSlides.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const liveCategories = useMemo(() => {
-    const names = [...new Set(products.map((product) => product.category).filter(Boolean))];
-    return (names.length ? names : fallbackCategories).slice(0, 6).map((name, index) => ({
+  const bestSellers = useMemo(() => products.slice(0, 4), [products]);
+  const newArrivals = useMemo(() => [...products].slice(0, 8), [products]);
+  const categories = useMemo(() => {
+    return desiredCategories.map((name) => ({
       name,
-      image: categoryImages[index % categoryImages.length],
-      count: products.filter((product) => product.category === name).length
+      image: categoryArtwork[name],
+      count: products.filter((product) => (product.category || '').toLowerCase() === name.toLowerCase()).length
     }));
   }, [products]);
-
-  const bestSellers = useMemo(() => products.slice(0, 8), [products]);
-  const dealProduct = products[4] || products[0];
-  const dealPrice = Number(dealProduct?.salePrice || dealProduct?.discountedPrice || dealProduct?.price || 0);
-  const originalPrice = Number(dealProduct?.originalPrice || dealProduct?.mrp || Math.round(dealPrice * 1.3));
-  const slide = slides[activeSlide];
-  const promotionalSlide = promotionalSlides[activePromoSlide];
-
-  function goToSlide(index) {
-    setActiveSlide((index + slides.length) % slides.length);
-  }
-
-  function goToPromoSlide(index) {
-    setActivePromoSlide((index + promotionalSlides.length) % promotionalSlides.length);
-  }
 
   async function handleAddToCart(product) {
     if (!isAuthenticated) {
@@ -232,400 +217,215 @@ export default function Home() {
   }
 
   return (
-    <>
-      <section className="overflow-hidden bg-white">
-        <div className="premium-container pt-6">
-          <motion.div
-            className="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-[#f3f8ef] shadow-card md:min-h-[500px]"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-          >
-            <motion.div
-              key={promotionalSlide.title}
-              className="absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.55 }}
-            >
-              <img className="absolute inset-y-0 right-0 h-full w-full object-cover object-center opacity-45 md:w-[62%] md:opacity-95" src={promotionalSlide.image} alt={promotionalSlide.title} />
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/25" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(220,237,216,0.9),transparent_22rem)]" />
-            </motion.div>
-
-            <div className="relative z-10 flex min-h-[420px] flex-col justify-center p-7 md:min-h-[500px] md:p-12 lg:w-[56%]">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-leaf-100 px-4 py-2 text-sm font-black text-leaf-800">
-                <Sparkles size={16} />
-                Premium Plant Sale
+    <div className="bg-[#f8fff5] text-[#1b2a1f]">
+      <section className="relative overflow-hidden">
+        <div className="premium-container grid gap-8 py-10 lg:grid-cols-[1fr_22rem] xl:grid-cols-[1fr_24rem]">
+          <motion.div className="grid gap-8 rounded-[2rem] border border-[#dbe8d8] bg-white p-6 shadow-[0_26px_80px_rgba(11,61,30,0.10)] md:grid-cols-[0.9fr_1.1fr] md:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+            <div className="flex flex-col justify-center">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#eaf7e8] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#0b3d1e]">
+                <Leaf size={16} />
+                Premium Botanical Store
               </span>
-              <h1 className="mt-6 max-w-2xl text-5xl font-black leading-[1.02] tracking-tight text-leaf-950 sm:text-6xl">
-                {promotionalSlide.title}
-              </h1>
-              <p className="mt-5 text-2xl font-black text-leaf-700 sm:text-3xl">{promotionalSlide.offer}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-leaf-900 px-7 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-700" to="/shop">
+              <h1 className="mt-6 font-serif text-5xl font-black leading-[0.98] tracking-tight text-[#0b3d1e] sm:text-6xl xl:text-7xl">Bring Nature Home</h1>
+              <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-stone-600">Healthy Plants. Happy Homes. Delivered with Love.</p>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                {heroBadges.map((badge) => (
+                  <div key={badge} className="flex items-center gap-2 rounded-2xl border border-[#dbe8d8] bg-[#f8fff5] px-4 py-3 text-sm font-black text-[#0b3d1e]">
+                    <Check size={17} className="text-[#4caf50]" />
+                    {badge}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#0b3d1e] px-7 text-sm font-black text-white shadow-button transition hover:-translate-y-1 hover:bg-[#4caf50]" to="/shop">
                   Shop Now <ArrowRight className="ml-2" size={18} />
                 </Link>
-                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-leaf-200 bg-white/80 px-7 text-sm font-black text-leaf-950 transition hover:-translate-y-0.5 hover:bg-white" to="/categories">
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#dbe8d8] bg-white px-7 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-[#eaf7e8]" to="/categories">
                   Explore Collections
                 </Link>
               </div>
             </div>
 
-            <button className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-leaf-100 bg-white/85 text-leaf-900 shadow-soft backdrop-blur transition hover:bg-leaf-900 hover:text-white" onClick={() => goToPromoSlide(activePromoSlide - 1)} aria-label="Previous promotional slide">
-              <ArrowLeft size={18} />
-            </button>
-            <button className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-leaf-100 bg-white/85 text-leaf-900 shadow-soft backdrop-blur transition hover:bg-leaf-900 hover:text-white" onClick={() => goToPromoSlide(activePromoSlide + 1)} aria-label="Next promotional slide">
-              <ArrowRight size={18} />
-            </button>
-            <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2" aria-label="Promotional slider pagination">
-              {promotionalSlides.map((item, index) => (
-                <button
-                  key={item.title}
-                  className={`h-2.5 rounded-full transition ${activePromoSlide === index ? 'w-8 bg-leaf-900' : 'w-2.5 bg-leaf-300'}`}
-                  onClick={() => goToPromoSlide(index)}
-                  aria-label={`Go to promotional slide ${index + 1}`}
-                />
-              ))}
+            <div className="relative min-h-[430px]">
+              <motion.img className="absolute right-0 top-0 h-64 w-[72%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85" alt="Green nursery plants" animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
+              <motion.img className="absolute bottom-8 left-0 h-60 w-[62%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=900&q=85" alt="Potted plants" animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} />
+              <img className="absolute bottom-0 right-6 h-44 w-44 rounded-[1.5rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=85" alt="Nursery care" loading="lazy" />
+              <div className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-8 border-white bg-[#0b3d1e] text-center text-white shadow-card">
+                <span className="text-3xl font-black">GN</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.16em]">Gaurav Nursery</span>
+              </div>
+              <div className="absolute bottom-7 right-0 rotate-[-3deg] rounded-2xl bg-[#7a5230] px-5 py-4 text-center font-serif text-lg font-black text-white shadow-card">
+                From Our Nursery<br />To Your Home
+              </div>
             </div>
           </motion.div>
-        </div>
-      </section>
 
-      <section className="overflow-hidden bg-white">
-        <div className="premium-container py-6 sm:py-8">
-          <motion.div
-            className="relative overflow-hidden rounded-[1.75rem] bg-leaf-950 text-white shadow-card"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-          >
-            <motion.div
-              key={slide.image}
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `linear-gradient(90deg, rgba(6,40,15,0.88) 0%, rgba(8,55,22,0.72) 45%, rgba(8,55,22,0.35) 100%), url(${slide.image})`
-              }}
-              initial={{ scale: 1 }}
-              animate={{ scale: 1.06 }}
-              transition={{ duration: 6.5, ease: 'easeOut' }}
-            />
-            <div className="pointer-events-none absolute -left-24 -top-24 hidden h-64 w-64 rounded-full bg-white/10 blur-3xl md:block" />
-            <div className="pointer-events-none absolute -bottom-28 right-10 hidden h-72 w-72 rounded-full bg-leaf-200/15 blur-3xl md:block" />
-
-            <div className="relative z-10 flex min-h-[500px] items-center px-4 pb-24 pt-12 text-center sm:min-h-[560px] sm:px-8 sm:py-20 lg:min-h-[640px] lg:px-14 lg:text-left">
-              <div
-                key={slide.title}
-                className="mx-auto w-full max-w-3xl p-6 sm:p-8 lg:mx-0 lg:p-10"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: '28px',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.25)'
-                }}
-              >
-                <motion.span
-                  className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-leaf-50 ring-1 ring-white/20 backdrop-blur sm:text-sm"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: 0.08 }}
-                >
-                  <Sparkles size={16} />
-                  {slide.eyebrow}
-                </motion.span>
-                <motion.p
-                  className="mt-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-black text-white backdrop-blur"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: 0.14 }}
-                >
-                  Up to 30% Off on Best Sellers
-                </motion.p>
-                <motion.h1
-                  className="mt-5 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl"
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {slide.title}
-                </motion.h1>
-                <motion.p
-                  className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-leaf-50/90 sm:text-lg lg:mx-0"
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.28 }}
-                >
-                  {slide.text}
-                </motion.p>
-                <motion.div
-                  className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.36 }}
-                >
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition duration-300 hover:-translate-y-1 hover:bg-leaf-50 hover:shadow-[0_18px_36px_rgba(0,0,0,0.28)]" to="/shop">
-                    Shop Now <ArrowRight className="ml-2" size={18} />
-                  </Link>
-                  <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/70 bg-transparent px-7 text-sm font-black text-white transition duration-300 hover:-translate-y-1 hover:bg-white hover:text-leaf-950" to="/categories">
-                    Explore Collections
-                  </Link>
-                </motion.div>
-                <motion.div
-                  className="mt-6 grid gap-2 text-xs font-black text-white/90 sm:grid-cols-2 lg:grid-cols-4"
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.44 }}
-                >
-                  {heroTrustBadges.map((item) => (
-                    <span key={item} className="rounded-full border border-white/15 bg-white/10 px-3 py-2 backdrop-blur">
-                      {item}
-                    </span>
+          <aside className="grid gap-5">
+            <div className="rounded-[1.5rem] border border-[#dbe8d8] bg-white p-5 shadow-soft">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-serif text-2xl font-black text-[#0b3d1e]">Best Sellers</h2>
+                <Link className="text-sm font-black text-[#4caf50]" to="/shop">View all</Link>
+              </div>
+              {isLoading && <div className="grid gap-3">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-28" />)}</div>}
+              {error && <p className="rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-700">{error}</p>}
+              {!isLoading && !error && (
+                <div className="grid gap-4">
+                  {bestSellers.map((product) => (
+                    <div key={product._id} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl bg-[#f8fff5] p-2">
+                      <Link to={`/products/${product._id}`}><img className="h-20 w-20 rounded-xl object-cover" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" /></Link>
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-black uppercase tracking-[0.12em] text-[#4caf50]">{product.category || 'Plants'}</p>
+                        <Link className="line-clamp-1 text-sm font-black text-[#1b2a1f]" to={`/products/${product._id}`}>{getProductTitle(product)}</Link>
+                        <div className="mt-1 flex items-center gap-1 text-amber-500"><Star size={13} fill="currentColor" /><span className="text-xs font-bold text-stone-500">4.8</span></div>
+                        <div className="mt-1 flex items-center gap-2"><span className="font-black text-[#0b3d1e]">{formatCurrency(product.price)}</span><span className="text-xs font-bold text-stone-400 line-through">{formatCurrency(getOldPrice(product))}</span></div>
+                      </div>
+                    </div>
                   ))}
-                </motion.div>
-                <motion.div
-                  className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start"
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.52 }}
-                >
-                  {heroCategoryChips.map((category) => (
-                    <Link
-                      key={category}
-                      className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black text-white/90 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:text-leaf-950"
-                      to={`/shop?category=${encodeURIComponent(category)}`}
-                    >
-                      {category}
-                    </Link>
-                  ))}
-                </motion.div>
-              </div>
-            </div>
-
-            <div className="absolute bottom-5 left-5 right-5 z-20 flex items-center justify-between gap-4 sm:bottom-8 sm:left-8 sm:right-8">
-              <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white shadow-soft backdrop-blur transition duration-300 hover:scale-105 hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide - 1)} aria-label="Previous slide">
-                <ArrowLeft size={18} />
-              </button>
-              <div className="flex gap-2" aria-label="Slider pagination">
-                {slides.map((item, index) => (
-                  <button
-                    key={item.title}
-                    className={`h-3 rounded-full transition duration-300 ${activeSlide === index ? 'w-10 bg-white' : 'w-3 bg-white/45 hover:bg-white/70'}`}
-                    onClick={() => goToSlide(index)}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-              <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/12 text-white shadow-soft backdrop-blur transition duration-300 hover:scale-105 hover:bg-white hover:text-leaf-950" onClick={() => goToSlide(activeSlide + 1)} aria-label="Next slide">
-                <ArrowRight size={18} />
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="border-y border-leaf-100 bg-white">
-        <div className="premium-container grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-6">
-          {trustBadges.map((item) => (
-            <div key={item.label} className="flex items-center gap-3 rounded-2xl bg-leaf-50 px-4 py-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-leaf-800 shadow-soft">
-                <item.icon size={19} />
-              </span>
-              <span className="text-sm font-black text-leaf-950">{item.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="premium-container py-10">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {premiumGuarantees.map((item, index) => (
-            <motion.div
-              key={item.label}
-              className="rounded-[1.25rem] border border-leaf-100 bg-white p-5 shadow-soft"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              transition={{ duration: 0.4, delay: index * 0.04 }}
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-leaf-100 text-leaf-800">
-                <item.icon size={22} />
-              </div>
-              <h3 className="mt-4 text-lg font-black text-leaf-950">{item.label}</h3>
-              <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="premium-container py-12">
-        <SectionHeader
-          eyebrow="Shop by Categories"
-          title="Find Your Planting Style"
-          action={
-            <Link className="inline-flex items-center gap-2 rounded-full border border-leaf-200 px-5 py-3 text-sm font-black text-leaf-900 transition hover:bg-leaf-50" to="/categories">
-              View All <ArrowRight size={17} />
-            </Link>
-          }
-        />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {liveCategories.map((category, index) => (
-            <motion.div key={category.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.04 }}>
-              <Link className="group relative block overflow-hidden rounded-[1.25rem] bg-leaf-900 shadow-soft" to={`/shop?category=${encodeURIComponent(category.name)}`}>
-                <img className="h-56 w-full object-cover opacity-75 transition duration-500 group-hover:scale-105 group-hover:opacity-90" src={category.image} alt={category.name} loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-leaf-950/90 via-leaf-950/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                  <h3 className="text-2xl font-black">{category.name}</h3>
-                  <p className="mt-1 text-sm font-bold text-leaf-50/85">{category.count || 'Curated'} products</p>
                 </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-[#f4f7ef] py-12">
-        <div className="premium-container">
-          <SectionHeader
-            eyebrow="Best Sellers"
-            title="Loved by Plant Parents"
-            action={
-              <Link className="inline-flex items-center gap-2 rounded-full border border-leaf-200 bg-white px-5 py-3 text-sm font-black text-leaf-900 transition hover:bg-leaf-50" to="/shop">
-                View All <ArrowRight size={17} />
-              </Link>
-            }
-          />
-          {isLoading && (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, index) => (
-                <Skeleton key={index} className="h-80" />
-              ))}
+              )}
             </div>
-          )}
-          {error && <p className="rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-700">{error}</p>}
-          {!isLoading && !error && !!bestSellers.length && (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {bestSellers.map((product) => (
-                <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
-      <section className="premium-container py-6">
-        <motion.div
-          className="grid gap-6 overflow-hidden rounded-[2rem] bg-leaf-950 p-7 text-white shadow-card md:grid-cols-[1fr_auto] md:items-center md:p-10"
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-leaf-200">Limited time offer</p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">Spring Plant Sale</h2>
-            <p className="mt-3 max-w-2xl leading-7 text-leaf-100">Refresh your balcony, living room, and garden with seasonal plants and essentials.</p>
-          </div>
-          <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-leaf-950 shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-50" to="/shop">
-            Shop Now <ArrowRight className="ml-2" size={18} />
-          </Link>
-        </motion.div>
-      </section>
-
-      {dealProduct && (
-        <section className="premium-container py-12">
-          <SectionHeader eyebrow="Daily Deal" title="Deal of the Day" />
-          <motion.div
-            className="grid overflow-hidden rounded-[2rem] border border-leaf-100 bg-white shadow-card md:grid-cols-[0.9fr_1.1fr]"
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Link className="block bg-leaf-50" to={`/products/${dealProduct._id}`}>
-              <img className="h-full min-h-[320px] w-full object-cover" src={getProductImage(dealProduct)} alt={getProductTitle(dealProduct)} loading="lazy" />
+            <Link className="block rounded-[1.5rem] bg-[#0b3d1e] p-6 text-white shadow-card transition hover:-translate-y-1" to="/shop">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#eaf7e8]">Summer Green Sale</p>
+              <h3 className="mt-2 font-serif text-3xl font-black">Up to 40% OFF</h3>
+              <span className="mt-4 inline-flex items-center text-sm font-black">Shop offers <ArrowRight className="ml-2" size={17} /></span>
             </Link>
-            <div className="flex flex-col justify-center p-7 md:p-10">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-black text-amber-800">
-                <Clock3 size={16} /> Limited availability
-              </span>
-              <Link to={`/products/${dealProduct._id}`} className="mt-5 text-3xl font-black tracking-tight text-leaf-950 transition hover:text-leaf-700">
-                {getProductTitle(dealProduct)}
-              </Link>
-              <div className="mt-5 flex items-end gap-3">
-                <span className="text-lg font-bold text-stone-400 line-through">{formatCurrency(originalPrice)}</span>
-                <span className="text-4xl font-black text-leaf-900">{formatCurrency(dealPrice)}</span>
-              </div>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button onClick={() => handleAddToCart(dealProduct)}>
-                  <ShoppingCart className="mr-2" size={18} />
-                  Add to Cart
-                </Button>
-                <Button onClick={() => handleWishlist(dealProduct)} variant="outline">
-                  <Heart className="mr-2" size={18} />
-                  Wishlist
-                </Button>
+
+            <div className="overflow-hidden rounded-[1.5rem] border border-[#dbe8d8] bg-white shadow-soft">
+              <img className="h-44 w-full object-cover" src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=700&q=85" alt="Gardener consultation" loading="lazy" />
+              <div className="p-5">
+                <h3 className="font-serif text-2xl font-black text-[#0b3d1e]">Free Plant Consultation</h3>
+                <a className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-[#25d366] px-5 text-sm font-black text-white transition hover:-translate-y-1" href="https://wa.me/916352031504" rel="noreferrer" target="_blank">
+                  <MessageCircle className="mr-2" size={17} /> Chat Now
+                </a>
               </div>
             </div>
-          </motion.div>
-        </section>
-      )}
+          </aside>
+        </div>
+      </section>
 
       <section className="premium-container py-12">
-        <div className="grid gap-5 sm:grid-cols-3">
-          {[
-            { icon: Leaf, title: 'Premium Quality', text: 'Healthy plants selected for home, balcony, and garden spaces.' },
-            { icon: Sprout, title: 'Fresh Arrivals', text: 'New plants, seeds, and essentials added regularly.' },
-            { icon: ShieldCheck, title: 'Secure Checkout', text: 'Cart, wishlist, authentication, and payments stay connected.' }
-          ].map((item, index) => (
-            <motion.div
-              key={item.title}
-              className="rounded-3xl border border-leaf-100 bg-white p-6 shadow-soft"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              transition={{ duration: 0.45, delay: index * 0.05 }}
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800">
-                <item.icon size={23} />
-              </div>
-              <h3 className="mt-5 text-lg font-black text-leaf-950">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
+        <SectionTitle eyebrow="Shop by Category" title="Curated for Every Green Corner" />
+        <div className="grid grid-cols-2 gap-5 md:grid-cols-4 lg:grid-cols-8">
+          {categories.map((category, index) => (
+            <motion.div key={category.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.03 }}>
+              <Link className="group block text-center" to={`/shop?category=${encodeURIComponent(category.name)}`}>
+                <span className="mx-auto block h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-[#eaf7e8] shadow-soft transition group-hover:-translate-y-1 group-hover:shadow-card">
+                  <img className="h-full w-full object-cover transition duration-500 group-hover:scale-110" src={category.image} alt={category.name} loading="lazy" />
+                </span>
+                <span className="mt-4 block text-sm font-black text-[#0b3d1e]">{category.name}</span>
+                <span className="mt-1 block text-xs font-bold text-stone-500">{category.count || 'Explore'} items</span>
+              </Link>
             </motion.div>
           ))}
         </div>
       </section>
 
-      <section className="premium-container pb-16">
-        <div className="grid gap-6 overflow-hidden rounded-[1.5rem] bg-leaf-950 p-7 text-white shadow-card lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:p-10">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-leaf-200">Newsletter</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Get plant care tips and offers</h2>
-            <p className="mt-3 leading-7 text-leaf-100">Fresh arrivals, seasonal offers, and simple care reminders from Gaurav Nursery.</p>
+      <section className="bg-white py-14">
+        <div className="premium-container">
+          <SectionTitle eyebrow="New Arrivals" title="Fresh From the Nursery" text="Latest live products from the Gaurav Nursery catalog." />
+          {isLoading && <div className="grid gap-5 md:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-96" />)}</div>}
+          {!isLoading && !error && (
+            <div className="flex snap-x gap-5 overflow-x-auto pb-4">
+              {newArrivals.map((product) => (
+                <div key={product._id} className="w-72 shrink-0 snap-start">
+                  <ProductMiniCard product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="premium-container py-14">
+        <div className="relative overflow-hidden rounded-[2rem] bg-[#0b3d1e] p-8 text-white shadow-card md:p-12">
+          <img className="absolute inset-y-0 right-0 hidden h-full w-1/2 object-cover opacity-45 md:block" src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1000&q=85" alt="Beautiful plants" loading="lazy" />
+          <div className="relative max-w-2xl">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#eaf7e8]">Beautiful Plants Better Living</p>
+            <h2 className="mt-3 font-serif text-4xl font-black sm:text-5xl">Handpicked | Hygienic | Carefully Delivered</h2>
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              {featureList.map((feature) => (
+                <div key={feature} className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 font-black backdrop-blur">
+                  <Check size={18} className="text-[#eaf7e8]" />
+                  {feature}
+                </div>
+              ))}
+            </div>
           </div>
-          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
+        </div>
+      </section>
+
+      <section className="premium-container py-12">
+        <SectionTitle eyebrow="Why Choose Us" title="Why Choose Gaurav Nursery" />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {whyChoose.map((item, index) => (
+            <motion.div key={item} className="rounded-[1.5rem] border border-[#dbe8d8] bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-card" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.04 }}>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eaf7e8] text-[#0b3d1e]"><Check size={22} /></div>
+              <h3 className="mt-5 text-lg font-black text-[#0b3d1e]">{item}</h3>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-white py-14">
+        <div className="premium-container">
+          <SectionTitle eyebrow="Testimonials" title="Loved by Plant Parents" />
+          <div className="grid gap-5 md:grid-cols-3">
+            {testimonials.map((testimonial, index) => (
+              <motion.article key={testimonial.name} className="rounded-[1.5rem] border border-[#dbe8d8] bg-[#f8fff5] p-6 shadow-soft" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.05 }}>
+                <div className="flex items-center gap-4">
+                  <img className="h-14 w-14 rounded-full object-cover" src={testimonial.image} alt={testimonial.name} loading="lazy" />
+                  <div>
+                    <div className="flex text-amber-500">{Array.from({ length: 5 }).map((_, starIndex) => <Star key={starIndex} size={15} fill="currentColor" />)}</div>
+                    <h3 className="mt-1 font-black text-[#0b3d1e]">{testimonial.name}</h3>
+                  </div>
+                </div>
+                <p className="mt-5 leading-7 text-stone-600">{testimonial.review}</p>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="premium-container grid gap-6 py-14 lg:grid-cols-[1fr_24rem]">
+        <div className="rounded-[2rem] bg-[#eaf7e8] p-8 shadow-soft md:p-10">
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">Newsletter</p>
+          <h2 className="mt-3 font-serif text-4xl font-black text-[#0b3d1e]">Join Our Green Family</h2>
+          <form className="mt-7 flex flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
             <label className="relative flex-1">
               <span className="sr-only">Email address</span>
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
-              <input className="form-input h-12 pl-11 text-leaf-950" onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" required type="email" value={email} />
+              <input className="form-input h-12 pl-11" onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email" required type="email" value={email} />
             </label>
-            <Button className="h-12 bg-white text-leaf-950 hover:bg-leaf-50" type="submit">Subscribe</Button>
+            <Button className="h-12 bg-[#0b3d1e] hover:bg-[#4caf50]" type="submit">Subscribe</Button>
           </form>
+        </div>
+        <div className="overflow-hidden rounded-[2rem] border border-[#dbe8d8] bg-white shadow-soft">
+          <img className="h-52 w-full object-cover" src="https://images.unsplash.com/photo-1599685315640-0ca6d2e8f83d?auto=format&fit=crop&w=800&q=85" alt="Our nursery" loading="lazy" />
+          <div className="p-6">
+            <h2 className="font-serif text-3xl font-black text-[#0b3d1e]">Our Nursery</h2>
+            <p className="mt-2 text-sm leading-6 text-stone-600">Visit Gaurav Nursery for plants, planters, seeds, and expert guidance.</p>
+            <a className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[#0b3d1e] px-5 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#4caf50]" href="https://www.google.com/maps/search/?api=1&query=Gaurav+Nursery" rel="noreferrer" target="_blank">
+              <MapPin className="mr-2" size={17} /> Get Direction
+            </a>
+          </div>
         </div>
       </section>
 
-      <a
-        className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-card transition hover:-translate-y-1 hover:bg-[#1ebe5d]"
-        href="https://wa.me/916352031504"
-        rel="noreferrer"
-        target="_blank"
-        aria-label="Chat on WhatsApp"
-      >
+      <section className="border-y border-[#dbe8d8] bg-white">
+        <div className="premium-container grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-5">
+          {trustBar.map((item) => (
+            <div key={item.label} className="flex items-center gap-3 rounded-2xl bg-[#f8fff5] px-4 py-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eaf7e8] text-[#0b3d1e]"><item.icon size={19} /></span>
+              <span className="text-sm font-black text-[#0b3d1e]">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <a className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-card transition hover:-translate-y-1 hover:bg-[#1ebe5d]" href="https://wa.me/916352031504" rel="noreferrer" target="_blank" aria-label="Chat on WhatsApp">
         <MessageCircle size={27} />
       </a>
-    </>
+    </div>
   );
 }
