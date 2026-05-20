@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Button from '../ui/Button.jsx';
 import Spinner from '../ui/Spinner.jsx';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import { getProductImage, getProductTitle, handleImageError } from '../../utils/product.js';
 import { StatusPill, TableToolbar } from '../dashboard/DashboardUI.jsx';
 
 export default function SellerProductTable({ products, isDeletingId, onDelete, showToolbar = false }) {
@@ -50,13 +51,14 @@ export default function SellerProductTable({ products, isDeletingId, onDelete, s
                 <div className="flex items-center gap-3">
                   <img
                     className="h-16 w-16 rounded-2xl object-cover"
-                    src={product.images?.[0]?.url || product.image || 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=300&q=80'}
-                    alt={product.title || product.name}
+                    src={getProductImage(product)}
+                    alt={getProductTitle(product)}
                     loading="lazy"
                     decoding="async"
+                    onError={handleImageError}
                   />
                   <div>
-                    <h2 className="font-black leading-tight text-leaf-950">{product.title || product.name}</h2>
+                    <h2 className="font-black leading-tight text-leaf-950">{getProductTitle(product)}</h2>
                     <p className="mt-1 text-sm text-stone-500 xl:hidden">{product.category} · {sku}</p>
                   </div>
                 </div>

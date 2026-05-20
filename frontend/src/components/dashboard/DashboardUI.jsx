@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowUpRight, MoreHorizontal, Search } from 'lucide-react';
+import { ArrowUpRight, Search } from 'lucide-react';
 import clsx from 'clsx';
 
 export function PageHeader({ eyebrow, title, text, action }) {
@@ -58,11 +58,7 @@ export function Panel({ title, subtitle, children, action, className = '' }) {
           <h2 className="text-lg font-black text-leaf-950">{title}</h2>
           {subtitle && <p className="mt-1 text-sm text-stone-500">{subtitle}</p>}
         </div>
-        {action || (
-          <button className="rounded-full p-2 text-stone-400 transition hover:bg-leaf-50 hover:text-leaf-900" aria-label="More options">
-            <MoreHorizontal size={20} />
-          </button>
-        )}
+        {action}
       </div>
       {children}
     </section>

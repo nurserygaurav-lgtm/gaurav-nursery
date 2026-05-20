@@ -9,6 +9,7 @@ import {
   MapPin,
   MessageCircle,
   PackageCheck,
+  Phone,
   RotateCcw,
   ShieldCheck,
   ShoppingCart,
@@ -29,7 +30,7 @@ import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
-import { getProductImage, getProductTitle } from '../../utils/product.js';
+import { FALLBACK_PLANT_IMAGE, getProductImage, getProductTitle, handleImageError } from '../../utils/product.js';
 
 const categoryArtwork = {
   'Indoor Plants': 'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=500&q=85',
@@ -43,6 +44,7 @@ const categoryArtwork = {
 };
 
 const desiredCategories = Object.keys(categoryArtwork);
+const nurseryImage = 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=900&q=85';
 
 const heroBadges = ['10K+ Happy Customers', '4.8 Rating', '100% Healthy Plants', 'Pan India Delivery'];
 const featureList = ['Hygienic Packaging', 'Fresh Plants', 'On-Time Delivery', 'Healthy Guarantee'];
@@ -95,7 +97,7 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
     <article className="group rounded-[1.25rem] border border-[#dbe8d8] bg-white p-3 shadow-[0_18px_45px_rgba(11,61,30,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(11,61,30,0.14)]">
       <div className="relative overflow-hidden rounded-2xl bg-[#eaf7e8]">
         <Link to={`/products/${product._id}`}>
-          <img className="aspect-[5/4] w-full object-cover transition duration-500 group-hover:scale-110" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" />
+          <img className="aspect-[5/4] w-full object-cover transition duration-500 group-hover:scale-110" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" onError={handleImageError} />
         </Link>
         <span className="absolute left-3 top-3 rounded-full bg-[#4caf50] px-3 py-1 text-[11px] font-black text-white">{getDiscount(product)}</span>
         <button className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#0b3d1e] shadow-soft transition hover:bg-[#0b3d1e] hover:text-white" onClick={() => onAddToWishlist(product)} aria-label="Add to wishlist">
@@ -247,9 +249,9 @@ export default function Home() {
             </div>
 
             <div className="relative min-h-[430px]">
-              <motion.img className="absolute right-0 top-0 h-64 w-[72%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85" alt="Green nursery plants" animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
-              <motion.img className="absolute bottom-8 left-0 h-60 w-[62%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=900&q=85" alt="Potted plants" animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} />
-              <img className="absolute bottom-0 right-6 h-44 w-44 rounded-[1.5rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=85" alt="Nursery care" loading="lazy" />
+              <motion.img className="absolute right-0 top-0 h-64 w-[72%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85" alt="Green nursery plants" onError={handleImageError} animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
+              <motion.img className="absolute bottom-8 left-0 h-60 w-[62%] rounded-[2rem] object-cover shadow-card" src={FALLBACK_PLANT_IMAGE} alt="Potted plants" onError={handleImageError} animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} />
+              <img className="absolute bottom-0 right-6 h-44 w-44 rounded-[1.5rem] object-cover shadow-card" src={nurseryImage} alt="Nursery care" loading="lazy" onError={handleImageError} />
               <div className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-8 border-white bg-[#0b3d1e] text-center text-white shadow-card">
                 <span className="text-3xl font-black">GN</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.16em]">Gaurav Nursery</span>
@@ -272,7 +274,7 @@ export default function Home() {
                 <div className="grid gap-4">
                   {bestSellers.map((product) => (
                     <div key={product._id} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl bg-[#f8fff5] p-2">
-                      <Link to={`/products/${product._id}`}><img className="h-20 w-20 rounded-xl object-cover" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" /></Link>
+                      <Link to={`/products/${product._id}`}><img className="h-20 w-20 rounded-xl object-cover" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" onError={handleImageError} /></Link>
                       <div className="min-w-0">
                         <p className="truncate text-xs font-black uppercase tracking-[0.12em] text-[#4caf50]">{product.category || 'Plants'}</p>
                         <Link className="line-clamp-1 text-sm font-black text-[#1b2a1f]" to={`/products/${product._id}`}>{getProductTitle(product)}</Link>
@@ -292,7 +294,7 @@ export default function Home() {
             </Link>
 
             <div className="overflow-hidden rounded-[1.5rem] border border-[#dbe8d8] bg-white shadow-soft">
-              <img className="h-44 w-full object-cover" src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=700&q=85" alt="Gardener consultation" loading="lazy" />
+              <img className="h-44 w-full object-cover" src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=700&q=85" alt="Gardener consultation" loading="lazy" onError={handleImageError} />
               <div className="p-5">
                 <h3 className="font-serif text-2xl font-black text-[#0b3d1e]">Free Plant Consultation</h3>
                 <a className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-[#25d366] px-5 text-sm font-black text-white transition hover:-translate-y-1" href="https://wa.me/916352031504" rel="noreferrer" target="_blank">
@@ -311,7 +313,7 @@ export default function Home() {
             <motion.div key={category.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.03 }}>
               <Link className="group block text-center" to={`/shop?category=${encodeURIComponent(category.name)}`}>
                 <span className="mx-auto block h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-[#eaf7e8] shadow-soft transition group-hover:-translate-y-1 group-hover:shadow-card">
-                  <img className="h-full w-full object-cover transition duration-500 group-hover:scale-110" src={category.image} alt={category.name} loading="lazy" />
+                  <img className="h-full w-full object-cover transition duration-500 group-hover:scale-110" src={category.image} alt={category.name} loading="lazy" onError={handleImageError} />
                 </span>
                 <span className="mt-4 block text-sm font-black text-[#0b3d1e]">{category.name}</span>
                 <span className="mt-1 block text-xs font-bold text-stone-500">{category.count || 'Explore'} items</span>
@@ -339,7 +341,7 @@ export default function Home() {
 
       <section className="premium-container py-14">
         <div className="relative overflow-hidden rounded-[2rem] bg-[#0b3d1e] p-8 text-white shadow-card md:p-12">
-          <img className="absolute inset-y-0 right-0 hidden h-full w-1/2 object-cover opacity-45 md:block" src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1000&q=85" alt="Beautiful plants" loading="lazy" />
+          <img className="absolute inset-y-0 right-0 hidden h-full w-1/2 object-cover opacity-45 md:block" src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1000&q=85" alt="Beautiful plants" loading="lazy" onError={handleImageError} />
           <div className="relative max-w-2xl">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#eaf7e8]">Beautiful Plants Better Living</p>
             <h2 className="mt-3 font-serif text-4xl font-black sm:text-5xl">Handpicked | Hygienic | Carefully Delivered</h2>
@@ -374,7 +376,7 @@ export default function Home() {
             {testimonials.map((testimonial, index) => (
               <motion.article key={testimonial.name} className="rounded-[1.5rem] border border-[#dbe8d8] bg-[#f8fff5] p-6 shadow-soft" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: index * 0.05 }}>
                 <div className="flex items-center gap-4">
-                  <img className="h-14 w-14 rounded-full object-cover" src={testimonial.image} alt={testimonial.name} loading="lazy" />
+                  <img className="h-14 w-14 rounded-full object-cover" src={testimonial.image} alt={testimonial.name} loading="lazy" onError={handleImageError} />
                   <div>
                     <div className="flex text-amber-500">{Array.from({ length: 5 }).map((_, starIndex) => <Star key={starIndex} size={15} fill="currentColor" />)}</div>
                     <h3 className="mt-1 font-black text-[#0b3d1e]">{testimonial.name}</h3>
@@ -387,9 +389,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="premium-container grid gap-8 py-14 lg:grid-cols-[minmax(0,7fr)_minmax(18rem,3fr)]">
+      <section className="premium-container grid items-stretch gap-6 py-12 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,25rem)]">
         <motion.div
-          className="relative overflow-hidden rounded-[2rem] border border-white bg-gradient-to-br from-[#f5fff2] to-[#edf8ea] p-8 shadow-[0_28px_90px_rgba(11,61,30,0.12)] transition duration-300 md:p-14"
+          className="relative flex overflow-hidden rounded-[2rem] border border-white bg-gradient-to-br from-[#f7fff3] via-white to-[#edf8ea] p-6 shadow-[0_24px_70px_rgba(11,61,30,0.10)] transition duration-300 sm:p-8 lg:p-10"
           initial="hidden"
           whileInView="visible"
           whileHover={{ y: -6 }}
@@ -397,39 +399,39 @@ export default function Home() {
           variants={fadeUp}
           transition={{ duration: 0.45 }}
         >
-          <div className="pointer-events-none absolute inset-0 opacity-[0.05]">
-            <Leaf className="absolute left-8 top-8 h-24 w-24 rotate-[-18deg] text-[#0b3d1e]" />
-            <Leaf className="absolute right-20 top-12 h-20 w-20 rotate-[28deg] text-[#0b3d1e]" />
-            <Leaf className="absolute bottom-16 left-1/3 h-28 w-28 rotate-[12deg] text-[#0b3d1e]" />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.035]">
+            <Leaf className="absolute -left-2 top-5 h-24 w-24 rotate-[-18deg] text-[#0b3d1e]" />
+            <Leaf className="absolute right-8 top-8 h-20 w-20 rotate-[28deg] text-[#0b3d1e]" />
+            <Leaf className="absolute bottom-4 left-1/2 h-24 w-24 rotate-[12deg] text-[#0b3d1e]" />
           </div>
-          <Leaf className="pointer-events-none absolute -right-10 bottom-8 h-44 w-44 rotate-[-18deg] text-[#4caf50] opacity-20" />
-          <div className="relative max-w-3xl">
+          <Leaf className="pointer-events-none absolute -right-12 bottom-0 h-40 w-40 rotate-[-18deg] text-[#4caf50] opacity-[0.08]" />
+          <div className="relative flex max-w-3xl flex-col justify-center">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[#4caf50]">NEWSLETTER</p>
-            <h2 className="mt-4 font-serif text-5xl font-black leading-[1.02] tracking-tight text-[#0b3d1e] md:text-[56px]">Join Our Green Family</h2>
-            <p className="mt-5 max-w-2xl text-base font-medium leading-8 text-stone-600">
+            <h2 className="mt-3 font-serif text-4xl font-black leading-tight tracking-tight text-[#0b3d1e] sm:text-5xl">Join Our Green Family</h2>
+            <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-stone-600">
               Subscribe to get updates on new arrivals, exclusive offers, and expert gardening tips.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-2.5">
               {['New arrivals', 'Exclusive offers', 'Plant care tips'].map((item) => (
                 <span key={item} className="rounded-full border border-[#dbe8d8] bg-white/80 px-4 py-2 text-sm font-black text-[#0b3d1e] shadow-soft">
                   {item}
                 </span>
               ))}
             </div>
-            <form className="mt-8 flex flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
+            <form className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-stretch" onSubmit={handleNewsletter}>
               <label className="relative flex-1">
                 <span className="sr-only">Email address</span>
                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[#4caf50]" size={20} />
                 <input className="form-input h-14 bg-white pl-14 pr-5 text-base shadow-soft" onChange={(event) => setEmail(event.target.value)} placeholder="Enter your email address" required type="email" value={email} />
               </label>
-              <Button className="h-14 bg-gradient-to-r from-[#0b3d1e] to-[#4caf50] px-8 font-black hover:-translate-y-1 hover:from-[#4caf50] hover:to-[#0b3d1e]" type="submit">Subscribe</Button>
+              <Button className="h-14 w-full bg-gradient-to-r from-[#0b3d1e] to-[#4caf50] px-8 font-black hover:-translate-y-1 hover:from-[#4caf50] hover:to-[#0b3d1e] sm:w-auto" type="submit">Subscribe</Button>
             </form>
-            <p className="mt-5 text-sm font-black text-[#0b3d1e]">Join 10,000+ plant lovers across India.</p>
+            <p className="mt-4 text-sm font-black text-[#0b3d1e]">Join 10,000+ plant lovers across India.</p>
           </div>
         </motion.div>
 
         <motion.div
-          className="overflow-hidden rounded-[1.75rem] border border-[#dbe8d8] bg-white shadow-[0_24px_70px_rgba(11,61,30,0.10)] transition duration-300"
+          className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-[#dbe8d8] bg-white shadow-[0_24px_70px_rgba(11,61,30,0.10)] transition duration-300"
           initial="hidden"
           whileInView="visible"
           whileHover={{ y: -6 }}
@@ -437,12 +439,12 @@ export default function Home() {
           variants={fadeUp}
           transition={{ duration: 0.45, delay: 0.06 }}
         >
-          <div className="relative h-56 overflow-hidden">
-            <img className="h-full w-full object-cover transition duration-700 hover:scale-105" src="https://images.unsplash.com/photo-1599685315640-0ca6d2e8f83d?auto=format&fit=crop&w=800&q=85" alt="Our nursery" loading="lazy" />
+          <div className="relative h-52 overflow-hidden sm:h-56">
+            <img className="h-full w-full object-cover transition duration-700 hover:scale-105" src={nurseryImage} alt="Rows of healthy nursery plants" loading="lazy" onError={handleImageError} />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b3d1e]/30 to-transparent" />
-            <Leaf className="absolute right-5 top-5 h-10 w-10 rotate-12 text-white/80" />
+            <Leaf className="pointer-events-none absolute right-5 top-5 h-10 w-10 rotate-12 text-white/45" />
           </div>
-          <div className="p-7">
+          <div className="flex flex-1 flex-col p-6 sm:p-7">
             <h2 className="font-serif text-3xl font-black text-[#0b3d1e]">Our Nursery</h2>
             <p className="mt-3 text-sm leading-7 text-stone-600">Visit our nursery in Aliganj Bazar, Sultanpur and explore hundreds of healthy plants.</p>
             <div className="mt-5 grid gap-3 text-sm font-bold text-[#1b2a1f]">
@@ -450,11 +452,12 @@ export default function Home() {
               <span className="flex items-center gap-3"><Leaf size={17} className="text-[#4caf50]" /> 500+ Plant Varieties</span>
               <span className="flex items-center gap-3"><UserRound size={17} className="text-[#4caf50]" /> Expert Guidance</span>
             </div>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-              <a className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#0b3d1e] px-5 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#4caf50]" href="https://www.google.com/maps/search/?api=1&query=Gaurav+Nursery" rel="noreferrer" target="_blank">
+            <div className="mt-auto grid gap-3 pt-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <a className="inline-flex h-12 items-center justify-center rounded-full bg-[#0b3d1e] px-5 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#4caf50]" href="https://www.google.com/maps/search/?api=1&query=Gaurav+Nursery" rel="noreferrer" target="_blank">
                 <MapPin className="mr-2" size={17} /> Get Direction
               </a>
-              <a className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#dbe8d8] bg-[#f8fff5] px-5 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-[#eaf7e8]" href="tel:+916352031504">
+              <a className="inline-flex h-12 items-center justify-center rounded-full border border-[#dbe8d8] bg-[#f8fff5] px-5 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-[#eaf7e8]" href="tel:+916352031504">
+                <Phone className="mr-2" size={17} />
                 Call Now
               </a>
             </div>

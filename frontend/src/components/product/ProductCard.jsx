@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import Button from '../ui/Button.jsx';
 import { formatCurrency } from '../../utils/formatCurrency.js';
-import { getProductImage, getProductTitle, getSellerName } from '../../utils/product.js';
+import { getProductImage, getProductTitle, getSellerName, handleImageError } from '../../utils/product.js';
 
 export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
   const navigate = useNavigate();
@@ -38,6 +38,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
             alt={getProductTitle(product)}
             loading="lazy"
             decoding="async"
+            onError={handleImageError}
           />
         </Link>
         <button
