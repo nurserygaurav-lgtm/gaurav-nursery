@@ -62,40 +62,60 @@ export const getOrderById = asyncHandler(async (req, res) => {
 });
 
 export const getSellerOrders = asyncHandler(async (req, res) => {
-  const limit = Math.min(parseInt(req.query.limit || '10', 10), 50);
+  const startedAt = Date.now();
+  console.time('sellerOrdersTotal');
+
+  // HARD LIMIT for debugging/permanent hard safety.
+  const limit = 5;
   const page = Math.max(parseInt(req.query.page || '1', 10), 1);
   const skip = (page - 1) * limit;
 
   const sellerId = req.user._id;
 
-  // Keep response lightweight to prevent seller-orders timeout.
-  // UI needs: order _id, orderNumber/orderId if any, status, totalAmount, createdAt,
-  // customer basic, and item-level seller/product minimal.
+  const totalStart = Date.now();
+  const totalCountPromise = Order.countDocuments({ 'items.seller': sellerId });
+
+  const queryStart = Date.now();
   const ordersQuery = Order.find({ 'items.seller': sellerId })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
+    // Return only fields needed for seller orders UI summary.
     .select('items status totalAmount createdAt customer shippingAddress payment paymentId')
-    .populate({ path: 'customer', select: 'name email phone' })
-    .populate({ path: 'items.product', select: 'title name images category price' })
-    .populate({ path: 'items.seller', select: 'name sellerProfile.shopName' })
+    // Temporarily remove populate to isolate timeout root-cause.
     .lean();
 
-  const [orders, total] = await Promise.all([
-    ordersQuery,
-    Order.countDocuments({ 'items.seller': sellerId })
-  ]);
+  try {
+    const [orders, total] = await Promise.all([
+      ordersQuery,
+      totalCountPromise
+    ]);
 
-  res.json({
-    orders,
-    pagination: {
-      page,
-      limit,
-      total,
-      hasMore: skip + orders.length < total
-    }
-  });
+    const queryMs = Date.now() - queryStart;
+    const totalMs = Date.now() - totalStart;
+    const totalAllMs = Date.now() - startedAt;
+
+    console.timeEnd('sellerOrdersTotal');
+    console.log('[sellerOrders] sellerId=%s page=%d limit=%d skip=%d queryMs=%d countMs=%d totalMs=%d total=%d orders=%d',
+      sellerId.toString(), page, limit, skip, queryMs, totalMs, totalAllMs, total, orders?.length ?? 0
+    );
+
+    res.json({
+      orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        hasMore: skip + orders.length < total
+      }
+    });
+  } catch (err) {
+    const totalAllMs = Date.now() - startedAt;
+    console.error('[sellerOrders] ERROR sellerId=%s page=%d limit=%d totalMs=%d err=%o', sellerId?.toString?.() ?? sellerId, page, limit, totalAllMs, err);
+    throw err;
+  }
 });
+
 
 
 export const getAllOrders = asyncHandler(async (_req, res) => {

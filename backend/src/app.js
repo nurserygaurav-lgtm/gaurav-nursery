@@ -6,7 +6,9 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import config from './config/env.js';
 import routes from './routes/index.js';
+import indexDebug from './routes/index_debug.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+
 
 const app = express();
 const allowedOrigins = [
@@ -59,6 +61,11 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api', routes);
+// Debug endpoints (non-production use)
+app.use('/api', indexDebug);
+
+
+
 app.use(notFound);
 app.use(errorHandler);
 
