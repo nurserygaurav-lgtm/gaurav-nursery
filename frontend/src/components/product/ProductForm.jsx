@@ -1,9 +1,12 @@
-import { ImagePlus, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { UploadCloud, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useToast } from '../../hooks/useToast.js';
 import Button from '../ui/Button.jsx';
 import Spinner from '../ui/Spinner.jsx';
 import { buildProductFormData, validateProductForm } from '../../utils/productValidation.js';
 
+const MAX_IMAGES = 6;
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 const initialValues = {
   title: '',
   description: '',
@@ -29,6 +32,8 @@ const initialValues = {
 };
 
 export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) {
+  const fileInputRef = useRef(null);
+  const { showToast } = useToast();
   const [values, setValues] = useState(() => ({
     ...initialValues,
     title: initialProduct?.title || initialProduct?.name || '',
@@ -55,8 +60,18 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
   }));
   const [images, setImages] = useState([]);
   const [errors, setErrors] = useState({});
+  const [dragActive, setDragActive] = useState(false);
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
 
-  const previews = useMemo(() => images.map((file) => ({ name: file.name, url: URL.createObjectURL(file) })), [images]);
+  const previews = useMemo(
+    () =>
+      images.map((file) => ({
+        id: `${file.name}-${file.size}-${file.lastModified}`,
+        name: file.name,
+        url: URL.createObjectURL(file)
+      })),
+    [images]
+  );
 
   useEffect(() => {
     return () => {
@@ -64,19 +79,105 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     };
   }, [previews]);
 
+  useEffect(() => {
+    const handleWindowPaste = (event) => {
+      const clipboard = event.clipboardData || window.clipboardData;
+      if (!clipboard) return;
+
+      const imageFiles = [];
+      Array.from(clipboard.items || []).forEach((item) => {
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) imageFiles.push(file);
+        }
+      });
+
+      if (!imageFiles.length) return;
+
+      event.preventDefault();
+      processFiles(imageFiles);
+    };
+
+    window.addEventListener('paste', handleWindowPaste);
+    return () => window.removeEventListener('paste', handleWindowPaste);
+  }, [images]);
+
+  function validateImageFile(file) {
+    if (!file.type.startsWith('image/')) {
+      return `File ${file.name} is not an image.`;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      return `File ${file.name} exceeds the 5MB limit.`;
+    }
+
+    return '';
+  }
+
+  function processFiles(fileList) {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+
+    setIsProcessingImages(true);
+    const nextImages = [...images];
+    const availableSlots = Math.max(0, MAX_IMAGES - nextImages.length);
+    const filesToAdd = files.slice(0, availableSlots);
+    const rejectedMessages = [];
+
+    filesToAdd.forEach((file) => {
+      const validationMessage = validateImageFile(file);
+      if (validationMessage) {
+        rejectedMessages.push(validationMessage);
+        return;
+      }
+
+      const duplicate = nextImages.some(
+        (existing) => existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified
+      );
+      if (!duplicate) nextImages.push(file);
+    });
+
+    if (rejectedMessages.length) {
+      showToast(rejectedMessages[0], 'error');
+    }
+
+    if (files.length > availableSlots) {
+      showToast(`Only ${MAX_IMAGES} images allowed. Extra files were skipped.`, 'error');
+    }
+
+    setImages(nextImages.slice(0, MAX_IMAGES));
+    setIsProcessingImages(false);
+  }
+
+  function handleImageChange(event) {
+    processFiles(event.target.files);
+    event.target.value = '';
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(false);
+    processFiles(event.dataTransfer.files);
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+    setDragActive(true);
+  }
+
+  function handleDragLeave() {
+    setDragActive(false);
+  }
+
+  function removeImage(id) {
+    setImages((current) => current.filter((file) => `${file.name}-${file.size}-${file.lastModified}` !== id));
+  }
+
   function handleChange(event) {
     const { name, value } = event.target;
     setValues((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: '' }));
-  }
-
-  function handleImages(event) {
-    const selected = Array.from(event.target.files || []).slice(0, 6);
-    setImages(selected);
-  }
-
-  function removeImage(name) {
-    setImages((current) => current.filter((file) => file.name !== name));
   }
 
   function handleSubmit(event) {
@@ -90,7 +191,7 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
   }
 
   return (
-    <form className="mt-6 grid gap-5 rounded-lg bg-white p-5 shadow-soft lg:grid-cols-2" onSubmit={handleSubmit}>
+    <form className="mt-6 grid gap-5 rounded-3xl bg-white p-5 shadow-soft lg:grid-cols-2" onSubmit={handleSubmit}>
       <Field error={errors.title} label="Product title">
         <input className="form-input" name="title" onChange={handleChange} value={values.title} />
       </Field>
@@ -170,20 +271,45 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
         </select>
       </Field>
       <div className="lg:col-span-2">
-        <label className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-leaf-200 bg-leaf-50 px-4 py-6 text-center text-leaf-800">
-          <ImagePlus size={28} />
-          <span className="mt-2 text-sm font-bold">Upload product images</span>
-          <span className="mt-1 text-xs text-stone-600">Up to 6 images, 5MB each</span>
-          <input accept="image/*" className="sr-only" multiple onChange={handleImages} type="file" />
-        </label>
+        <div
+          className={`relative cursor-pointer rounded-3xl border-2 border-dashed bg-leaf-50 p-6 text-center transition duration-200 ${
+            dragActive
+              ? 'border-leaf-600 bg-leaf-100 shadow-inner'
+              : 'border-leaf-200 hover:border-leaf-500 hover:bg-leaf-100'
+          }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <UploadCloud size={34} className="mx-auto text-leaf-700" />
+          <p className="mt-3 text-sm font-semibold text-leaf-900">Drag & Drop / Click / CTRL + V Paste Images</p>
+          <p className="mt-1 text-xs text-stone-600">Up to 6 images, 5MB each. PNG, JPG, WEBP supported.</p>
+          <input
+            ref={fileInputRef}
+            accept="image/*"
+            className="sr-only"
+            multiple
+            onChange={handleImageChange}
+            type="file"
+          />
+          {isProcessingImages && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-white/80">
+              <div className="inline-flex items-center gap-2 rounded-full bg-leaf-100 px-4 py-2 text-sm font-semibold text-leaf-900 shadow-sm">
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-leaf-900 border-t-transparent" />
+                Processing images...
+              </div>
+            </div>
+          )}
+        </div>
         {!!previews.length && (
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {previews.map((preview) => (
-              <div key={preview.name} className="relative overflow-hidden rounded-lg border border-leaf-100">
-                <img className="aspect-square w-full object-cover" src={preview.url} alt={preview.name} />
+              <div key={preview.id} className="group relative overflow-hidden rounded-3xl border border-leaf-100 bg-leaf-50 shadow-sm">
+                <img className="aspect-square w-full object-cover transition duration-200 group-hover:scale-105" src={preview.url} alt={preview.name} />
                 <button
-                  className="absolute right-2 top-2 rounded-lg bg-white p-1 text-leaf-900 shadow"
-                  onClick={() => removeImage(preview.name)}
+                  className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-leaf-900 shadow hover:bg-white"
+                  onClick={() => removeImage(preview.id)}
                   type="button"
                   aria-label="Remove image"
                 >
@@ -194,9 +320,9 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
           </div>
         )}
         {!!initialProduct?.images?.length && !previews.length && (
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {initialProduct.images.map((image) => (
-              <img key={image.publicId || image.url} className="aspect-square rounded-lg object-cover" src={image.url} alt={values.title} />
+              <img key={image.publicId || image.url} className="aspect-square w-full rounded-3xl object-cover" src={image.url} alt={values.title} />
             ))}
           </div>
         )}
