@@ -15,6 +15,7 @@ router.post('/', protect, authorize('customer', 'admin'), createOrder);
 router.get('/my', protect, authorize('customer', 'admin'), getMyOrders);
 router.get('/my-orders', protect, authorize('customer', 'admin'), getMyOrders);
 router.get('/seller', protect, authorize('seller', 'admin'), getSellerOrders);
+
 router.get('/', protect, authorize('admin'), getAllOrders);
 router.get('/:id', protect, getOrderById);
 router.put('/:id/status', protect, authorize('seller', 'admin'), updateOrderStatus);

@@ -49,4 +49,13 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for seller orders listing (GET /orders/seller)
+// NOTE: nested items.seller is used in queries.
+orderSchema.index({ 'items.seller': 1, createdAt: -1 });
+orderSchema.index({ 'items.seller': 1, status: 1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ customer: 1 });
+
 export default mongoose.model('Order', orderSchema);
+

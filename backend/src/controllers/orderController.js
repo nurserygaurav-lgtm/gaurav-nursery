@@ -62,9 +62,41 @@ export const getOrderById = asyncHandler(async (req, res) => {
 });
 
 export const getSellerOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ 'items.seller': req.user._id }).populate(orderPopulate).sort({ createdAt: -1 });
-  res.json({ orders });
+  const limit = Math.min(parseInt(req.query.limit || '10', 10), 50);
+  const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+  const skip = (page - 1) * limit;
+
+  const sellerId = req.user._id;
+
+  // Keep response lightweight to prevent seller-orders timeout.
+  // UI needs: order _id, orderNumber/orderId if any, status, totalAmount, createdAt,
+  // customer basic, and item-level seller/product minimal.
+  const ordersQuery = Order.find({ 'items.seller': sellerId })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .select('items status totalAmount createdAt customer shippingAddress payment paymentId')
+    .populate({ path: 'customer', select: 'name email phone' })
+    .populate({ path: 'items.product', select: 'title name images category price' })
+    .populate({ path: 'items.seller', select: 'name sellerProfile.shopName' })
+    .lean();
+
+  const [orders, total] = await Promise.all([
+    ordersQuery,
+    Order.countDocuments({ 'items.seller': sellerId })
+  ]);
+
+  res.json({
+    orders,
+    pagination: {
+      page,
+      limit,
+      total,
+      hasMore: skip + orders.length < total
+    }
+  });
 });
+
 
 export const getAllOrders = asyncHandler(async (_req, res) => {
   const orders = await Order.find().populate(orderPopulate).sort({ createdAt: -1 });

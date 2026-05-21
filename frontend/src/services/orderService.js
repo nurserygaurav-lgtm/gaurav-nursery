@@ -15,10 +15,13 @@ export async function getOrderById(id) {
   return data;
 }
 
-export async function getSellerOrders() {
-  const { data } = await api.get('/orders/seller');
+export async function getSellerOrders({ page = 1, limit = 10 } = {}) {
+  const { data } = await api.get('/orders/seller', {
+    params: { page, limit }
+  });
   return data;
 }
+
 
 export async function getAllOrders() {
   const { data } = await api.get('/orders');
