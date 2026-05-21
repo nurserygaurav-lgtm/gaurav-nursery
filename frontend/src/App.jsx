@@ -10,6 +10,7 @@ import SellerLayout from './layouts/SellerLayout.jsx';
 const Home = lazy(() => import('./pages/public/Home.jsx'));
 const Shop = lazy(() => import('./pages/public/Shop.jsx'));
 const Categories = lazy(() => import('./pages/public/Categories.jsx'));
+const CategoryLanding = lazy(() => import('./pages/public/CategoryLanding.jsx'));
 const ProductDetails = lazy(() => import('./pages/public/ProductDetails.jsx'));
 const About = lazy(() => import('./pages/public/About.jsx'));
 const Contact = lazy(() => import('./pages/public/Contact.jsx'));
@@ -48,6 +49,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="shop" element={<Shop />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="category/:slug" element={<CategoryLanding />} />
           <Route path="products/:id" element={<ProductDetails />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
