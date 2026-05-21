@@ -1,8 +1,9 @@
 # TODO - Git push
 
-- [ ] Check current changes/diff status
-- [ ] Stage ALL changes (modified + untracked)
-- [ ] Create commit
-- [ ] Push to `origin/main`
-- [ ] Verify push succeeded
+- [x] Check current changes/diff status
+- [x] Stage ALL changes (modified + untracked)
+- [x] Create commit
+- [x] Push to `origin/main`
+- [x] Verify push succeeded
+
 
