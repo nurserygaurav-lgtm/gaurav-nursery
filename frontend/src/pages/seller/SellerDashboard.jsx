@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Boxes, IndianRupee, PackageCheck, ShoppingBag, TrendingUp, Truck } from 'lucide-react';
+import { Bell, Boxes, IndianRupee, PackageCheck, ShoppingBag, Star, TrendingUp, Truck } from 'lucide-react';
 import SellerProductTable from '../../components/product/SellerProductTable.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
@@ -306,6 +306,56 @@ export default function SellerDashboard() {
             </div>
           )}
           <div className="mt-4 text-sm font-bold text-leaf-700">{activeProducts.length} active listings currently live.</div>
+        </Panel>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        <Panel title="Inventory Alerts" subtitle="Live stock signals from your listings">
+          <div className="space-y-3">
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-16 rounded-2xl" />)
+            ) : lowStockProducts.length ? (
+              lowStockProducts.slice(0, 5).map((product) => (
+                <div key={product._id} className="flex items-center gap-3 rounded-2xl bg-amber-50 p-3">
+                  <Boxes className="shrink-0 text-amber-700" size={20} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-black text-leaf-950">{getProductTitle(product)}</p>
+                    <p className="text-xs font-bold text-amber-700">{formatNumber(product.stock)} in stock</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <EmptyState>Inventory alerts will appear when products run low.</EmptyState>
+            )}
+          </div>
+        </Panel>
+
+        <Panel title="Notifications" subtitle="Actionable seller updates">
+          <div className="space-y-3">
+            {dashboardLoading ? (
+              Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-16 rounded-2xl" />)
+            ) : activity.length ? (
+              activity.slice(0, 4).map((item) => (
+                <div key={item.title} className="flex gap-3 rounded-2xl border border-leaf-100 bg-white p-3">
+                  <Bell className="mt-1 shrink-0 text-leaf-700" size={18} />
+                  <div>
+                    <p className="text-sm font-black text-leaf-950">{item.title}</p>
+                    <p className="mt-1 text-xs leading-5 text-stone-500">{item.text}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <EmptyState>No seller notifications yet.</EmptyState>
+            )}
+          </div>
+        </Panel>
+
+        <Panel title="Reviews" subtitle="Customer feedback workspace">
+          <div className="rounded-2xl bg-leaf-50 p-5 text-center">
+            <Star className="mx-auto text-leaf-700" size={28} />
+            <h3 className="mt-3 font-black text-leaf-950">Reviews will appear here</h3>
+            <p className="mt-2 text-sm leading-6 text-stone-600">No review analytics are shown until real customer reviews are available from the backend.</p>
+          </div>
         </Panel>
       </div>
     </section>

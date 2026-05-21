@@ -11,7 +11,7 @@ import { getProductById } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
-import { getProductImage, getProductTitle, getSellerName } from '../../utils/product.js';
+import { getProductImage, getProductTitle, getSellerName, handleImageError } from '../../utils/product.js';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -50,6 +50,27 @@ export default function ProductDetails() {
       isMounted = false;
     };
   }, [id]);
+
+  useEffect(() => {
+    if (!product?._id) return;
+    try {
+      const current = JSON.parse(localStorage.getItem('recentlyViewedProducts') || '[]');
+      const nextProduct = {
+        _id: product._id,
+        name: getProductTitle(product),
+        title: getProductTitle(product),
+        price: product.price,
+        category: product.category,
+        stock: product.stock,
+        image: getProductImage(product),
+        images: product.images
+      };
+      const next = [nextProduct, ...(Array.isArray(current) ? current.filter((item) => item._id !== product._id) : [])].slice(0, 8);
+      localStorage.setItem('recentlyViewedProducts', JSON.stringify(next));
+    } catch {
+      // Recently viewed is a progressive enhancement; ignore storage failures.
+    }
+  }, [product]);
 
   async function handleAddToCart() {
     if (!isAuthenticated) {
@@ -130,11 +151,11 @@ export default function ProductDetails() {
     <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:px-8">
       <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       <div>
-        <img className="aspect-square w-full rounded-lg object-cover shadow-soft" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" />
+        <img className="aspect-square w-full rounded-lg object-cover shadow-soft" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" onError={handleImageError} />
         {!!product.images?.length && (
           <div className="mt-3 grid grid-cols-4 gap-3">
             {product.images.slice(0, 4).map((image) => (
-              <img key={image.publicId || image.url} className="aspect-square rounded-lg object-cover" src={image.url} alt={getProductTitle(product)} />
+              <img key={image.publicId || image.url} className="aspect-square rounded-lg object-cover" src={image.url} alt={getProductTitle(product)} onError={handleImageError} />
             ))}
           </div>
         )}

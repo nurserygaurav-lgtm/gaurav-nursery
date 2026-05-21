@@ -12,7 +12,7 @@ import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 
-const categories = ['', 'Indoor Plants', 'Flowering Plants', 'Fruit Plants', 'Seeds', 'Planters', 'Garden Tools'];
+const categories = ['', 'Indoor Plants', 'Outdoor Plants', 'Flowering Plants', 'Fruit Plants', 'Pots & Planters', 'Seeds', 'Fertilizers', 'Gardening Tools'];
 
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();

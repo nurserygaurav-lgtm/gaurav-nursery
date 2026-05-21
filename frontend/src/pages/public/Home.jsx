@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
+  ArrowUp,
   BadgePercent,
   Check,
+  Clock,
   Heart,
+  Instagram,
   Leaf,
   Mail,
   MapPin,
@@ -13,9 +16,7 @@ import {
   RotateCcw,
   ShieldCheck,
   ShoppingCart,
-  Sparkles,
   Star,
-  Truck,
   UserRound
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -40,7 +41,7 @@ const categoryArtwork = {
   'Pots & Planters': 'https://images.unsplash.com/photo-1617576683096-00fc8eecb3af?auto=format&fit=crop&w=500&q=85',
   Seeds: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=500&q=85',
   Fertilizers: 'https://images.unsplash.com/photo-1591955506264-3f5a6834570a?auto=format&fit=crop&w=500&q=85',
-  'Tools & Accessories': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=500&q=85'
+  'Gardening Tools': 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=500&q=85'
 };
 
 const desiredCategories = Object.keys(categoryArtwork);
@@ -141,6 +142,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [timeLeft, setTimeLeft] = useState({ hours: '00', minutes: '00', seconds: '00' });
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -172,8 +175,33 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('recentlyViewedProducts') || '[]');
+      if (Array.isArray(stored)) setRecentlyViewed(stored.slice(0, 4));
+    } catch {
+      setRecentlyViewed([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      const diff = Math.max(0, end.getTime() - now.getTime());
+      const hours = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      setTimeLeft({ hours, minutes, seconds });
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
   const bestSellers = useMemo(() => products.slice(0, 4), [products]);
   const newArrivals = useMemo(() => [...products].slice(0, 8), [products]);
+  const trendingProducts = useMemo(() => [...products].sort((a, b) => Number(b.stock || 0) - Number(a.stock || 0)).slice(0, 4), [products]);
   const categories = useMemo(() => {
     return desiredCategories.map((name) => ({
       name,
@@ -220,29 +248,40 @@ export default function Home() {
 
   return (
     <div className="bg-[#f8fff5] text-[#1b2a1f]">
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_20%_10%,rgba(155,201,145,0.22),transparent_24rem),linear-gradient(135deg,#061507_0%,#0d2a15_44%,#17391c_100%)]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <motion.span
+              key={index}
+              className="absolute h-8 w-4 rounded-full bg-emerald-200/20 blur-[0.2px]"
+              style={{ left: `${8 + index * 8}%`, top: `${(index * 17) % 82}%` }}
+              animate={{ y: [0, 24, 0], rotate: [0, 18, -10, 0], opacity: [0.18, 0.42, 0.18] }}
+              transition={{ duration: 7 + index, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          ))}
+        </div>
         <div className="premium-container grid gap-8 py-10 lg:grid-cols-[1fr_22rem] xl:grid-cols-[1fr_24rem]">
-          <motion.div className="grid gap-8 rounded-[2rem] border border-[#dbe8d8] bg-white p-6 shadow-[0_26px_80px_rgba(11,61,30,0.10)] md:grid-cols-[0.9fr_1.1fr] md:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+          <motion.div className="grid gap-8 rounded-[2rem] border border-white/15 bg-white/10 p-6 text-white shadow-[0_30px_100px_rgba(0,0,0,0.34)] backdrop-blur md:grid-cols-[0.9fr_1.1fr] md:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <div className="flex flex-col justify-center">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#eaf7e8] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#0b3d1e]">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-emerald-50 backdrop-blur">
                 <Leaf size={16} />
                 Premium Botanical Store
               </span>
-              <h1 className="mt-6 font-serif text-5xl font-black leading-[0.98] tracking-tight text-[#0b3d1e] sm:text-6xl xl:text-7xl">Bring Nature Home</h1>
-              <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-stone-600">Healthy Plants. Happy Homes. Delivered with Love.</p>
+              <h1 className="mt-6 font-serif text-5xl font-black leading-[0.98] tracking-tight text-white sm:text-6xl xl:text-7xl">Bring Nature Home</h1>
+              <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-emerald-50/85">Healthy Plants. Happy Homes. Delivered with Love.</p>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 {heroBadges.map((badge) => (
-                  <div key={badge} className="flex items-center gap-2 rounded-2xl border border-[#dbe8d8] bg-[#f8fff5] px-4 py-3 text-sm font-black text-[#0b3d1e]">
-                    <Check size={17} className="text-[#4caf50]" />
+                  <div key={badge} className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/12 px-4 py-3 text-sm font-black text-white backdrop-blur">
+                    <Check size={17} className="text-emerald-200" />
                     {badge}
                   </div>
                 ))}
               </div>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#0b3d1e] px-7 text-sm font-black text-white shadow-button transition hover:-translate-y-1 hover:bg-[#4caf50]" to="/shop">
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-[#0b3d1e] shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:bg-emerald-50" to="/shop">
                   Shop Now <ArrowRight className="ml-2" size={18} />
                 </Link>
-                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#dbe8d8] bg-white px-7 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-[#eaf7e8]" to="/categories">
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-7 text-sm font-black text-white backdrop-blur transition hover:-translate-y-1 hover:bg-white/20" to="/categories">
                   Explore Collections
                 </Link>
               </div>
@@ -252,34 +291,34 @@ export default function Home() {
               <motion.img className="absolute right-0 top-0 h-64 w-[72%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85" alt="Green nursery plants" onError={handleImageError} animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
               <motion.img className="absolute bottom-8 left-0 h-60 w-[62%] rounded-[2rem] object-cover shadow-card" src={FALLBACK_PLANT_IMAGE} alt="Potted plants" onError={handleImageError} animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} />
               <img className="absolute bottom-0 right-6 h-44 w-44 rounded-[1.5rem] object-cover shadow-card" src={nurseryImage} alt="Nursery care" loading="lazy" onError={handleImageError} />
-              <div className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-8 border-white bg-[#0b3d1e] text-center text-white shadow-card">
+              <div className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-8 border-white/80 bg-[#0b3d1e]/90 text-center text-white shadow-card backdrop-blur">
                 <span className="text-3xl font-black">GN</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.16em]">Gaurav Nursery</span>
               </div>
-              <div className="absolute bottom-7 right-0 rotate-[-3deg] rounded-2xl bg-[#7a5230] px-5 py-4 text-center font-serif text-lg font-black text-white shadow-card">
+              <div className="absolute bottom-7 right-0 rotate-[-3deg] rounded-2xl border border-white/20 bg-white/15 px-5 py-4 text-center font-serif text-lg font-black text-white shadow-card backdrop-blur">
                 From Our Nursery<br />To Your Home
               </div>
             </div>
           </motion.div>
 
           <aside className="grid gap-5">
-            <div className="rounded-[1.5rem] border border-[#dbe8d8] bg-white p-5 shadow-soft">
+            <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-5 text-white shadow-soft backdrop-blur">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-serif text-2xl font-black text-[#0b3d1e]">Best Sellers</h2>
-                <Link className="text-sm font-black text-[#4caf50]" to="/shop">View all</Link>
+                <h2 className="font-serif text-2xl font-black text-white">Best Sellers</h2>
+                <Link className="text-sm font-black text-emerald-100" to="/shop">View all</Link>
               </div>
               {isLoading && <div className="grid gap-3">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-28" />)}</div>}
               {error && <p className="rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-700">{error}</p>}
               {!isLoading && !error && (
                 <div className="grid gap-4">
                   {bestSellers.map((product) => (
-                    <div key={product._id} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl bg-[#f8fff5] p-2">
+                    <div key={product._id} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl border border-white/10 bg-white/12 p-2 backdrop-blur">
                       <Link to={`/products/${product._id}`}><img className="h-20 w-20 rounded-xl object-cover" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" onError={handleImageError} /></Link>
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-black uppercase tracking-[0.12em] text-[#4caf50]">{product.category || 'Plants'}</p>
-                        <Link className="line-clamp-1 text-sm font-black text-[#1b2a1f]" to={`/products/${product._id}`}>{getProductTitle(product)}</Link>
-                        <div className="mt-1 flex items-center gap-1 text-amber-500"><Star size={13} fill="currentColor" /><span className="text-xs font-bold text-stone-500">4.8</span></div>
-                        <div className="mt-1 flex items-center gap-2"><span className="font-black text-[#0b3d1e]">{formatCurrency(product.price)}</span><span className="text-xs font-bold text-stone-400 line-through">{formatCurrency(getOldPrice(product))}</span></div>
+                        <p className="truncate text-xs font-black uppercase tracking-[0.12em] text-emerald-100">{product.category || 'Plants'}</p>
+                        <Link className="line-clamp-1 text-sm font-black text-white" to={`/products/${product._id}`}>{getProductTitle(product)}</Link>
+                        <div className="mt-1 flex items-center gap-1 text-amber-300"><Star size={13} fill="currentColor" /><span className="text-xs font-bold text-emerald-50/80">4.8</span></div>
+                        <div className="mt-1 flex items-center gap-2"><span className="font-black text-white">{formatCurrency(product.price)}</span><span className="text-xs font-bold text-emerald-50/50 line-through">{formatCurrency(getOldPrice(product))}</span></div>
                       </div>
                     </div>
                   ))}
@@ -287,7 +326,7 @@ export default function Home() {
               )}
             </div>
 
-            <Link className="block rounded-[1.5rem] bg-[#0b3d1e] p-6 text-white shadow-card transition hover:-translate-y-1" to="/shop">
+            <Link className="block rounded-[1.5rem] border border-white/15 bg-white/10 p-6 text-white shadow-card backdrop-blur transition hover:-translate-y-1" to="/shop">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#eaf7e8]">Summer Green Sale</p>
               <h3 className="mt-2 font-serif text-3xl font-black">Up to 40% OFF</h3>
               <span className="mt-4 inline-flex items-center text-sm font-black">Shop offers <ArrowRight className="ml-2" size={17} /></span>
@@ -340,6 +379,57 @@ export default function Home() {
       </section>
 
       <section className="premium-container py-14">
+        <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
+          <motion.div className="relative overflow-hidden rounded-[2rem] bg-[#0b3d1e] p-7 text-white shadow-card" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+            <Clock className="absolute right-5 top-5 h-16 w-16 text-white/10" />
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-emerald-100">Flash Sale</p>
+            <h2 className="mt-3 font-serif text-4xl font-black">Today&apos;s Green Deals</h2>
+            <p className="mt-3 text-sm leading-7 text-emerald-50/80">Limited-time offers on live catalog products. Ends tonight.</p>
+            <div className="mt-6 grid grid-cols-3 gap-3">
+              {[
+                ['Hours', timeLeft.hours],
+                ['Minutes', timeLeft.minutes],
+                ['Seconds', timeLeft.seconds]
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur">
+                  <span className="block text-3xl font-black">{value}</span>
+                  <span className="mt-1 block text-[11px] font-black uppercase tracking-[0.16em] text-emerald-100">{label}</span>
+                </div>
+              ))}
+            </div>
+            <Link className="mt-7 inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-emerald-50" to="/shop">
+              Shop Sale <ArrowRight className="ml-2" size={17} />
+            </Link>
+          </motion.div>
+
+          <div>
+            <SectionTitle eyebrow="Trending Now" title="Most Loved This Week" text="Curated from products currently available in the store." />
+            {isLoading && <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-80" />)}</div>}
+            {!isLoading && !error && (
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                {trendingProducts.map((product) => (
+                  <ProductMiniCard key={product._id} product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {!!recentlyViewed.length && (
+        <section className="bg-white py-14">
+          <div className="premium-container">
+            <SectionTitle eyebrow="Recently Viewed" title="Pick Up Where You Left Off" />
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {recentlyViewed.map((product) => (
+                <ProductMiniCard key={product._id || product.id || product.name} product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="premium-container py-14">
         <div className="relative overflow-hidden rounded-[2rem] bg-[#0b3d1e] p-8 text-white shadow-card md:p-12">
           <img className="absolute inset-y-0 right-0 hidden h-full w-1/2 object-cover opacity-45 md:block" src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1000&q=85" alt="Beautiful plants" loading="lazy" onError={handleImageError} />
           <div className="relative max-w-2xl">
@@ -385,6 +475,51 @@ export default function Home() {
                 <p className="mt-5 leading-7 text-stone-600">{testimonial.review}</p>
               </motion.article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="premium-container py-14">
+        <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
+          <div>
+            <SectionTitle eyebrow="Plant Care Blog" title="Grow Better Every Week" text="Simple care notes for healthier balconies, homes, and gardens." />
+            <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1">
+              {[
+                { title: 'How to Water Indoor Plants', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=85', tag: 'Indoor care' },
+                { title: 'Best Flowering Plants for Indian Homes', image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=700&q=85', tag: 'Seasonal' },
+                { title: 'Balcony Garden Starter Guide', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=700&q=85', tag: 'Beginner' }
+              ].map((post, index) => (
+                <motion.article key={post.title} className="grid overflow-hidden rounded-[1.5rem] border border-[#dbe8d8] bg-white shadow-soft transition hover:-translate-y-1 hover:shadow-card sm:block lg:grid lg:grid-cols-[11rem_1fr]" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: index * 0.04 }}>
+                  <img className="h-44 w-full object-cover lg:h-full" src={post.image} alt={post.title} loading="lazy" onError={handleImageError} />
+                  <div className="p-5">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-[#4caf50]">{post.tag}</p>
+                    <h3 className="mt-2 text-lg font-black text-[#0b3d1e]">{post.title}</h3>
+                    <Link className="mt-4 inline-flex items-center text-sm font-black text-[#4caf50]" to="/shop">Explore plants <ArrowRight className="ml-2" size={15} /></Link>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <SectionTitle eyebrow="Instagram Gallery" title="From Our Green Corners" />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {[
+                'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=500&q=85',
+                'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=500&q=85',
+                'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=500&q=85',
+                'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=500&q=85',
+                'https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=500&q=85',
+                'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=500&q=85'
+              ].map((image, index) => (
+                <motion.a key={image} className="group relative block overflow-hidden rounded-[1.25rem] bg-[#eaf7e8] shadow-soft" href="https://www.instagram.com/" target="_blank" rel="noreferrer" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: index * 0.03 }} aria-label="Open Instagram gallery">
+                  <img className="aspect-square w-full object-cover transition duration-500 group-hover:scale-110" src={image} alt="Gaurav Nursery plant gallery" loading="lazy" onError={handleImageError} />
+                  <span className="absolute inset-0 flex items-center justify-center bg-[#0b3d1e]/0 text-white opacity-0 transition group-hover:bg-[#0b3d1e]/35 group-hover:opacity-100">
+                    <Instagram size={24} />
+                  </span>
+                </motion.a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -479,6 +614,9 @@ export default function Home() {
       <a className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-card transition hover:-translate-y-1 hover:bg-[#1ebe5d]" href="https://wa.me/916352031504" rel="noreferrer" target="_blank" aria-label="Chat on WhatsApp">
         <MessageCircle size={27} />
       </a>
+      <button className="fixed bottom-24 right-5 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0b3d1e] text-white shadow-card transition hover:-translate-y-1 hover:bg-[#4caf50]" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Back to top">
+        <ArrowUp size={22} />
+      </button>
     </div>
   );
 }
