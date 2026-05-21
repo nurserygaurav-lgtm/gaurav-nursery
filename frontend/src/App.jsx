@@ -24,6 +24,7 @@ const Orders = lazy(() => import('./pages/customer/Orders.jsx'));
 const Wishlist = lazy(() => import('./pages/customer/Wishlist.jsx'));
 const SellerDashboard = lazy(() => import('./pages/seller/SellerDashboard.jsx'));
 const AddProduct = lazy(() => import('./pages/seller/AddProduct.jsx'));
+const BulkUpload = lazy(() => import('./pages/seller/BulkUpload.jsx'));
 const ManageProducts = lazy(() => import('./pages/seller/ManageProducts.jsx'));
 const EditProduct = lazy(() => import('./pages/seller/EditProduct.jsx'));
 const SellerOrders = lazy(() => import('./pages/seller/SellerOrders.jsx'));
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="seller" element={<SellerLayout />}>
             <Route index element={<SellerDashboard />} />
             <Route path="products/new" element={<AddProduct />} />
+            <Route path="products/bulk-upload" element={<BulkUpload />} />
             <Route path="products" element={<ManageProducts />} />
             <Route path="products/:id/edit" element={<EditProduct />} />
             <Route path="orders" element={<SellerOrders />} />

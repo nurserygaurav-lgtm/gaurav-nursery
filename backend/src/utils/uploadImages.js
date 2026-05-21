@@ -37,3 +37,27 @@ export async function uploadProductImages(files = []) {
 
   return Promise.all(files.map(uploadBuffer));
 }
+
+export async function uploadProductImageUrls(urls = []) {
+  const cleanUrls = urls.map((url) => String(url || '').trim()).filter(Boolean);
+  if (!cleanUrls.length) return [];
+
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    return cleanUrls.map((url) => ({ url, publicId: '' }));
+  }
+
+  return Promise.all(
+    cleanUrls.map(async (url) => {
+      const result = await cloudinary.uploader.upload(url, {
+        folder: 'gaurav-nursery/products',
+        resource_type: 'image',
+        overwrite: false,
+        quality: 'auto',
+        fetch_format: 'auto'
+      });
+
+      if (!result?.secure_url || !result?.public_id) throw new Error('Cloudinary URL upload failed');
+      return { url: result.secure_url, publicId: result.public_id };
+    })
+  );
+}

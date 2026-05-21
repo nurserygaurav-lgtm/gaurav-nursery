@@ -38,3 +38,18 @@ export async function deleteProduct(id) {
   const { data } = await api.delete(`/products/${id}`);
   return data;
 }
+
+export async function bulkImportProducts(file, onUploadProgress) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post('/products/import', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress
+  });
+  return data;
+}
+
+export async function downloadProductImportSample() {
+  const { data } = await api.get('/products/import/sample', { responseType: 'blob' });
+  return data;
+}

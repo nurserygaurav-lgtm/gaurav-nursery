@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, UploadCloud } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SellerProductTable from '../../components/product/SellerProductTable.jsx';
@@ -38,12 +38,20 @@ export default function ManageProducts() {
           <h1 className="mt-2 text-3xl font-black text-leaf-950">Manage Products</h1>
           <p className="mt-2 text-sm text-stone-600">Edit pricing, stock, images, and availability for your listings.</p>
         </div>
-        <Link to="/seller/products/new">
-          <Button>
-            <Plus className="mr-2" size={18} />
-            Add Product
-          </Button>
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/seller/products/bulk-upload">
+            <Button variant="outline">
+              <UploadCloud className="mr-2" size={18} />
+              Bulk Upload
+            </Button>
+          </Link>
+          <Link to="/seller/products/new">
+            <Button>
+              <Plus className="mr-2" size={18} />
+              Add Product
+            </Button>
+          </Link>
+        </div>
       </div>
       <div className="mt-6">
         {isLoading && (

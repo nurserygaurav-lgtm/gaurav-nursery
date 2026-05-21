@@ -7,9 +7,24 @@ import { buildProductFormData, validateProductForm } from '../../utils/productVa
 const initialValues = {
   title: '',
   description: '',
+  benefits: '',
   category: '',
+  subcategory: '',
   price: '',
+  offerPrice: '',
   stock: '',
+  sku: '',
+  tags: '',
+  height: '',
+  potSize: '',
+  watering: '',
+  sunlight: '',
+  fertilizer: '',
+  difficulty: 'Easy',
+  airPurification: '',
+  seoTitle: '',
+  metaDescription: '',
+  altText: '',
   status: 'active'
 };
 
@@ -18,9 +33,24 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     ...initialValues,
     title: initialProduct?.title || initialProduct?.name || '',
     description: initialProduct?.description || '',
+    benefits: initialProduct?.benefits || '',
     category: initialProduct?.category || '',
+    subcategory: initialProduct?.subcategory || '',
     price: initialProduct?.price ?? '',
+    offerPrice: initialProduct?.offerPrice ?? '',
     stock: initialProduct?.stock ?? '',
+    sku: initialProduct?.sku || '',
+    tags: initialProduct?.tags?.join(', ') || '',
+    height: initialProduct?.care?.height || '',
+    potSize: initialProduct?.care?.potSize || '',
+    watering: initialProduct?.care?.watering || '',
+    sunlight: initialProduct?.care?.sunlight || '',
+    fertilizer: initialProduct?.care?.fertilizer || '',
+    difficulty: initialProduct?.care?.difficulty || 'Easy',
+    airPurification: initialProduct?.care?.airPurification || '',
+    seoTitle: initialProduct?.seo?.title || '',
+    metaDescription: initialProduct?.seo?.metaDescription || '',
+    altText: initialProduct?.seo?.altText || '',
     status: initialProduct?.status || 'active'
   }));
   const [images, setImages] = useState([]);
@@ -75,14 +105,63 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
           <option value="Garden Tools">Garden Tools</option>
         </select>
       </Field>
+      <Field label="Subcategory">
+        <input className="form-input" name="subcategory" onChange={handleChange} placeholder="Air Purifying Plants" value={values.subcategory} />
+      </Field>
       <Field error={errors.price} label="Price">
         <input className="form-input" min="0" name="price" onChange={handleChange} type="number" value={values.price} />
+      </Field>
+      <Field label="Offer price">
+        <input className="form-input" min="0" name="offerPrice" onChange={handleChange} type="number" value={values.offerPrice} />
       </Field>
       <Field error={errors.stock} label="Stock">
         <input className="form-input" min="0" name="stock" onChange={handleChange} type="number" value={values.stock} />
       </Field>
+      <Field label="SKU">
+        <input className="form-input" name="sku" onChange={handleChange} placeholder="GN-PLANT-001" value={values.sku} />
+      </Field>
+      <Field label="Tags">
+        <input className="form-input" name="tags" onChange={handleChange} placeholder="indoor, bestseller, air purifier" value={values.tags} />
+      </Field>
       <Field className="lg:col-span-2" error={errors.description} label="Description">
         <textarea className="form-input min-h-32" name="description" onChange={handleChange} value={values.description} />
+      </Field>
+      <Field className="lg:col-span-2" label="Benefits">
+        <textarea className="form-input min-h-24" name="benefits" onChange={handleChange} value={values.benefits} />
+      </Field>
+      <Field label="Height">
+        <input className="form-input" name="height" onChange={handleChange} placeholder="18-24 inch" value={values.height} />
+      </Field>
+      <Field label="Pot size">
+        <input className="form-input" name="potSize" onChange={handleChange} placeholder="6 inch pot" value={values.potSize} />
+      </Field>
+      <Field label="Watering">
+        <input className="form-input" name="watering" onChange={handleChange} placeholder="Twice a week" value={values.watering} />
+      </Field>
+      <Field label="Sunlight">
+        <input className="form-input" name="sunlight" onChange={handleChange} placeholder="Bright indirect sunlight" value={values.sunlight} />
+      </Field>
+      <Field label="Fertilizer">
+        <input className="form-input" name="fertilizer" onChange={handleChange} placeholder="Organic fertilizer monthly" value={values.fertilizer} />
+      </Field>
+      <Field label="Care difficulty">
+        <select className="form-input" name="difficulty" onChange={handleChange} value={values.difficulty}>
+          <option value="Easy">Easy</option>
+          <option value="Moderate">Moderate</option>
+          <option value="Expert">Expert</option>
+        </select>
+      </Field>
+      <Field className="lg:col-span-2" label="Air purification benefits">
+        <input className="form-input" name="airPurification" onChange={handleChange} value={values.airPurification} />
+      </Field>
+      <Field label="SEO title">
+        <input className="form-input" name="seoTitle" onChange={handleChange} value={values.seoTitle} />
+      </Field>
+      <Field label="Meta description">
+        <input className="form-input" name="metaDescription" onChange={handleChange} value={values.metaDescription} />
+      </Field>
+      <Field className="lg:col-span-2" label="Image alt text">
+        <input className="form-input" name="altText" onChange={handleChange} value={values.altText} />
       </Field>
       <Field label="Status">
         <select className="form-input" name="status" onChange={handleChange} value={values.status}>

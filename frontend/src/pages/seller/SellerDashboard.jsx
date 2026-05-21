@@ -1,35 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Bell, Boxes, IndianRupee, PackageCheck, ShoppingBag, Star, TrendingUp, Truck } from 'lucide-react';
 import SellerProductTable from '../../components/product/SellerProductTable.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { ActivityFeed, Panel, PageHeader, MetricCard, StatusPill } from '../../components/dashboard/DashboardUI.jsx';
+import { useSellerDashboard } from '../../hooks/useSellerDashboard.js';
 import { useSellerProducts } from '../../hooks/useSellerProducts.js';
-import { getSellerDashboard } from '../../services/dashboardService.js';
-import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { getProductImage, getProductTitle, handleImageError } from '../../utils/product.js';
 
 const categoryColors = ['#315f2e', '#72ae68', '#9bc991', '#c4dfbd', '#7a5230', '#d4a373', '#588157'];
-
-const defaultDashboard = {
-  metrics: {
-    totalSales: 0,
-    revenue: 0,
-    orders: 0,
-    pendingOrders: 0,
-    productsSold: 0,
-    monthlyGrowth: 0
-  },
-  charts: {
-    revenueAnalytics: [],
-    categoryMix: [],
-    salesAnalytics: []
-  },
-  recentOrders: [],
-  topProducts: []
-};
 
 function formatNumber(value) {
   return new Intl.NumberFormat('en-IN').format(Number(value || 0));
@@ -93,9 +74,7 @@ function DashboardSkeleton() {
 
 export default function SellerDashboard() {
   const { products, isLoading, error } = useSellerProducts();
-  const [dashboard, setDashboard] = useState(defaultDashboard);
-  const [dashboardLoading, setDashboardLoading] = useState(true);
-  const [dashboardError, setDashboardError] = useState('');
+  const { dashboard, isLoading: dashboardLoading, error: dashboardError } = useSellerDashboard();
   const activeProducts = products.filter((product) => product.status === 'active');
   const lowStockProducts = products.filter((product) => Number(product.stock) < 5);
   const revenueData = dashboard.charts.revenueAnalytics || [];
@@ -106,38 +85,6 @@ export default function SellerDashboard() {
   const hasCategoryData = hasPositiveChartValue(categoryData, ['value']);
   const activity = useMemo(() => getActivity({ dashboard, lowStockProducts, activeProducts }), [dashboard, lowStockProducts, activeProducts]);
   const topProducts = dashboard.topProducts || [];
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadDashboard() {
-      try {
-        setDashboardLoading(true);
-        setDashboardError('');
-        const data = await getSellerDashboard();
-        if (isMounted) {
-          setDashboard({
-            ...defaultDashboard,
-            ...data,
-            charts: { ...defaultDashboard.charts, ...(data.charts || {}) },
-            topProducts: data.topProducts || []
-          });
-        }
-      } catch (err) {
-        if (isMounted) {
-          setDashboard(defaultDashboard);
-          setDashboardError(getApiError(err, 'Unable to load dashboard data'));
-        }
-      } finally {
-        if (isMounted) setDashboardLoading(false);
-      }
-    }
-
-    loadDashboard();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   return (
     <section>

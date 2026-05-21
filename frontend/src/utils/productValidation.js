@@ -22,6 +22,26 @@ export function buildProductFormData(values, images) {
   formData.append('stock', values.stock);
   formData.append('status', values.status);
 
+  [
+    'offerPrice',
+    'subcategory',
+    'sku',
+    'tags',
+    'benefits',
+    'height',
+    'potSize',
+    'watering',
+    'sunlight',
+    'fertilizer',
+    'difficulty',
+    'airPurification',
+    'seoTitle',
+    'metaDescription',
+    'altText'
+  ].forEach((key) => {
+    if (values[key] !== undefined && values[key] !== null) formData.append(key, String(values[key]).trim());
+  });
+
   images.forEach((image) => {
     formData.append('images', image);
   });
