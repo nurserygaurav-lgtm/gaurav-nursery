@@ -24,8 +24,7 @@ import {
   TrendingUp,
   UserRound,
   Wheat,
-  Wrench,
-  X
+  Wrench
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';

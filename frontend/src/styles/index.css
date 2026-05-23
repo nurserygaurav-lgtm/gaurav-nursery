@@ -16,6 +16,9 @@
   --accent: #3d7d36;
   --accent-dark: #0d1f0e;
   --shadow-soft: 0 24px 70px rgba(13, 31, 14, 0.12);
+  --shadow-card: 0 28px 90px rgba(13, 31, 14, 0.12);
+  --shadow-button: 0 20px 45px rgba(61, 125, 54, 0.22);
+  --border-soft: rgba(77, 156, 69, 0.12);
 }
 
 .dark {
@@ -113,6 +116,14 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.45);
   box-shadow: 0 24px 70px rgba(13, 31, 14, 0.16);
   backdrop-filter: blur(18px);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+.shadow-button {
+  box-shadow: var(--shadow-button);
 }
 
 .hero-button {
