@@ -395,6 +395,25 @@ export const updateProduct = asyncHandler(async (req, res) => {
   res.json({ product });
 });
 
+export const bulkDeleteProducts = asyncHandler(async (req, res) => {
+  const productIds = Array.isArray(req.body.productIds) ? req.body.productIds.filter(Boolean) : [];
+
+  if (!productIds.length) {
+    res.status(400);
+    throw new Error('productIds must be a non-empty array');
+  }
+
+  const result = await Product.deleteMany({
+    _id: { $in: productIds },
+    seller: req.user._id
+  });
+
+  res.json({
+    success: true,
+    deletedCount: result.deletedCount || 0
+  });
+});
+
 export const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) {
@@ -412,3 +431,113 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 
   res.json({ message: 'Product archived' });
 });
+
+export const deleteTodayProducts = asyncHandler(async (req, res) => {
+  try {
+    // Local-time start-of-day. This route is expected to run based on server timezone.
+    const now = new Date();
+
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    console.log('[admin] deleteTodayProducts now:', now.toISOString());
+    console.log('[admin] deleteTodayProducts startOfDay(local):', startOfDay.toISOString());
+    console.log('[admin] deleteTodayProducts endOfDay(local):', endOfDay.toISOString());
+
+    // Verify matches before deleting
+    const matches = await Product.find({
+      createdAt: { $gte: startOfDay }
+    })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+
+    const matchedCount = await Product.countDocuments({
+      createdAt: { $gte: startOfDay }
+    });
+
+    console.log('[admin] deleteTodayProducts matchedCount(createdAt >= startOfDay):', matchedCount);
+    console.log('[admin] deleteTodayProducts matched sample:', matches);
+
+    if (!matchedCount) {
+      // Quick signal for alternate date fields (best-effort)
+      const hasFields = await Product.collection.findOne(
+        {},
+        { projection: { createdAt: 1, updatedAt: 1, created_on: 1, created_on_ts: 1, uploadDate: 1, date: 1 } }
+      );
+      console.log('[admin] deleteTodayProducts zero matches. Sample doc date fields:', hasFields);
+    }
+
+    // Safer tested version: only $gte startOfDay
+    const result = await Product.deleteMany({
+      createdAt: { $gte: startOfDay }
+    });
+
+    console.log('[admin] deleteTodayProducts deleteMany deletedCount:', result.deletedCount, {
+      startOfDay: startOfDay.toISOString()
+    });
+
+    res.json({
+      success: true,
+      deletedCount: result.deletedCount || 0,
+      debug: {
+        now: now.toISOString(),
+        startOfDay: startOfDay.toISOString(),
+        endOfDay: endOfDay.toISOString(),
+        matchedCount
+      }
+    });
+  } catch (err) {
+    console.error('[admin] deleteTodayProducts error:', err);
+    res.status(500);
+    throw new Error('Failed to delete today products');
+  }
+});
+
+export const debugTodayProducts = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(now);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const totalMatched = await Product.countDocuments({
+    createdAt: { $gte: startOfDay }
+  });
+
+  const sample = await Product.find({
+    createdAt: { $gte: startOfDay }
+  })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .select({
+      title: 1,
+      name: 1,
+      sku: 1,
+      slug: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      status: 1,
+      seller: 1
+    })
+    .lean();
+
+  res.json({
+    success: true,
+    debug: {
+      now: now.toISOString(),
+      startOfDay: startOfDay.toISOString(),
+      endOfDay: endOfDay.toISOString(),
+      timezoneNote: 'Using server local time for startOfDay/endOfDay.'
+    },
+    totalMatched,
+    sample,
+    createdAtValues: sample.map((p) => ({ id: p._id, createdAt: p.createdAt }))
+  });
+});
+
+

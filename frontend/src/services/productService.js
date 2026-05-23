@@ -39,6 +39,17 @@ export async function deleteProduct(id) {
   return data;
 }
 
+export async function bulkDeleteProducts(productIds) {
+  const { data } = await api.delete('/products/bulk-delete', { data: { productIds } });
+  return data;
+}
+
+// Admin-only: delete all products created today
+export async function deleteTodayProducts() {
+  const { data } = await api.delete('/products/delete-today-products');
+  return data;
+}
+
 export async function bulkImportProducts(file, onUploadProgress) {
   const formData = new FormData();
   formData.append('file', file);

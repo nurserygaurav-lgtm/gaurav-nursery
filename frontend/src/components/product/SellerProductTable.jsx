@@ -6,7 +6,18 @@ import { formatCurrency } from '../../utils/formatCurrency.js';
 import { getProductImage, getProductTitle, handleImageError } from '../../utils/product.js';
 import { StatusPill, TableToolbar } from '../dashboard/DashboardUI.jsx';
 
-export default function SellerProductTable({ products, isDeletingId, onDelete, showToolbar = false }) {
+export default function SellerProductTable({
+  products,
+  isDeletingId,
+  onDelete,
+  showToolbar = false,
+  selectedIds = [],
+  onSelect,
+  onSelectAll,
+  allSelected = false
+}) {
+  const isSelectable = typeof onSelect === 'function';
+
   if (!products.length) {
     return (
       <div className="rounded-3xl bg-white p-8 text-center shadow-soft">
@@ -33,8 +44,19 @@ export default function SellerProductTable({ products, isDeletingId, onDelete, s
         />
       )}
       <div className="overflow-hidden rounded-3xl border border-leaf-100 bg-white shadow-soft">
-        <div className="hidden grid-cols-[1.45fr_0.75fr_0.65fr_0.7fr_0.75fr_0.65fr_0.6fr] gap-4 border-b border-leaf-100 bg-leaf-50/70 px-5 py-4 text-xs font-black uppercase tracking-[0.16em] text-leaf-800 xl:grid">
-          <span>Product</span>
+        <div className={`hidden gap-4 border-b border-leaf-100 bg-leaf-50/70 px-5 py-4 text-xs font-black uppercase tracking-[0.16em] text-leaf-800 xl:grid ${isSelectable ? 'grid-cols-[auto_1.45fr_0.75fr_0.65fr_0.7fr_0.75fr_0.65fr_0.6fr]' : 'grid-cols-[1.45fr_0.75fr_0.65fr_0.7fr_0.75fr_0.65fr_0.6fr]'}`}>
+          {isSelectable && (
+            <label className="inline-flex items-center gap-2 text-left">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={onSelectAll}
+                className="h-4 w-4 rounded border-stone-300 text-leaf-600 focus:ring-leaf-500"
+              />
+              <span>Product</span>
+            </label>
+          )}
+          {!isSelectable && <span>Product</span>}
           <span>SKU</span>
           <span>Stock</span>
           <span>Price</span>
@@ -46,9 +68,21 @@ export default function SellerProductTable({ products, isDeletingId, onDelete, s
           {products.map((product) => {
             const stock = Number(product.stock || 0);
             const sku = product.sku || `GN-${String(product._id || product.name || '0000').slice(-4).toUpperCase()}`;
+            const isSelected = selectedIds.includes(product._id);
+
             return (
-              <article key={product._id} className="grid gap-4 px-5 py-4 xl:grid-cols-[1.45fr_0.75fr_0.65fr_0.7fr_0.75fr_0.65fr_0.6fr] xl:items-center">
-                <div className="flex items-center gap-3">
+              <article key={product._id} className={`grid gap-4 px-5 py-4 ${isSelectable ? 'xl:grid-cols-[auto_1.45fr_0.75fr_0.65fr_0.7fr_0.75fr_0.65fr_0.6fr]' : 'xl:grid-cols-[1.45fr_0.75fr_0.65fr_0.7fr_0.75fr_0.65fr_0.6fr]'} xl:items-center`}>
+                <div className="flex items-start gap-3 xl:items-center">
+                  {isSelectable && (
+                    <label className="flex items-center self-start xl:self-auto">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onSelect(product._id)}
+                        className="mr-3 h-4 w-4 rounded border-stone-300 text-leaf-600 focus:ring-leaf-500"
+                      />
+                    </label>
+                  )}
                   <img
                     className="h-16 w-16 rounded-2xl object-cover"
                     src={getProductImage(product)}
