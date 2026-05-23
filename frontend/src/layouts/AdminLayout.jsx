@@ -7,6 +7,7 @@ const navItems = [
   { label: 'Products', to: '/admin/products', icon: PackageSearch },
   { label: 'Categories', to: '/admin/categories', icon: Tags },
   { label: 'Orders', to: '/admin/orders', icon: ShoppingBag },
+  { label: 'Support', to: '/admin/support', icon: ClipboardCheck },
   { label: 'Users', to: '/admin/users', icon: Users },
   { label: 'Transactions', to: '/admin/transactions', icon: ReceiptText },
   { label: 'Reports', to: '/admin/reports', icon: Layers3 },

@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Inventory', to: '/seller/inventory', icon: Boxes },
   { label: 'Earnings', to: '/seller/earnings', icon: IndianRupee },
   { label: 'Reviews', to: '/seller/reviews', icon: Star },
+  { label: 'Support', to: '/seller/support', icon: MessageSquareText },
   { label: 'Settings', to: '/seller/settings', icon: Settings },
   { label: 'Messages', to: '/seller/messages', icon: MessageSquareText }
 ];

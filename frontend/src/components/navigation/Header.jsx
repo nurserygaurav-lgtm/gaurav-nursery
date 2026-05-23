@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  Bell,
   Building2,
   ChevronDown,
   Flower2,
@@ -10,6 +11,7 @@ import {
   LogOut,
   Menu,
   MessageCircle,
+  Moon,
   Package,
   PackageSearch,
   Search,
@@ -17,6 +19,7 @@ import {
   ShoppingCart,
   Sparkles,
   Sprout,
+  Sun,
   Tag,
   TrendingUp,
   UserRound,
@@ -49,6 +52,7 @@ const iconMap = {
 const quickLinks = [
   { label: 'Offers', to: '/shop' },
   { label: 'All Categories', to: '/categories' },
+  { label: 'Support', to: '/support' },
   { label: 'Contact', to: '/contact' }
 ];
 
@@ -218,6 +222,25 @@ export default function Header() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cartCount, setCartCount] = useState(() => readStoredCartCount());
   const [wishlistCount, setWishlistCount] = useState(() => readStoredWishlistCount());
+  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('dark', isDarkMode);
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    async function syncCounts() {
+      try {
+        await Promise.all([getCart(), getWishlist()]);
+      } catch {
+        // ignore sync errors
+      }
+    }
+
+    syncCounts();
+  }, [isAuthenticated]);
 
   useEffect(() => {
     function handleCartCountUpdate(event) {
@@ -305,6 +328,10 @@ export default function Header() {
     setIsMenuOpen(false);
   }
 
+  function handleThemeToggle() {
+    setIsDarkMode((current) => !current);
+  }
+
   function handleLogout() {
     logout();
     showToast('Logged out successfully');
@@ -320,13 +347,12 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#dbe8d8] bg-white/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 bg-white/90 shadow-soft backdrop-blur-xl dark:bg-[#07140b]/90 dark:border-b dark:border-white/10">
       <div className="bg-[#0b3d1e] text-white">
-        <div className="premium-container flex min-h-10 flex-wrap items-center justify-center gap-x-6 gap-y-1 px-2 py-2 text-center text-xs font-black sm:text-sm">
-          <span>Welcome to Gaurav Nursery - Your Partner in Green Living</span>
-          <span>Free Delivery on Orders Above Rs.499</span>
-          <span>COD Available</span>
-          <span>7 Days Easy Returns</span>
+        <div className="premium-container flex flex-wrap items-center justify-between gap-3 px-3 py-2 text-xs font-black uppercase tracking-[0.2em] text-white/90 sm:text-sm">
+          <span>Free delivery above ₹499</span>
+          <span className="hidden sm:inline-flex">COD available • 7-day easy returns • Premium nursery care</span>
+          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">Green luxury</span>
         </div>
       </div>
 
@@ -357,9 +383,15 @@ export default function Header() {
           </label>
         </form>
 
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <button className="rounded-full p-3 text-[#0b3d1e] transition hover:bg-[#eaf7e8] lg:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Search">
-            <Search size={20} />
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <button type="button" className="rounded-full border border-[#dbe8d8] bg-white/95 p-3 text-[#0b3d1e] transition hover:bg-[#f4fff2]" onClick={handleThemeToggle} aria-label="Toggle theme">
+            {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+          <button className="rounded-full border border-[#dbe8d8] bg-white/95 p-3 text-[#0b3d1e] transition hover:bg-[#f4fff2]" aria-label="Notifications">
+            <Bell size={18} />
+          </button>
+          <button className="rounded-full p-3 text-[#0b3d1e] transition hover:bg-[#eaf7e8] lg:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Open mobile menu">
+            <Menu size={20} />
           </button>
           <button
             type="button"
@@ -425,10 +457,6 @@ export default function Header() {
             <PackageSearch size={18} />
             Track Order
           </Link>
-
-          <button className="rounded-full p-3 text-[#0b3d1e] transition hover:bg-[#eaf7e8] xl:hidden" onClick={() => setIsMenuOpen((current) => !current)} aria-label="Open menu">
-            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
         </div>
       </div>
 

@@ -20,6 +20,34 @@ export const upload = multer({
   }
 });
 
+function ticketFileFilter(_req, file, callback) {
+  const allowedMimeTypes = [
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'image/gif',
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
+
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    callback(new Error('Only images, PDF, and Word documents are allowed for ticket attachments'));
+    return;
+  }
+
+  callback(null, true);
+}
+
+export const ticketUpload = multer({
+  storage,
+  fileFilter: ticketFileFilter,
+  limits: {
+    files: 5,
+    fileSize: 10 * 1024 * 1024
+  }
+});
+
 function importFileFilter(_req, file, callback) {
   const allowedMimeTypes = ['text/csv', 'application/csv', 'application/vnd.ms-excel', 'text/plain'];
   const allowedExtensions = ['.csv', '.txt'];

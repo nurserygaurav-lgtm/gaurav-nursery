@@ -14,6 +14,7 @@ const CategoryLanding = lazy(() => import('./pages/public/CategoryLanding.jsx'))
 const ProductDetails = lazy(() => import('./pages/public/ProductDetails.jsx'));
 const About = lazy(() => import('./pages/public/About.jsx'));
 const Contact = lazy(() => import('./pages/public/Contact.jsx'));
+const SupportHome = lazy(() => import('./pages/SupportHome.jsx'));
 const Login = lazy(() => import('./pages/auth/Login.jsx'));
 const Register = lazy(() => import('./pages/auth/Register.jsx'));
 const Cart = lazy(() => import('./pages/customer/Cart.jsx'));
@@ -25,6 +26,7 @@ const Wishlist = lazy(() => import('./pages/customer/Wishlist.jsx'));
 const SellerDashboard = lazy(() => import('./pages/seller/SellerDashboard.jsx'));
 const AddProduct = lazy(() => import('./pages/seller/AddProduct.jsx'));
 const BulkUpload = lazy(() => import('./pages/seller/BulkUpload.jsx'));
+const SupportTickets = lazy(() => import('./pages/seller/SupportTickets.jsx'));
 const ManageProducts = lazy(() => import('./pages/seller/ManageProducts.jsx'));
 const EditProduct = lazy(() => import('./pages/seller/EditProduct.jsx'));
 const SellerOrders = lazy(() => import('./pages/seller/SellerOrders.jsx'));
@@ -34,6 +36,7 @@ const Inventory = lazy(() => import('./pages/seller/Inventory.jsx'));
 const SellerSettings = lazy(() => import('./pages/seller/Settings.jsx'));
 const SellerPlaceholder = lazy(() => import('./pages/seller/SellerPlaceholder.jsx'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard.jsx'));
+const AdminSupport = lazy(() => import('./pages/admin/AdminSupport.jsx'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers.jsx'));
 const AdminSellers = lazy(() => import('./pages/admin/AdminSellers.jsx'));
 const AdminProducts = lazy(() => import('./pages/admin/AdminProducts.jsx'));
@@ -54,6 +57,7 @@ export default function App() {
           <Route path="products/:id" element={<ProductDetails />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="support" element={<SupportHome />} />
           <Route element={<PublicOnlyRoute />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
@@ -83,6 +87,7 @@ export default function App() {
             <Route path="inventory" element={<Inventory />} />
             <Route path="earnings" element={<Earnings />} />
             <Route path="reviews" element={<SellerPlaceholder title="Reviews" text="Ratings, customer feedback, and product review moderation for your store." />} />
+            <Route path="support" element={<SupportTickets />} />
             <Route path="settings" element={<SellerSettings />} />
             <Route path="messages" element={<SellerPlaceholder title="Messages" text="Buyer conversations, order questions, and seller support messages." />} />
           </Route>
@@ -96,6 +101,7 @@ export default function App() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="categories" element={<AdminPlaceholder title="Categories" text="Manage plant categories, filters, merchandising, and collection visibility." />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="support" element={<AdminSupport />} />
             <Route path="transactions" element={<AdminPlaceholder title="Transactions" text="Monitor Razorpay payments, COD collections, refunds, and settlement health." />} />
             <Route path="reports" element={<AdminPlaceholder title="Reports" text="Download marketplace reports, fulfillment exports, and seller performance summaries." />} />
             <Route path="analytics" element={<Analytics />} />
