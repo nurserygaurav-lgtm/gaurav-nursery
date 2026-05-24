@@ -135,7 +135,7 @@ async function createUniqueSlug(name) {
 async function generateImagesForProduct(productId) {
   try {
     const product = await Product.findById(productId).lean();
-    if (!product || (product.images && product.images.length > 0)) return;
+    if (!product) return { id: productId, skipped: true, reason: 'not_found' };
 
     const generated = await generateProductImageSet(
       {
@@ -157,29 +157,59 @@ async function generateImagesForProduct(productId) {
     }
 
     const stored = await uploadGeneratedImage(generated[0].base64);
-    await Product.updateOne(
-      { _id: product._id, 'images.0': { $exists: false } },
+    const existingImages = Array.isArray(product.images) ? product.images : [];
+    const nextImages = [
       {
-        $push: {
-          images: {
-            ...stored,
-            variant: generated[0].variant,
-            prompt: generated[0].prompt,
-            revisedPrompt: generated[0].revisedPrompt
-          }
-        }
-      }
-    );
+        ...stored,
+        variant: generated[0].variant,
+        prompt: generated[0].prompt,
+        revisedPrompt: generated[0].revisedPrompt
+      },
+      ...existingImages
+    ];
+
+    await Product.updateOne({ _id: product._id }, { $set: { images: nextImages } });
+    return { id: productId, success: true };
   } catch (error) {
     console.error(`Bulk import image generation failed for product ${productId}:`, error?.message || error);
+    return { id: productId, success: false, error: error?.message || 'generation_failed' };
   }
 }
 
 async function generateImagesForProducts(productIds) {
+  const results = [];
   for (const productId of productIds) {
-    await generateImagesForProduct(productId);
+    results.push(await generateImagesForProduct(productId));
   }
+  return results;
 }
+
+export const generateSelectedProductImages = asyncHandler(async (req, res) => {
+  const productIds = Array.isArray(req.body.productIds) ? req.body.productIds.filter(Boolean) : [];
+  if (!productIds.length) {
+    res.status(400);
+    throw new Error('productIds array is required');
+  }
+
+  const filter = { _id: { $in: productIds } };
+  if (req.user.role === 'seller') {
+    filter.seller = req.user._id;
+  }
+
+  const products = await Product.find(filter).select('_id').lean();
+  const validProductIds = products.map((product) => String(product._id));
+  const invalidIds = productIds.filter((id) => !validProductIds.includes(id));
+
+  setImmediate(async () => {
+    try {
+      await generateImagesForProducts(validProductIds);
+    } catch (backgroundError) {
+      console.error('Batch AI image generation failed:', backgroundError?.message || backgroundError);
+    }
+  });
+
+  res.status(202).json({ queued: validProductIds.length, invalidIds });
+});
 
 function mapImportRow(row, headerIndex) {
   const get = (name) => row[headerIndex[normalizeHeader(name)]] || '';

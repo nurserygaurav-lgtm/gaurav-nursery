@@ -6,14 +6,15 @@ import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { useSellerProducts } from '../../hooks/useSellerProducts.js';
 import { useToast } from '../../hooks/useToast.js';
-import { bulkDeleteProducts, deleteProduct } from '../../services/productService.js';
+import { bulkDeleteProducts, deleteProduct, generateProductImagesForProducts } from '../../services/productService.js';
 import { getApiError } from '../../utils/auth.js';
 
 export default function ManageProducts() {
-  const { products, setProducts, isLoading, error } = useSellerProducts();
+  const { products, setProducts, isLoading, error, reload } = useSellerProducts();
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [isDeletingId, setIsDeletingId] = useState('');
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const { showToast } = useToast();
 
@@ -72,6 +73,25 @@ export default function ManageProducts() {
     }
   }
 
+  async function handleBulkGenerate() {
+    if (!selectedProductIds.length) return;
+
+    try {
+      setIsBulkGenerating(true);
+      const result = await generateProductImagesForProducts(selectedProductIds);
+      showToast(
+        `Image generation queued for ${result.queued} product${result.queued === 1 ? '' : 's'}. Refresh the page if images do not appear immediately.`,
+        'success'
+      );
+      setSelectedProductIds([]);
+      reload();
+    } catch (err) {
+      showToast(getApiError(err, 'Failed to queue image generation'), 'error');
+    } finally {
+      setIsBulkGenerating(false);
+    }
+  }
+
   return (
     <section>
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -107,6 +127,13 @@ export default function ManageProducts() {
               <Button variant="outline" onClick={cancelSelection} className="min-w-[160px]">
                 <X className="mr-2" size={16} />
                 Cancel selection
+              </Button>
+              <Button
+                onClick={handleBulkGenerate}
+                disabled={isBulkGenerating}
+                className="min-w-[220px] bg-leaf-600 text-white hover:bg-leaf-700"
+              >
+                {isBulkGenerating ? <Spinner label="Generating" /> : 'Generate product images'}
               </Button>
               <Button
                 onClick={() => setShowBulkDeleteModal(true)}

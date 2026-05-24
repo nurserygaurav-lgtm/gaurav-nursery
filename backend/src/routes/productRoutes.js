@@ -27,6 +27,7 @@ router.get('/seller', protect, authorize('seller', 'admin'), getSellerProducts);
 router.get('/import/sample', protect, authorize('seller', 'admin'), downloadProductImportSample);
 router.post('/import', protect, authorize('seller', 'admin'), importUpload.single('file'), bulkImportProducts);
 router.post('/ai-images', protect, authorize('seller', 'admin'), generateProductImages);
+router.post('/ai-images/batch', protect, authorize('seller', 'admin'), generateSelectedProductImages);
 router.get('/:id', getProductById);
 router.post('/', protect, authorize('seller', 'admin'), upload.array('images', 6), createProduct);
 router.put('/:id', protect, authorize('seller', 'admin'), upload.array('images', 6), updateProduct);
