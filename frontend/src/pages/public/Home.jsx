@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   ShoppingCart,
   Star,
-  UserRound
+  UserRound,
+  Youtube
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -28,6 +29,7 @@ import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { useToast } from '../../hooks/useToast.js';
 import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
+import { getStoreSummary } from '../../services/publicService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
@@ -50,29 +52,53 @@ const nurseryImage = 'https://images.unsplash.com/photo-1523348837708-15d4a09cfa
 const heroBadges = ['10K+ Happy Customers', '4.8 Rating', '100% Healthy Plants', 'Pan India Delivery'];
 const featureList = ['Hygienic Packaging', 'Fresh Plants', 'On-Time Delivery', 'Healthy Guarantee'];
 const whyChoose = ['Wide Variety of Plants', 'Best Quality Products', 'Affordable Prices', 'Expert Guidance', 'Safe Packaging', 'Pan India Delivery'];
-const trustBar = [
-  { icon: PackageCheck, label: 'Secure Packaging' },
-  { icon: ShieldCheck, label: 'Live Arrival Guarantee' },
-  { icon: BadgePercent, label: 'COD Available' },
-  { icon: RotateCcw, label: 'Easy Returns' },
-  { icon: UserRound, label: 'Expert Guidance' }
+const galleryFallback = [
+  'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=900&q=85',
+  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=900&q=85'
 ];
 
-const testimonials = [
+const trustBar = [
+  { icon: ShieldCheck, label: 'Secure Payments' },
+  { icon: PackageCheck, label: 'COD Available' },
+  { icon: Leaf, label: 'Live Plant Guarantee' },
+  { icon: Clock, label: 'Fast Delivery' },
+  { icon: RotateCcw, label: 'Eco Packaging' }
+];
+
+const videoReels = [
   {
-    name: 'Priya Sharma',
-    review: 'The plants arrived fresh, carefully packed, and looked even better than expected.',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=85'
+    title: 'Green Delivery Reel',
+    embedUrl: 'https://www.youtube.com/embed/Ev1iWygUL5Y',
+    description: 'Quick plant delivery moments and care-ready pack styling.'
   },
   {
-    name: 'Rahul Verma',
-    review: 'Beautiful collection, quick delivery, and helpful guidance for plant care.',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=85'
+    title: 'Indoor Plant Styling',
+    embedUrl: 'https://www.youtube.com/embed/6YC0kK0mY0U',
+    description: 'Simple styling tips for brighter indoor green corners.'
   },
   {
-    name: 'Anjali Singh',
-    review: 'My balcony looks lovely now. The packaging and quality felt truly premium.',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=85'
+    title: 'Easy Plant Care',
+    embedUrl: 'https://www.youtube.com/embed/zQVIPu3M-cE',
+    description: 'Short tutorials for watering, light, and nurturing your plants.'
+  }
+];
+
+const communityItems = [
+  {
+    title: 'WhatsApp Gardening Group',
+    description: 'Join real-time plant care support, Q&A, and group inspiration.',
+    href: 'https://wa.me/916352031504',
+    cta: 'Join WhatsApp'
+  },
+  {
+    title: 'Telegram Updates',
+    description: 'Get quick plant care tips and new arrival alerts in one place.',
+    href: null,
+    cta: 'Stay tuned'
   }
 ];
 
@@ -139,6 +165,7 @@ function SectionTitle({ eyebrow, title, text }) {
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [storeSummary, setStoreSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
@@ -176,6 +203,24 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
+
+    async function loadStoreSummary() {
+      try {
+        const data = await getStoreSummary();
+        if (isMounted) setStoreSummary(data);
+      } catch {
+        if (isMounted) setStoreSummary(null);
+      }
+    }
+
+    loadStoreSummary();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem('recentlyViewedProducts') || '[]');
       if (Array.isArray(stored)) setRecentlyViewed(stored.slice(0, 4));
@@ -202,6 +247,10 @@ export default function Home() {
   const bestSellers = useMemo(() => products.slice(0, 4), [products]);
   const newArrivals = useMemo(() => [...products].slice(0, 8), [products]);
   const trendingProducts = useMemo(() => [...products].sort((a, b) => Number(b.stock || 0) - Number(a.stock || 0)).slice(0, 4), [products]);
+  const galleryImages = useMemo(() => {
+    const images = products.flatMap((product) => (product.images || []).map((image) => image?.url).filter(Boolean));
+    return images.length > 0 ? images.slice(0, 8) : galleryFallback;
+  }, [products]);
   const categories = useMemo(() => {
     return desiredCategories.map((name) => ({
       name,
@@ -502,28 +551,127 @@ export default function Home() {
           </div>
 
           <div>
-            <SectionTitle eyebrow="Instagram Gallery" title="From Our Green Corners" />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <SectionTitle eyebrow="Instagram Garden Gallery" title="Real Plant Moments" text="A curated showcase of healthy plants and real home greenery." />
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {galleryImages.map((image, index) => (
+                <motion.div
+                  key={`${image}-${index}`}
+                  className="group overflow-hidden rounded-[1.75rem] bg-[#eaf7e8] shadow-soft transition duration-500 hover:-translate-y-1"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeUp}
+                  transition={{ delay: index * 0.04 }}
+                >
+                  <img className="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105" src={image} alt="Garden gallery" loading="lazy" onError={handleImageError} />
+                  <div className="space-y-2 p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#4caf50]">Garden gallery</p>
+                    <p className="text-sm font-black text-[#0b3d1e]">Live nursery imagery for real plant styling.</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-[#dbe8d8] bg-white p-7 shadow-soft">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">Nursery Stats</p>
+            <h2 className="mt-3 font-serif text-4xl font-black text-[#0b3d1e]">Growth you can trust</h2>
+            <p className="mt-4 text-sm leading-7 text-stone-600">Verified store metrics from active orders and deliveries.</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {[
-                'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=500&q=85',
-                'https://images.unsplash.com/photo-1545239705-1564e58b9e4a?auto=format&fit=crop&w=500&q=85',
-                'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=500&q=85',
-                'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=500&q=85',
-                'https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=500&q=85',
-                'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=500&q=85'
-              ].map((image, index) => (
-                <motion.a key={image} className="group relative block overflow-hidden rounded-[1.25rem] bg-[#eaf7e8] shadow-soft" href="https://www.instagram.com/" target="_blank" rel="noreferrer" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: index * 0.03 }} aria-label="Open Instagram gallery">
-                  <img className="aspect-square w-full object-cover transition duration-500 group-hover:scale-110" src={image} alt="Gaurav Nursery plant gallery" loading="lazy" onError={handleImageError} />
-                  <span className="absolute inset-0 flex items-center justify-center bg-[#0b3d1e]/0 text-white opacity-0 transition group-hover:bg-[#0b3d1e]/35 group-hover:opacity-100">
-                    <Instagram size={24} />
-                  </span>
-                </motion.a>
+                { label: 'Total Plants Sold', value: storeSummary?.totalPlantsSold ?? '—' },
+                { label: 'Cities Delivered', value: storeSummary?.citiesDelivered ?? '—' },
+                { label: 'Active Customers', value: storeSummary?.activeCustomers ?? '—' },
+                { label: 'Daily Orders', value: storeSummary?.dailyOrders ?? '—' }
+              ].map((stat) => (
+                <div key={stat.label} className="rounded-[1.5rem] border border-[#e0f2e9] bg-[#f4fff4] p-5">
+                  <p className="text-3xl font-black text-[#0b3d1e]">{stat.value}</p>
+                  <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-[#4caf50]">{stat.label}</p>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </section>
 
+      <section className="premium-container py-14">
+        <SectionTitle eyebrow="Video Reviews" title="Short Plant Reels & Stories" text="Watch brand-safe short videos that bring our nursery deliveries and plant care to life." />
+        <div className="grid gap-5 lg:grid-cols-3">
+          {videoReels.map((video, index) => (
+            <motion.article
+              key={video.title}
+              className="overflow-hidden rounded-[2rem] border border-[#dbe8d8] bg-white shadow-soft"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+            >
+              <div className="relative overflow-hidden bg-[#eaf7e8]">
+                <iframe
+                  className="h-56 w-full"
+                  src={`${video.embedUrl}?rel=0&modestbranding=1&autoplay=0`}
+                  title={video.title}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <div className="p-6">
+                <div className="inline-flex items-center gap-2 rounded-full bg-[#ebf8ef] px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#4caf50]">
+                  <Youtube size={16} /> Reel
+                </div>
+                <h3 className="mt-4 text-xl font-black text-[#0b3d1e]">{video.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-stone-600">{video.description}</p>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-[#f2fff0] py-14">
+        <div className="premium-container grid gap-6 lg:grid-cols-2">
+          <div className="rounded-[2rem] border border-[#dbe8d8] bg-white p-8 shadow-soft">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">Community</p>
+            <h2 className="mt-3 font-serif text-4xl font-black text-[#0b3d1e]">Join our green community</h2>
+            <p className="mt-4 text-sm leading-7 text-stone-600">Connect with plant lovers, receive timely tips, and stay updated with care guidance.</p>
+            <div className="mt-8 grid gap-4">
+              {communityItems.map((item) => (
+                <div key={item.title} className="rounded-[1.5rem] border border-[#dbe8d8] bg-[#f8fff5] p-5 shadow-soft">
+                  <h3 className="font-black text-[#0b3d1e]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-stone-600">{item.description}</p>
+                  {item.href ? (
+                    <a className="mt-4 inline-flex items-center rounded-full bg-[#0b3d1e] px-5 py-3 text-sm font-black text-white transition hover:bg-[#4caf50]" href={item.href} target="_blank" rel="noreferrer">
+                      {item.cta}
+                    </a>
+                  ) : (
+                    <span className="mt-4 inline-flex items-center rounded-full bg-[#d7f6dc] px-5 py-3 text-sm font-black text-[#0b3d1e]">
+                      {item.cta}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-[#dbe8d8] bg-white p-8 shadow-soft">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">Trust Features</p>
+            <h2 className="mt-3 font-serif text-4xl font-black text-[#0b3d1e]">Premium service in every order</h2>
+            <div className="mt-8 grid gap-3">
+              {trustBar.map((feature) => (
+                <div key={feature.label} className="flex items-start gap-4 rounded-[1.5rem] border border-[#e8f6ec] bg-[#f7fff5] p-4">
+                  <span className="mt-1 flex h-11 w-11 items-center justify-center rounded-full bg-[#4caf50] text-white shadow-soft"><feature.icon size={18} /></span>
+                  <div>
+                    <p className="font-black text-[#0b3d1e]">{feature.label}</p>
+                    <p className="mt-1 text-sm text-stone-600">Our premium care promise for every delivery.</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    
       <section className="premium-container grid items-stretch gap-6 py-12 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,25rem)]">
         <motion.div
           className="relative flex overflow-hidden rounded-[2rem] border border-white bg-gradient-to-br from-[#f7fff3] via-white to-[#edf8ea] p-6 shadow-[0_24px_70px_rgba(11,61,30,0.10)] transition duration-300 sm:p-8 lg:p-10"
