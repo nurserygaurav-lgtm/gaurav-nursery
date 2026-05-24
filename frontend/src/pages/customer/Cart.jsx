@@ -83,15 +83,18 @@ export default function Cart() {
       {!isLoading && !error && !!cart.items.length && (
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-4">
-            {cart.items.map((item) => (
-              <CartItem
-                key={item.product._id}
-                item={item}
-                isUpdating={updatingId === item.product._id}
-                onQuantityChange={handleQuantityChange}
-                onRemove={handleRemove}
-              />
-            ))}
+            {cart.items.filter((item) => item?.product?._id || item?.product?.id).map((item) => {
+              const productId = item.product._id || item.product.id;
+              return (
+                <CartItem
+                  key={productId}
+                  item={item}
+                  isUpdating={updatingId === productId}
+                  onQuantityChange={handleQuantityChange}
+                  onRemove={handleRemove}
+                />
+              );
+            })}
           </div>
           <aside className="h-fit rounded-lg bg-white p-5 shadow-soft">
             <h2 className="text-xl font-black text-leaf-900">Order Summary</h2>

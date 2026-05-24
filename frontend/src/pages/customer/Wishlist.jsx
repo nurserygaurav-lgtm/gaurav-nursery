@@ -62,6 +62,8 @@ export default function Wishlist() {
     }
   }
 
+  const safeProducts = products.filter((product) => product?._id || product?.id);
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-black text-leaf-900">Wishlist</h1>
@@ -80,27 +82,30 @@ export default function Wishlist() {
           </Link>
         </div>
       )}
-      {!isLoading && !error && !!products.length && (
+      {!isLoading && !error && !!safeProducts.length && (
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <article key={product._id} className="rounded-lg bg-white p-4 shadow-soft">
-              <Link to={`/products/${product._id}`}>
-                <img className="aspect-[4/3] w-full rounded-lg object-cover" src={getProductImage(product)} alt={getProductTitle(product)} />
-              </Link>
-              <h2 className="mt-4 font-bold text-leaf-900">{getProductTitle(product)}</h2>
-              <p className="mt-1 text-sm text-stone-600">{product.category}</p>
-              <p className="mt-3 text-lg font-black text-leaf-900">{formatCurrency(product.price)}</p>
-              <div className="mt-4 flex gap-2">
-                <Button className="flex-1" disabled={updatingId === product._id} onClick={() => handleAddToCart(product._id)}>
-                  <ShoppingCart className="mr-2" size={18} />
-                  Cart
-                </Button>
-                <Button variant="outline" disabled={updatingId === product._id} onClick={() => handleRemove(product._id)}>
-                  <Trash2 size={18} />
-                </Button>
-              </div>
-            </article>
-          ))}
+          {safeProducts.map((product) => {
+            const productId = product._id || product.id;
+            return (
+              <article key={productId} className="rounded-lg bg-white p-4 shadow-soft">
+                <Link to={`/products/${productId}`}>
+                  <img className="aspect-[4/3] w-full rounded-lg object-cover" src={getProductImage(product)} alt={getProductTitle(product)} />
+                </Link>
+                <h2 className="mt-4 font-bold text-leaf-900">{getProductTitle(product)}</h2>
+                <p className="mt-1 text-sm text-stone-600">{product.category}</p>
+                <p className="mt-3 text-lg font-black text-leaf-900">{formatCurrency(product.price)}</p>
+                <div className="mt-4 flex gap-2">
+                  <Button className="flex-1" disabled={updatingId === productId} onClick={() => handleAddToCart(productId)}>
+                    <ShoppingCart className="mr-2" size={18} />
+                    Cart
+                  </Button>
+                  <Button variant="outline" disabled={updatingId === productId} onClick={() => handleRemove(productId)}>
+                    <Trash2 size={18} />
+                  </Button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </section>

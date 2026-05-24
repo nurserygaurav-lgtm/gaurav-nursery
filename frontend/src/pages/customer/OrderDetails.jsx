@@ -94,7 +94,7 @@ export default function OrderDetails() {
             <h2 className="text-lg font-black text-leaf-900">Products</h2>
           </div>
           {order.items.map((item) => (
-            <article key={`${item.product?._id}-${item.name}`} className="rounded-[1.25rem] bg-white p-4 shadow-soft">
+            <article key={`${item.product?._id || item.product?.id || item.name}`} className="rounded-[1.25rem] bg-white p-4 shadow-soft">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h3 className="font-bold text-leaf-900">{item.name}</h3>
@@ -103,7 +103,7 @@ export default function OrderDetails() {
                 <div className="text-right">
                   <p className="font-bold text-leaf-900">{formatCurrency(item.price * item.quantity)}</p>
                   {order.status === 'delivered' && (
-                    <Link className="mt-2 inline-flex items-center text-sm font-black text-leaf-700" to={`/products/${item.product?._id || ''}`}>
+                    <Link className="mt-2 inline-flex items-center text-sm font-black text-leaf-700" to={`/products/${item.product?._id || item.product?.id || ''}`}>
                       <Star className="mr-1" size={15} /> Review product
                     </Link>
                   )}
