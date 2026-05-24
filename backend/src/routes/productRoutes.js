@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   createProduct,
   generateProductImages,
+  generateSelectedProductImages,
   deleteProduct,
   bulkDeleteProducts,
   deleteTodayProducts,
