@@ -30,7 +30,7 @@ import {
   Wrench
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import BrandLogo from '../brand/BrandLogo.jsx';
 import { brandContact } from '../../data/brandContent.js';
 import { megaMenuItems } from '../../data/megaMenuData.js';
@@ -228,6 +228,7 @@ function MobileAccordion({ menu, isOpen, onToggle, onNavigate }) {
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { showToast } = useToast();
+  const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -322,6 +323,12 @@ export default function Header() {
       isMounted = false;
     };
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    setActiveMenu(null);
+    setIsMenuOpen(false);
+    setIsProfileOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     let isMounted = true;
@@ -506,7 +513,7 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block">
+      <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block" onMouseLeave={closeDesktopMenu}>
         <div className="premium-container flex min-h-12 items-center justify-center gap-1">
           {megaMenuItems.map((item) => (
             <div key={item.slug} className="py-2" onMouseEnter={() => setActiveMenu(item.slug)}>
