@@ -11,6 +11,7 @@ function App() {
     >
       <h1>Gaurav Nursery</h1>
       <p>Production recovery mode active.</p>
+      <p>Recovery Build v2</p>
     </div>
   );
 }
