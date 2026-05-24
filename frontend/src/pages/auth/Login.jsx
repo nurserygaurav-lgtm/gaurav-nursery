@@ -140,6 +140,10 @@ export default function Login() {
     }
   }
 
+  function handleContinueAsGuest() {
+    navigate(location.state?.from?.pathname || '/', { replace: true });
+  }
+
   return (
     <section className="auth-page">
       <div className="premium-container py-8 sm:py-12 lg:py-14">
@@ -184,6 +188,13 @@ export default function Login() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: 'easeOut' }}
           >
+            <button
+              type="button"
+              onClick={handleContinueAsGuest}
+              className="absolute right-4 top-4 z-20 rounded-full border border-white/20 bg-white/85 px-3 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#0f5132] shadow-soft backdrop-blur-md transition duration-200 hover:bg-[#edf9eb] md:right-5 md:top-5"
+            >
+              Continue as guest
+            </button>
             <div className="glass-panel w-full max-w-xl rounded-[2rem] border border-white/20 p-8 shadow-card login-card-hover login-card-fade-in">
               <div className="mb-6 rounded-[1.75rem] bg-[#f4fff2]/80 p-5 text-[#14532d] shadow-soft lg:hidden">
                 <p className="text-xs font-black uppercase tracking-[0.28em] text-[#14532d]">Luxury plant welcome</p>
@@ -316,6 +327,14 @@ export default function Login() {
                     Continue with Phone OTP
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleContinueAsGuest}
+                  className="mt-4 w-full rounded-2xl border border-white/20 bg-[#f4fff2] px-4 py-3 text-sm font-black text-[#14532d] shadow-soft transition hover:-translate-y-0.5 hover:border-[#d6f8d6] hover:bg-[#eaf9e4]"
+                >
+                  Continue as guest
+                </button>
 
                 <div className="rounded-[1.75rem] border border-white/15 bg-[#f4fff2]/80 p-4 text-sm text-[#244023] shadow-soft">
                   <p className="font-semibold">Secure login powered by Google OAuth</p>
