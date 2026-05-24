@@ -5,7 +5,20 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String, required: true, minlength: 6 },
+    password: {
+      type: String,
+      required() {
+        return this.loginProvider === 'email';
+      },
+      minlength: 6
+    },
+    avatar: String,
+    loginProvider: {
+      type: String,
+      enum: ['email', 'google'],
+      default: 'email'
+    },
+    googleId: String,
     role: {
       type: String,
       enum: ['customer', 'seller', 'admin'],

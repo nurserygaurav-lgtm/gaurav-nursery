@@ -5,6 +5,11 @@ export async function loginUser(payload) {
   return data;
 }
 
+export async function loginWithGoogle(payload) {
+  const { data } = await api.post('/auth/google', payload);
+  return data;
+}
+
 export async function registerUser(payload) {
   const { data } = await api.post('/auth/register', payload);
   return data;

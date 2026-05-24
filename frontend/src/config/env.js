@@ -2,6 +2,7 @@ const env = {
   apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   appName: import.meta.env.VITE_APP_NAME || 'Gaurav Nursery',
   appUrl: import.meta.env.VITE_APP_URL || 'http://localhost:5173',
+  googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
   razorpayKeyId: import.meta.env.VITE_RAZORPAY_KEY_ID || ''
 };
 
