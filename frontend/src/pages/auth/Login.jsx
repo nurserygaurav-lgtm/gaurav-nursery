@@ -151,8 +151,8 @@ export default function Login() {
           <div className="relative hidden overflow-hidden rounded-l-[2rem] bg-[#0d2f17] text-white lg:block">
             <img
               className="absolute inset-0 h-full w-full object-cover"
-              src="https://images.unsplash.com/photo-1493666438817-866a91353ca9?auto=format&fit=crop&w=1200&q=80"
-              alt="Luxury indoor plant and garden design with sculptural pots"
+              src="https://images.unsplash.com/photo-1466784820688-c2c5b4b8c7a7?auto=format&fit=crop&w=1200&q=80"
+              alt="Lush greenhouse nursery with rows of healthy green plants"
             />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(22,73,35,0.75),transparent_45%)]" />
             <div className="absolute -left-12 top-12 h-40 w-40 rounded-full bg-[#d7f5d1]/30 blur-3xl login-hero-glow" />
@@ -218,7 +218,7 @@ export default function Login() {
                 </p>
                 <div>
                   <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
-                    India’s Premium Plant Marketplace
+                    India&apos;s Premium Plant Marketplace
                   </h1>
                   <p className="mt-4 max-w-lg text-sm leading-7 text-[#d9f5d4]">
                     Secure your plant journey with fast login, premium support, and a luxury shopping experience built for plant lovers.
