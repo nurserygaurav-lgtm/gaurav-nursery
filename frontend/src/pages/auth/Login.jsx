@@ -1,15 +1,15 @@
-import { ArrowRight, BadgeCheck, CheckCircle2, Eye, EyeOff, Globe, Headphones, Leaf, Lock, Mail, Phone, ShieldCheck, Sparkles, Sprout, Truck, Undo2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowRight, Eye, EyeOff, Facebook, Leaf, Lock, Mail, ShieldCheck, Sparkles, Truck, Undo2, BadgeCheck, Headphones, Phone } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import BrandLogo from '../../components/brand/BrandLogo.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
-import env from '../../config/env.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { useToast } from '../../hooks/useToast.js';
 import { getRoleHome } from '../../utils/auth.js';
 import { validateLoginForm } from '../../utils/formValidation.js';
+import env from '../../config/env.js';
 
 export default function Login() {
   const [values, setValues] = useState({ email: '', password: '' });
@@ -145,91 +145,45 @@ export default function Login() {
   }
 
   return (
-    <section className="auth-page relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(155,201,145,0.22),transparent_28%),radial-gradient(circle_at_90%_20%,rgba(15,81,50,0.08),transparent_20%),linear-gradient(180deg,#f6fbf3_0%,#eef8e9_100%)]" />
-      <div className="premium-container relative py-8 sm:py-12 lg:py-14">
-        <div className="mx-auto grid min-h-[760px] overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/90 shadow-[0_30px_90px_rgba(14,42,20,0.16)] lg:grid-cols-[1.05fr_0.95fr]">
-          <aside className="relative hidden overflow-hidden bg-[#081a0c] text-white lg:block">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(183,242,187,0.18),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_28%),linear-gradient(145deg,#06150b,#0c2a13_55%,#12381d)]" />
-            <div className="absolute -left-20 top-10 h-56 w-56 rounded-full bg-[#b7f2bb]/12 blur-3xl" />
-            <div className="absolute right-0 top-24 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
-            <div className="absolute left-10 bottom-16 h-32 w-32 rounded-full bg-[#d7f5d1]/10 blur-3xl" />
-            <div className="relative z-10 flex h-full flex-col justify-between p-10 xl:p-12">
+    <section className="auth-page">
+      <div className="premium-container py-8 sm:py-12 lg:py-14">
+        <div className="mx-auto grid min-h-[720px] overflow-hidden rounded-[2rem] bg-white/95 shadow-card lg:grid-cols-[1.1fr_0.95fr]">
+          <div className="relative hidden overflow-hidden rounded-l-[2rem] bg-[#0d2f17] text-white lg:block">
+            <img
+              className="absolute inset-0 h-full w-full object-cover"
+              src="https://images.unsplash.com/photo-1466784820688-c2c5b4b8c7a7?auto=format&fit=crop&w=1200&q=80"
+              alt="Lush greenhouse nursery with rows of healthy green plants"
+            />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(22,73,35,0.75),transparent_45%)]" />
+            <div className="absolute -left-12 top-12 h-40 w-40 rounded-full bg-[#d7f5d1]/30 blur-3xl login-hero-glow" />
+            <div className="absolute right-12 top-28 h-28 w-28 rounded-full bg-[#ffffff]/10 blur-2xl login-leaf-float" />
+            <div className="absolute left-16 bottom-24 h-24 w-24 rounded-full bg-[#def2d0]/20 blur-3xl login-leaf-float" />
+            <div className="relative z-10 flex h-full flex-col justify-between p-10">
               <div className="max-w-xl">
-                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.3em] text-[#d9ffd8] backdrop-blur">
-                  <Sprout size={14} />
-                  Premium Nursery
-                </p>
-                <h1 className="mt-6 max-w-[12ch] text-[clamp(2.8rem,4.8vw,5.8rem)] font-black leading-[0.92] tracking-tight text-white">
-                  Welcome back to Gaurav Nursery
+                <p className="text-sm font-black uppercase tracking-[0.32em] text-[#d9ffd8]">Premium Nursery</p>
+                <h1 className="mt-6 text-4xl font-black tracking-tight text-white sm:text-5xl">
+                  Welcome Back to Gaurav Nursery
                 </h1>
-                <p className="mt-5 max-w-lg text-[clamp(1rem,1.15vw,1.15rem)] leading-8 text-[#eafeef]">
+                <p className="mt-5 max-w-lg text-base leading-8 text-[#eafeef]">
                   India&apos;s premium plant marketplace for curated indoor gardens, luxury pots, and effortless plant care.
                 </p>
               </div>
-
-              <div className="grid gap-4">
-                <div className="grid gap-4 rounded-[2rem] border border-white/12 bg-white/8 p-5 shadow-[0_24px_80px_rgba(5,24,10,0.28)] backdrop-blur-xl sm:grid-cols-2">
-                  <div className="rounded-[1.5rem] border border-white/12 bg-black/10 p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.24em] text-[#b7f2bb]">Live store</p>
-                    <p className="mt-3 text-2xl font-black text-white">Fresh stock daily</p>
-                    <p className="mt-2 text-sm leading-6 text-[#d4f5d6]">Plants, seeds, pots, and care essentials from verified nurseries.</p>
-                  </div>
-                  <div className="rounded-[1.5rem] border border-white/12 bg-black/10 p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.24em] text-[#b7f2bb]">Support</p>
-                    <p className="mt-3 text-2xl font-black text-white">Fast help</p>
-                    <p className="mt-2 text-sm leading-6 text-[#d4f5d6]">WhatsApp support, secure checkout, and live order tracking.</p>
-                  </div>
+              <div className="grid gap-3 rounded-[1.75rem] border border-white/15 bg-white/10 p-6 shadow-[0_24px_80px_rgba(5,24,10,0.28)] backdrop-blur-xl">
+                <div className="inline-flex items-center gap-3 rounded-full bg-[#ffffff]/10 px-4 py-3 text-sm font-semibold text-white">
+                  <ShieldCheck size={18} />
+                  Trusted by plant lovers across India
                 </div>
-
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    { label: 'Live plants', value: '1K+' },
-                    { label: 'Cities served', value: '50+' },
-                    { label: 'Seller rating', value: '4.9/5' }
-                  ].map((item) => (
-                    <div key={item.label} className="rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-3 backdrop-blur">
-                      <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b7f2bb]">{item.label}</p>
-                      <p className="mt-2 text-2xl font-black text-white">{item.value}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid gap-3 rounded-[2rem] border border-white/12 bg-white/8 p-5 backdrop-blur-xl sm:grid-cols-[1.2fr_0.8fr]">
-                  <div className="rounded-[1.5rem] bg-[#f5fff2] p-4 text-[#12381d]">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0b3d1e] text-white shadow-soft">
-                        <BrandLogo compact />
-                      </div>
-                      <div>
-                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#4caf50]">Trusted checkout</p>
-                        <p className="mt-1 text-lg font-black">Secure login journey</p>
-                      </div>
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-stone-600">Premium flow for customer, seller, and admin access without the clutter.</p>
-                  </div>
-
-                  <div className="grid gap-3">
-                    {[
-                      { icon: CheckCircle2, text: 'Live plant guarantee' },
-                      { icon: ShieldCheck, text: 'Protected checkout' },
-                      { icon: Truck, text: 'Pan India delivery' }
-                    ].map((item) => (
-                      <div key={item.text} className="flex items-center gap-3 rounded-[1.25rem] border border-white/12 bg-black/10 px-4 py-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/12 text-[#b7f2bb]">
-                          <item.icon size={18} />
-                        </span>
-                        <p className="text-sm font-semibold text-[#e8f8e4]">{item.text}</p>
-                      </div>
-                    ))}
-                  </div>
+                <div className="grid gap-2 text-sm text-[#d4f5d6]">
+                  <span>• 100% live plant guarantee</span>
+                  <span>• Fast eco packaging & delivery</span>
+                  <span>• Luxury indoor styling advice</span>
                 </div>
               </div>
             </div>
-          </aside>
+          </div>
 
           <motion.div
-            className="relative flex items-center justify-center p-4 sm:p-8 lg:p-10"
+            className="relative flex items-center justify-center p-6 sm:p-10"
             initial={{ opacity: 0, y: 26 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: 'easeOut' }}
@@ -237,24 +191,22 @@ export default function Login() {
             <button
               type="button"
               onClick={handleContinueAsGuest}
-              className="absolute right-4 top-4 z-20 rounded-full border border-white/20 bg-white/90 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#0f5132] shadow-soft backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:bg-[#edf9eb] md:right-5 md:top-5"
+              className="absolute right-4 top-4 z-20 rounded-full border border-white/20 bg-white/85 px-3 py-2 text-xs font-black uppercase tracking-[0.2em] text-[#0f5132] shadow-soft backdrop-blur-md transition duration-200 hover:bg-[#edf9eb] md:right-5 md:top-5"
             >
               Continue as guest
             </button>
-
-            <div className="glass-panel w-full max-w-xl rounded-[2rem] border border-white/20 p-5 shadow-card login-card-hover login-card-fade-in sm:p-7 lg:p-8">
+            <div className="glass-panel w-full max-w-xl rounded-[2rem] border border-white/20 p-8 shadow-card login-card-hover login-card-fade-in">
               <div className="mb-6 rounded-[1.75rem] bg-[#f4fff2]/80 p-5 text-[#14532d] shadow-soft lg:hidden">
                 <p className="text-xs font-black uppercase tracking-[0.28em] text-[#14532d]">Luxury plant welcome</p>
                 <h2 className="mt-4 text-2xl font-black tracking-tight">Premium plant shopping, now simpler</h2>
                 <p className="mt-3 text-sm leading-6 text-[#2f5132]">Login securely and continue your garden experience with curated indoor plants and fast delivery.</p>
               </div>
-
               <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
                 <div className="inline-flex w-fit items-center gap-3 rounded-full bg-[#f4fff2]/80 px-4 py-2 text-sm font-black text-[#0f5132] shadow-soft">
                   <Leaf size={16} />
                   Login
                 </div>
-                <Link className="font-black text-[#fff] transition hover:text-[#d1ffd4]" to="/register">
+                <Link className="font-black text-white transition hover:text-[#d1ffd4]" to="/register">
                   Create account
                 </Link>
               </div>
@@ -286,7 +238,7 @@ export default function Login() {
                     <span className="sr-only">Email address</span>
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7eac70]" size={18} />
                     <input
-                      className="form-input input-with-leading-icon h-[56px] rounded-[1.5rem] border-[#cde5cf] bg-[#f8fbf8] text-sm text-[#1c3b24] shadow-sm placeholder:text-stone-400"
+                      className="form-input input-with-leading-icon h-[54px] rounded-[1.5rem] border-[#cde5cf] bg-white text-sm text-[#1c3b24] shadow-sm"
                       name="email"
                       onChange={handleChange}
                       placeholder="Email address"
@@ -302,7 +254,7 @@ export default function Login() {
                     <span className="sr-only">Password</span>
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7eac70]" size={18} />
                     <input
-                      className="form-input input-with-leading-icon input-with-trailing-action h-[56px] rounded-[1.5rem] border-[#cde5cf] bg-[#f8fbf8] text-sm text-[#1c3b24] shadow-sm placeholder:text-stone-400"
+                      className="form-input input-with-leading-icon input-with-trailing-action h-[54px] rounded-[1.5rem] border-[#cde5cf] bg-white text-sm text-[#1c3b24] shadow-sm"
                       name="password"
                       onChange={handleChange}
                       placeholder="Password"
@@ -337,7 +289,7 @@ export default function Login() {
                 </div>
 
                 <Button
-                  className="h-[56px] w-full rounded-[1.5rem] bg-gradient-to-r from-[#0f5132] via-[#156c3d] to-[#1f9a57] text-white shadow-button hover:from-[#164a2e] hover:to-[#14804b]"
+                  className="h-[54px] w-full rounded-[1.5rem] bg-gradient-to-r from-[#0f5132] to-[#198754] text-white shadow-button hover:from-[#164a2e] hover:to-[#1f6b43]"
                   disabled={isSubmitting}
                   type="submit"
                 >
@@ -361,7 +313,7 @@ export default function Login() {
                       <Spinner label="Signing in" />
                     ) : (
                       <>
-                        <Globe className="text-[#4285f4]" size={18} />
+                        <span className="text-lg font-black text-[#4285f4]">G</span>
                         Continue with Google
                       </>
                     )}
@@ -385,10 +337,7 @@ export default function Login() {
                 </button>
 
                 <div className="rounded-[1.75rem] border border-white/15 bg-[#f4fff2]/80 p-4 text-sm text-[#244023] shadow-soft">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <ShieldCheck size={16} className="text-[#0f5132]" />
-                    <p className="font-semibold">Secure login powered by Google OAuth</p>
-                  </div>
+                  <p className="font-semibold">Secure login powered by Google OAuth</p>
                   <p className="mt-1 text-sm text-[#3d7d4e]">Popup friendly, device-safe, and built for fast checkout across mobile and desktop.</p>
                 </div>
               </form>
@@ -415,7 +364,7 @@ export default function Login() {
 }
 
 const trustBadges = [
-  { title: 'Free Delivery', text: 'On orders above Rs. 499', icon: Truck },
+  { title: 'Free Delivery', text: 'On orders above ₹499', icon: Truck },
   { title: 'Secure Payment', text: 'Protected checkout', icon: ShieldCheck },
   { title: 'Easy Returns', text: 'Simple support', icon: Undo2 },
   { title: 'Best Quality', text: 'Nursery fresh plants', icon: BadgeCheck },
