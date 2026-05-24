@@ -171,9 +171,9 @@ export default function ProductDetails() {
 
   if (isLoading) {
     return (
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:px-8">
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 md:grid-cols-2 lg:px-8">
         <Skeleton className="aspect-square" />
-        <Skeleton className="h-96" />
+        <Skeleton className="min-h-[24rem] md:min-h-[28rem]" />
       </section>
     );
   }
@@ -222,13 +222,13 @@ export default function ProductDetails() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 pb-28 sm:px-6 lg:px-8">
       <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(24rem,0.9fr)]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.9fr)] xl:gap-8">
         <div>
           <div className="group overflow-hidden rounded-2xl bg-leaf-50 shadow-soft">
             <img className="aspect-square w-full object-cover transition duration-500 group-hover:scale-110" src={selectedImage || getProductImage(product)} alt={product.seo?.altText || getProductTitle(product)} loading="lazy" decoding="async" onError={handleImageError} />
           </div>
           {gallery.length > 1 && (
-            <div className="mt-4 grid grid-cols-5 gap-3">
+            <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-5 sm:gap-3">
               {gallery.slice(0, 5).map((image) => (
                 <button key={image} className={`overflow-hidden rounded-xl border-2 bg-leaf-50 ${selectedImage === image ? 'border-leaf-700' : 'border-transparent'}`} onClick={() => setSelectedImage(image)} type="button">
                   <img className="aspect-square w-full object-cover" src={image} alt={getProductTitle(product)} onError={handleImageError} />
@@ -240,7 +240,7 @@ export default function ProductDetails() {
 
         <div>
           <p className="text-sm font-bold uppercase tracking-wide text-leaf-600">{product.subcategory || product.category}</p>
-          <h1 className="mt-2 text-3xl font-black text-leaf-950 md:text-4xl">{getProductTitle(product)}</h1>
+          <h1 className="mt-2 text-[clamp(1.9rem,3.5vw,3.5rem)] font-black text-leaf-950">{getProductTitle(product)}</h1>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm font-bold text-stone-600">
             <span>Sold by {getSellerName(product)}</span>
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-amber-700">
@@ -248,7 +248,7 @@ export default function ProductDetails() {
             </span>
           </div>
 
-          <div className="mt-6 rounded-2xl bg-white p-5 shadow-soft">
+          <div className="mt-6 rounded-2xl bg-white p-4 shadow-soft sm:p-5">
             <div className="flex flex-wrap items-end gap-3">
               <p className="text-4xl font-black text-leaf-950">{formatCurrency(sellingPrice)}</p>
               {product.offerPrice && <p className="pb-1 text-lg font-bold text-stone-400 line-through">{formatCurrency(mrp)}</p>}
@@ -278,8 +278,8 @@ export default function ProductDetails() {
             {deliveryMessage && <p className="mt-3 flex items-center gap-2 text-sm font-bold text-leaf-800"><Truck size={17} /> {deliveryMessage}</p>}
           </form>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <input className="form-input w-24" min="1" max={product.stock} onChange={(event) => setQuantity(Number(event.target.value))} type="number" value={quantity} />
+          <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+            <input className="form-input w-full sm:w-24" min="1" max={product.stock} onChange={(event) => setQuantity(Number(event.target.value))} type="number" value={quantity} />
             <Button disabled={!product.stock} onClick={handleAddToCart}><ShoppingCart className="mr-2" size={18} /> Add to Cart</Button>
             <Button disabled={!product.stock} onClick={handleBuyNow} variant="secondary">Buy Now</Button>
             <Button variant="outline" onClick={handleWishlist}><Heart className="mr-2" size={18} /> Wishlist</Button>
@@ -289,8 +289,8 @@ export default function ProductDetails() {
       </div>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_22rem]">
-        <div className="rounded-2xl bg-white p-6 shadow-soft">
-          <h2 className="text-2xl font-black text-leaf-950">Plant Care Guide</h2>
+        <div className="rounded-2xl bg-white p-5 shadow-soft sm:p-6">
+          <h2 className="text-[clamp(1.4rem,2.4vw,2rem)] font-black text-leaf-950">Plant Care Guide</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {careCards.map((item) => (
               <div key={item.label} className="rounded-2xl bg-leaf-50 p-4">
@@ -305,7 +305,7 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-leaf-950 p-6 text-white shadow-soft">
+        <div className="rounded-2xl bg-leaf-950 p-5 text-white shadow-soft sm:p-6">
           <h2 className="text-2xl font-black">Need plant help?</h2>
           <p className="mt-3 text-sm leading-6 text-white/75">Chat with Gaurav Nursery for care guidance, order questions, or bulk nursery delivery.</p>
           <a className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-[#25d366] px-5 text-sm font-black text-white" href="https://wa.me/916352031504" rel="noreferrer" target="_blank">
@@ -315,8 +315,8 @@ export default function ProductDetails() {
       </div>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white p-6 shadow-soft">
-          <h2 className="text-2xl font-black text-leaf-950">FAQ</h2>
+        <div className="rounded-2xl bg-white p-5 shadow-soft sm:p-6">
+          <h2 className="text-[clamp(1.4rem,2.4vw,2rem)] font-black text-leaf-950">FAQ</h2>
           <div className="mt-4 grid gap-3">
             {faqs.map(([question, answer]) => (
               <div key={question} className="rounded-2xl border border-leaf-100 p-4">
@@ -327,8 +327,8 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-soft">
-          <h2 className="text-2xl font-black text-leaf-950">Ratings & Reviews</h2>
+        <div className="rounded-2xl bg-white p-5 shadow-soft sm:p-6">
+          <h2 className="text-[clamp(1.4rem,2.4vw,2rem)] font-black text-leaf-950">Ratings & Reviews</h2>
           <div className="mt-4 rounded-2xl bg-leaf-50 p-5">
             <div className="flex items-center gap-2 text-amber-500">{Array.from({ length: 5 }).map((_, index) => <Star key={index} size={18} fill="currentColor" />)}</div>
             <p className="mt-3 font-black text-leaf-950">Healthy plant, excellent packaging</p>
@@ -339,7 +339,7 @@ export default function ProductDetails() {
 
       {!!relatedProducts.length && (
         <div className="mt-10">
-          <h2 className="text-2xl font-black text-leaf-950">Related Products</h2>
+          <h2 className="text-[clamp(1.4rem,2.4vw,2rem)] font-black text-leaf-950">Related Products</h2>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {relatedProducts.map((item) => (
               <a key={item._id} className="rounded-2xl bg-white p-3 shadow-soft transition hover:-translate-y-1" href={`/products/${item._id}`}>

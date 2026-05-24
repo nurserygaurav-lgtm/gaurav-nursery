@@ -72,7 +72,7 @@ export default function DashboardShell({ title, navItems }) {
 
   return (
     <div className={clsx('min-h-screen', isDark ? 'bg-leaf-950' : 'bg-[#f3f7ef]')}>
-      <div className="fixed inset-y-0 left-0 z-40 hidden w-72 lg:block">{sidebar}</div>
+      <div className="fixed inset-y-0 left-0 z-40 hidden w-64 xl:w-72 lg:block">{sidebar}</div>
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button className="absolute inset-0 bg-leaf-950/60" onClick={() => setIsMenuOpen(false)} aria-label="Close menu" />
@@ -80,9 +80,9 @@ export default function DashboardShell({ title, navItems }) {
         </div>
       )}
 
-      <div className="lg:pl-72">
+      <div className="lg:pl-64 xl:pl-72">
         <header className="sticky top-0 z-30 border-b border-white/70 bg-white/75 backdrop-blur-xl">
-          <div className="flex min-h-20 items-center gap-4 px-4 sm:px-6 xl:px-8">
+          <div className="flex min-h-16 items-center gap-3 px-4 sm:min-h-20 sm:px-6 xl:px-8">
             <button className="rounded-full p-3 text-leaf-900 hover:bg-leaf-50 lg:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Open menu">
               {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -91,17 +91,17 @@ export default function DashboardShell({ title, navItems }) {
               <input className="form-input pl-11" placeholder="Search orders, products, customers" />
             </div>
             <div className="ml-auto flex items-center gap-2">
-              <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" aria-label="Notifications">
+              <button className="rounded-full p-2.5 text-leaf-900 transition hover:bg-leaf-50 sm:p-3" aria-label="Notifications">
                 <Bell size={20} />
               </button>
-              <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" aria-label="Messages">
+              <button className="rounded-full p-2.5 text-leaf-900 transition hover:bg-leaf-50 sm:p-3" aria-label="Messages">
                 <MessageSquare size={20} />
               </button>
-              <button className="rounded-full p-3 text-leaf-900 transition hover:bg-leaf-50" onClick={() => setIsDark((current) => !current)} aria-label="Toggle theme">
+              <button className="rounded-full p-2.5 text-leaf-900 transition hover:bg-leaf-50 sm:p-3" onClick={() => setIsDark((current) => !current)} aria-label="Toggle theme">
                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-              <button className="flex items-center gap-3 rounded-full bg-white py-2 pl-2 pr-3 shadow-soft">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-leaf-900 text-sm font-black text-white">
+              <button className="flex items-center gap-2 rounded-full bg-white py-2 pl-2 pr-3 shadow-soft">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-leaf-900 text-xs font-black text-white sm:h-9 sm:w-9 sm:text-sm">
                   {user?.name?.slice(0, 1) || 'G'}
                 </span>
                 <span className="hidden text-left sm:block">

@@ -74,12 +74,12 @@ export default function Register() {
 
   return (
     <section className="auth-page">
-      <div className="premium-container py-10 sm:py-14">
-        <div className="mx-auto grid max-w-6xl items-stretch overflow-hidden rounded-[1.75rem] border border-white/80 bg-white shadow-[0_28px_80px_rgba(24,51,23,0.16)] lg:min-h-[760px] lg:grid-cols-2">
-          <div className="flex min-w-0 flex-col justify-center p-6 sm:p-10 lg:p-12">
+      <div className="premium-container py-8 sm:py-10 lg:py-14">
+        <div className="mx-auto grid max-w-6xl items-stretch overflow-hidden rounded-[1.75rem] border border-white/80 bg-white shadow-[0_28px_80px_rgba(24,51,23,0.16)] lg:min-h-[720px] lg:grid-cols-2">
+          <div className="flex min-w-0 flex-col justify-center p-5 sm:p-8 lg:p-12">
             <div className="mb-8 inline-flex w-fit max-w-full rounded-full bg-leaf-50 p-1 shadow-inner">
-              <Link className="rounded-full px-6 py-2.5 text-sm font-black text-leaf-900 transition hover:bg-white" to="/login">Login</Link>
-              <Link className="rounded-full bg-leaf-900 px-6 py-2.5 text-sm font-black text-white shadow-soft" to="/register">Register</Link>
+              <Link className="rounded-full px-5 py-2.5 text-sm font-black text-leaf-900 transition hover:bg-white sm:px-6" to="/login">Login</Link>
+              <Link className="rounded-full bg-leaf-900 px-5 py-2.5 text-sm font-black text-white shadow-soft sm:px-6" to="/register">Register</Link>
             </div>
 
             <div>
@@ -87,22 +87,22 @@ export default function Register() {
                 <Leaf size={14} />
                 Gaurav Nursery
               </p>
-              <h1 className="mt-5 text-3xl font-black tracking-tight text-leaf-950 sm:text-4xl">Create account</h1>
-              <p className="mt-3 max-w-md text-sm leading-6 text-stone-600">
+              <h1 className="mt-5 text-[clamp(2rem,3.2vw,3.25rem)] font-black tracking-tight text-leaf-950">Create account</h1>
+              <p className="mt-3 max-w-md text-[clamp(0.9rem,1vw,1rem)] leading-6 text-stone-600">
                 Register to continue shopping, manage your cart, and track your nursery orders.
               </p>
             </div>
 
-            <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <form className="mt-7 space-y-4 lg:mt-8" onSubmit={handleSubmit}>
               {authError && <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{authError}</p>}
               <Field error={errors.name} icon={UserRound}>
-                <input className="form-input input-with-leading-icon h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm" name="name" onChange={handleChange} placeholder="Full name" value={values.name} />
+                <input className="form-input input-with-leading-icon h-[50px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm sm:h-[52px]" name="name" onChange={handleChange} placeholder="Full name" value={values.name} />
               </Field>
               <Field error={errors.email} icon={Mail}>
-                <input className="form-input input-with-leading-icon h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm" name="email" onChange={handleChange} placeholder="Email address" type="email" value={values.email} />
+                <input className="form-input input-with-leading-icon h-[50px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm sm:h-[52px]" name="email" onChange={handleChange} placeholder="Email address" type="email" value={values.email} />
               </Field>
               <Field error={errors.phone} icon={Phone}>
-                <input className="form-input input-with-leading-icon h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm" name="phone" onChange={handleChange} placeholder="Phone" value={values.phone} />
+                <input className="form-input input-with-leading-icon h-[50px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm sm:h-[52px]" name="phone" onChange={handleChange} placeholder="Phone" value={values.phone} />
               </Field>
               <PasswordField
                 error={errors.password}
@@ -123,7 +123,7 @@ export default function Register() {
                 value={values.confirmPassword}
               />
               <Field error={errors.role}>
-                <select className="form-input h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm font-semibold text-stone-700" name="role" onChange={handleChange} value={values.role}>
+                <select className="form-input h-[50px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm font-semibold text-stone-700 sm:h-[52px]" name="role" onChange={handleChange} value={values.role}>
                   <option value="customer">Customer</option>
                   <option value="seller">Seller</option>
                 </select>
@@ -131,13 +131,13 @@ export default function Register() {
               {values.role === 'seller' && (
                 <>
                   <Field error={errors.shopName} icon={Store}>
-                    <input className="form-input input-with-leading-icon h-[52px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm" name="shopName" onChange={handleChange} placeholder="Shop name" value={values.shopName} />
+                    <input className="form-input input-with-leading-icon h-[50px] rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm sm:h-[52px]" name="shopName" onChange={handleChange} placeholder="Shop name" value={values.shopName} />
                   </Field>
                   <textarea className="form-input min-h-24 rounded-2xl border-leaf-100 bg-leaf-50/50 text-sm" name="businessAddress" onChange={handleChange} placeholder="Business address" value={values.businessAddress} />
                 </>
               )}
 
-              <Button className="h-[52px] w-full bg-gradient-to-r from-leaf-700 to-leaf-500 shadow-[0_18px_36px_rgba(61,125,54,0.28)] hover:from-leaf-800 hover:to-leaf-600" disabled={isSubmitting} type="submit">
+              <Button className="h-12 w-full bg-gradient-to-r from-leaf-700 to-leaf-500 shadow-[0_18px_36px_rgba(61,125,54,0.28)] hover:from-leaf-800 hover:to-leaf-600 sm:h-[52px]" disabled={isSubmitting} type="submit">
                 {isSubmitting ? <Spinner label="Creating account" /> : <>Register <ArrowRight className="ml-2" size={18} /></>}
               </Button>
 
@@ -164,7 +164,7 @@ export default function Register() {
             </form>
           </div>
 
-          <div className="relative min-h-[420px] overflow-hidden bg-leaf-950 text-white lg:min-h-full">
+            <div className="relative min-h-[320px] overflow-hidden bg-leaf-950 text-white lg:min-h-full">
             <img
               className="absolute inset-0 h-full w-full object-cover"
               src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1200&q=80"
@@ -178,13 +178,13 @@ export default function Register() {
                 background: 'linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.15))'
               }}
             />
-            <div className="absolute inset-x-0 bottom-0 z-10 p-7 sm:p-10 lg:p-12">
+            <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-8 lg:p-12">
               <p className="inline-flex items-center gap-2 rounded-full bg-white/16 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-leaf-50 backdrop-blur">
                 <Sparkles size={14} />
                 Premium indoor plants
               </p>
-              <h2 className="mt-5 max-w-lg text-3xl font-black tracking-tight sm:text-5xl">Bring nature home and let it thrive</h2>
-              <p className="mt-4 max-w-md text-base font-semibold leading-7 text-leaf-50">
+              <h2 className="mt-5 max-w-lg text-[clamp(2rem,4vw,4.5rem)] font-black tracking-tight">Bring nature home and let it thrive</h2>
+              <p className="mt-4 max-w-md text-[clamp(0.92rem,1vw,1.05rem)] font-semibold leading-7 text-leaf-50">
                 Premium quality plants delivered to your doorstep
               </p>
             </div>

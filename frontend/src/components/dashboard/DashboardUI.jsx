@@ -4,13 +4,13 @@ import clsx from 'clsx';
 
 export function PageHeader({ eyebrow, title, text, action }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div>
+    <div className="mb-5 flex flex-col gap-4 lg:mb-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="min-w-0">
         {eyebrow && <p className="text-xs font-black uppercase tracking-[0.22em] text-leaf-600">{eyebrow}</p>}
-        <h1 className="mt-2 text-3xl font-black tracking-tight text-leaf-950 sm:text-4xl">{title}</h1>
-        {text && <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">{text}</p>}
+        <h1 className="mt-2 text-[clamp(1.75rem,3.5vw,3.25rem)] font-black tracking-tight text-leaf-950">{title}</h1>
+        {text && <p className="mt-2 max-w-2xl text-[clamp(0.9rem,1vw,1rem)] leading-6 text-stone-600">{text}</p>}
       </div>
-      {action}
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   );
 }
@@ -21,7 +21,7 @@ export function MetricCard({ label, value, change, icon: Icon, tone = 'light' })
   return (
     <motion.article
       className={clsx(
-        'rounded-3xl border p-5 shadow-soft transition hover:shadow-card',
+        'rounded-3xl border p-4 shadow-soft transition hover:shadow-card sm:p-5',
         isDark ? 'border-leaf-800 bg-leaf-950 text-white' : 'border-white/80 bg-white/85 text-leaf-950 backdrop-blur'
       )}
       initial={{ opacity: 0, y: 16 }}
@@ -35,7 +35,7 @@ export function MetricCard({ label, value, change, icon: Icon, tone = 'light' })
           <p className="mt-3 text-2xl font-black sm:text-3xl">{value}</p>
         </div>
         {Icon && (
-          <span className={clsx('flex h-12 w-12 items-center justify-center rounded-2xl', isDark ? 'bg-white/10' : 'bg-leaf-100 text-leaf-800')}>
+          <span className={clsx('flex h-11 w-11 items-center justify-center rounded-2xl sm:h-12 sm:w-12', isDark ? 'bg-white/10' : 'bg-leaf-100 text-leaf-800')}>
             <Icon size={22} />
           </span>
         )}
@@ -52,13 +52,13 @@ export function MetricCard({ label, value, change, icon: Icon, tone = 'light' })
 
 export function Panel({ title, subtitle, children, action, className = '' }) {
   return (
-    <section className={clsx('rounded-3xl border border-white/80 bg-white/85 p-5 shadow-soft backdrop-blur', className)}>
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-black text-leaf-950">{title}</h2>
-          {subtitle && <p className="mt-1 text-sm text-stone-500">{subtitle}</p>}
+    <section className={clsx('rounded-3xl border border-white/80 bg-white/85 p-4 shadow-soft backdrop-blur sm:p-5', className)}>
+      <div className="mb-4 flex items-start justify-between gap-4 sm:mb-5">
+        <div className="min-w-0">
+          <h2 className="text-[clamp(1.05rem,1.5vw,1.25rem)] font-black text-leaf-950">{title}</h2>
+          {subtitle && <p className="mt-1 text-[clamp(0.85rem,1vw,0.95rem)] text-stone-500">{subtitle}</p>}
         </div>
-        {action}
+        {action && <div className="shrink-0">{action}</div>}
       </div>
       {children}
     </section>
@@ -86,7 +86,7 @@ export function TableToolbar({ placeholder = 'Search', right }) {
         <Search className="absolute left-4 top-3.5 text-stone-400" size={17} />
         <input className="form-input pl-11" placeholder={placeholder} />
       </div>
-      {right}
+      {right && <div className="shrink-0">{right}</div>}
     </div>
   );
 }

@@ -159,10 +159,10 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
 
 function SectionTitle({ eyebrow, title, text }) {
   return (
-    <div className="mx-auto mb-10 max-w-3xl text-center">
+    <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
       <p className="text-xs font-black uppercase tracking-[0.28em] text-[#4caf50]">{eyebrow}</p>
-      <h2 className="mt-4 font-serif text-5xl font-black tracking-tight text-[#0b3d1e] sm:text-6xl">{title}</h2>
-      {text && <p className="mt-4 text-base leading-8 text-stone-600">{text}</p>}
+      <h2 className="mt-4 font-serif text-[clamp(1.8rem,3vw,3.4rem)] font-black tracking-tight text-[#0b3d1e]">{title}</h2>
+      {text && <p className="mt-4 text-[clamp(0.92rem,1vw,1.05rem)] leading-8 text-stone-600">{text}</p>}
     </div>
   );
 }
@@ -311,8 +311,8 @@ export default function HomePremium() {
     <div className="bg-[#f4f9f1] text-[#10210f]">
       <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(74,151,63,0.22),transparent_28rem),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.8),transparent_30rem)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(77,156,69,0.16),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.18),transparent_24%)]" />
-        <div className="premium-container relative grid gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/35 bg-white/80 p-6 shadow-[0_40px_120px_rgba(11,61,14,0.16)] backdrop-blur-xl sm:p-8">
+        <div className="premium-container relative grid gap-6 py-8 sm:py-10 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/35 bg-white/80 p-5 shadow-[0_40px_120px_rgba(11,61,14,0.16)] backdrop-blur-xl sm:p-8 lg:rounded-[2.5rem]">
             <motion.div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#d9f0d7]/90 to-transparent" />
             <div className="relative grid gap-6 lg:grid-cols-[1fr_0.6fr] lg:items-center">
               <div className="space-y-6">
@@ -321,10 +321,10 @@ export default function HomePremium() {
                   Luxury Nursery Marketplace
                 </div>
                 <div className="space-y-4">
-                  <motion.h1 className="font-serif text-5xl font-black leading-tight tracking-[-0.03em] text-[#10210f] sm:text-6xl lg:text-7xl" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+                  <motion.h1 className="font-serif text-[clamp(2.2rem,5vw,5.5rem)] font-black leading-tight tracking-[-0.03em] text-[#10210f]" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
                     Garden Luxury, Delivered.
                   </motion.h1>
-                  <motion.p className="max-w-2xl text-lg leading-8 text-[#4f6a52]" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+                  <motion.p className="max-w-2xl text-[clamp(0.95rem,1vw,1.1rem)] leading-8 text-[#4f6a52]" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
                     Discover premium plants, designer planters, curated garden kits and expert plant care with a next-generation nursery shopping experience.
                   </motion.p>
                 </div>
@@ -345,10 +345,10 @@ export default function HomePremium() {
                 </div>
               </div>
 
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-[#f7fff5]/85 shadow-[0_30px_90px_rgba(13,31,14,0.12)]">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-white/60 bg-[#f7fff5]/85 shadow-[0_30px_90px_rgba(13,31,14,0.12)] sm:rounded-[2rem]">
                 <motion.div
                   key={activeSlide}
-                  className="relative h-96 w-full overflow-hidden rounded-[2rem]"
+                  className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.75rem] sm:h-[26rem] sm:aspect-auto sm:rounded-[2rem]"
                   custom={direction}
                   variants={heroVariants}
                   initial="enter"
@@ -362,8 +362,8 @@ export default function HomePremium() {
                     <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#14532d]/95 px-3 py-2 text-xs font-black uppercase tracking-[0.22em] text-white">
                       {heroSlides[activeSlide].badge}
                     </div>
-                    <h2 className="text-3xl font-black tracking-tight sm:text-4xl">{heroSlides[activeSlide].title}</h2>
-                    <p className="mt-3 max-w-xl text-sm leading-7 text-white/90">{heroSlides[activeSlide].subtitle}</p>
+                    <h2 className="text-[clamp(1.6rem,3vw,2.5rem)] font-black tracking-tight">{heroSlides[activeSlide].title}</h2>
+                    <p className="mt-3 max-w-xl text-[clamp(0.9rem,1vw,1rem)] leading-7 text-white/90">{heroSlides[activeSlide].subtitle}</p>
                     <div className="mt-5 flex flex-wrap gap-3">
                       <Button className="h-12 bg-[#ffffff] px-6 text-sm font-black text-[#0b3d1e] hover:bg-[#f4f7f1]" onClick={() => navigate('/shop?category=' + encodeURIComponent(heroSlides[activeSlide].category))}>
                         {heroSlides[activeSlide].action}

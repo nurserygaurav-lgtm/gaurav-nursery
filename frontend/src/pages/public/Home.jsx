@@ -172,10 +172,10 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
 
 function SectionTitle({ eyebrow, title, text }) {
   return (
-    <div className="mx-auto mb-8 max-w-2xl text-center">
+    <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
       <p className="text-xs font-black uppercase tracking-[0.22em] text-[#4caf50]">{eyebrow}</p>
-      <h2 className="mt-3 font-serif text-4xl font-black tracking-tight text-[#0b3d1e] sm:text-5xl">{title}</h2>
-      {text && <p className="mt-3 text-sm leading-7 text-stone-600 sm:text-base">{text}</p>}
+      <h2 className="mt-3 font-serif text-[clamp(1.75rem,3vw,3rem)] font-black tracking-tight text-[#0b3d1e]">{title}</h2>
+      {text && <p className="mt-3 text-[clamp(0.9rem,1vw,1rem)] leading-7 text-stone-600">{text}</p>}
     </div>
   );
 }
@@ -326,16 +326,16 @@ export default function Home() {
             />
           ))}
         </div>
-        <div className="premium-container grid gap-8 py-10 lg:grid-cols-[1fr_22rem] xl:grid-cols-[1fr_24rem]">
-          <motion.div className="grid gap-8 rounded-[2rem] border border-white/15 bg-[#0f172a]/90 p-6 text-white shadow-[0_30px_100px_rgba(0,0,0,0.34)] backdrop-blur md:grid-cols-[0.9fr_1.1fr] md:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+        <div className="premium-container grid gap-6 py-8 sm:py-10 lg:grid-cols-[1fr_22rem] xl:grid-cols-[1fr_24rem]">
+          <motion.div className="grid gap-6 rounded-[2rem] border border-white/15 bg-[#0f172a]/90 p-5 text-white shadow-[0_30px_100px_rgba(0,0,0,0.34)] backdrop-blur md:grid-cols-[0.9fr_1.1fr] md:p-8 lg:gap-8 lg:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <div className="flex flex-col justify-center">
               <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-[#14532d]/95 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white backdrop-blur">
                 <Leaf size={16} />
                 Premium Botanical Store
               </span>
-              <h1 className="mt-6 font-serif text-5xl font-black leading-[0.98] tracking-tight text-white sm:text-6xl xl:text-7xl">Bring Nature Home</h1>
-              <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-emerald-50/85">Healthy Plants. Happy Homes. Delivered with Love.</p>
-              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              <h1 className="mt-5 font-serif text-[clamp(2.2rem,5vw,5.5rem)] font-black leading-[0.98] tracking-tight text-white">Bring Nature Home</h1>
+              <p className="mt-4 max-w-xl text-[clamp(0.95rem,1vw,1.1rem)] font-semibold leading-8 text-emerald-50/85">Healthy Plants. Happy Homes. Delivered with Love.</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {heroBadges.map((badge) => (
                   <div key={badge} className="flex items-center gap-2 rounded-2xl border border-white/15 bg-[#0f172a]/70 px-4 py-3 text-sm font-black text-white backdrop-blur">
                     <Check size={17} className="text-emerald-200" />
@@ -343,7 +343,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-[#0b3d1e] shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:bg-emerald-50" to="/shop">
                   Shop Now <ArrowRight className="ml-2" size={18} />
                 </Link>
@@ -353,15 +353,15 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative min-h-[430px]">
-              <motion.img className="absolute right-0 top-0 h-64 w-[72%] rounded-[2rem] object-cover shadow-card" src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85" alt="Green nursery plants" onError={handleImageError} animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
-              <motion.img className="absolute bottom-8 left-0 h-60 w-[62%] rounded-[2rem] object-cover shadow-card" src={FALLBACK_PLANT_IMAGE} alt="Potted plants" onError={handleImageError} animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} />
-              <img className="absolute bottom-0 right-6 h-44 w-44 rounded-[1.5rem] object-cover shadow-card" src={nurseryImage} alt="Nursery care" loading="lazy" onError={handleImageError} />
-              <div className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-8 border-white/80 bg-[#0b3d1e]/90 text-center text-white shadow-card backdrop-blur">
+            <div className="relative min-h-[24rem] sm:min-h-[28rem]">
+              <motion.img className="absolute right-0 top-0 h-52 w-[72%] rounded-[1.5rem] object-cover shadow-card sm:h-64 sm:rounded-[2rem]" src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85" alt="Green nursery plants" onError={handleImageError} animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
+              <motion.img className="absolute bottom-8 left-0 h-48 w-[62%] rounded-[1.5rem] object-cover shadow-card sm:h-60 sm:rounded-[2rem]" src={FALLBACK_PLANT_IMAGE} alt="Potted plants" onError={handleImageError} animate={{ y: [0, 10, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} />
+              <img className="absolute bottom-0 right-4 h-32 w-32 rounded-[1.25rem] object-cover shadow-card sm:right-6 sm:h-44 sm:w-44 sm:rounded-[1.5rem]" src={nurseryImage} alt="Nursery care" loading="lazy" onError={handleImageError} />
+              <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border-8 border-white/80 bg-[#0b3d1e]/90 text-center text-white shadow-card backdrop-blur sm:h-32 sm:w-32">
                 <span className="text-3xl font-black">GN</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.16em]">Gaurav Nursery</span>
               </div>
-              <div className="absolute bottom-7 right-0 rotate-[-3deg] rounded-2xl border border-white/20 bg-[#0f172a]/80 px-5 py-4 text-center font-serif text-lg font-black text-white shadow-card backdrop-blur">
+              <div className="absolute bottom-6 right-0 rotate-[-3deg] rounded-2xl border border-white/20 bg-[#0f172a]/80 px-4 py-3 text-center font-serif text-base font-black text-white shadow-card backdrop-blur sm:px-5 sm:py-4 sm:text-lg">
                 From Our Nursery<br />To Your Home
               </div>
             </div>

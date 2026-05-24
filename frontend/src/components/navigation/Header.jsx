@@ -73,28 +73,28 @@ function CountBadge({ children }) {
 function MegaMenuPanel({ menu }) {
   return (
     <motion.div
-      className="absolute left-1/2 top-full z-50 w-[min(96vw,78rem)] -translate-x-1/2 px-2 pt-3"
+      className="absolute left-1/2 top-full z-50 w-[min(96vw,72rem)] -translate-x-1/2 px-2 pt-3"
       initial={{ opacity: 0, y: 14, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.99 }}
       transition={{ duration: 0.18, ease: 'easeOut' }}
     >
       <div className="overflow-hidden rounded-[1.25rem] border border-white/80 bg-white/95 shadow-[0_28px_80px_rgba(13,31,14,0.18)] backdrop-blur-xl">
-        <div className="grid max-h-[74vh] grid-cols-[minmax(0,1fr)_21rem] overflow-y-auto">
-          <div className="p-6">
-            <div className="mb-5 flex items-center justify-between gap-4 border-b border-leaf-100 pb-4">
+        <div className="grid max-h-[74vh] grid-cols-[minmax(0,1fr)_18rem] overflow-y-auto">
+          <div className="p-5 lg:p-6">
+            <div className="mb-4 flex items-center justify-between gap-4 border-b border-leaf-100 pb-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800 shadow-soft">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800 shadow-soft">
                   <MenuIcon name={menu.icon} size={23} />
                 </span>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.2em] text-leaf-600">{menu.badge}</p>
-                  <h2 className="text-2xl font-black text-leaf-950">{menu.label}</h2>
-                  <p className="text-sm font-semibold text-stone-500">{menu.tagline}</p>
+                  <h2 className="text-[clamp(1.25rem,1.8vw,2rem)] font-black text-leaf-950">{menu.label}</h2>
+                  <p className="text-[clamp(0.8rem,1vw,0.95rem)] font-semibold text-stone-500">{menu.tagline}</p>
                 </div>
               </div>
               <Link
-                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-leaf-900 px-4 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-700"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-leaf-900 px-3.5 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-700"
                 to={menu.shopAllTo}
               >
                 Shop All
@@ -102,7 +102,7 @@ function MegaMenuPanel({ menu }) {
               </Link>
             </div>
 
-            <div className="grid gap-x-7 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
               {menu.sections.map((section) => (
                 <div key={section.title} className="min-w-0">
                   <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-leaf-950">
@@ -130,17 +130,17 @@ function MegaMenuPanel({ menu }) {
             </div>
           </div>
 
-          <aside className="border-l border-leaf-100 bg-gradient-to-b from-leaf-50 via-white to-[#f7fbf0] p-5">
+          <aside className="border-l border-leaf-100 bg-gradient-to-b from-leaf-50 via-white to-[#f7fbf0] p-4 lg:p-5">
             <Link className="group relative block overflow-hidden rounded-2xl bg-leaf-950" to={menu.to}>
-              <img className="h-44 w-full object-cover opacity-80 transition duration-700 group-hover:scale-105" src={menu.image} alt={menu.label} loading="lazy" decoding="async" />
+              <img className="h-40 w-full object-cover opacity-80 transition duration-700 group-hover:scale-105 lg:h-44" src={menu.image} alt={menu.label} loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-gradient-to-t from-leaf-950 via-leaf-950/25 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4 text-white">
                 <span className="mb-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-[11px] font-black uppercase backdrop-blur">
                   <Tag size={12} />
                   Featured Banner
                 </span>
-                <h3 className="text-xl font-black">{menu.label} Collection</h3>
-                <p className="mt-1 text-sm font-semibold text-white/80">Curated picks from Gaurav Nursery.</p>
+                <h3 className="text-[clamp(1.05rem,1.3vw,1.25rem)] font-black">{menu.label} Collection</h3>
+                <p className="mt-1 text-[clamp(0.82rem,1vw,0.95rem)] font-semibold text-white/80">Curated picks from Gaurav Nursery.</p>
               </div>
             </Link>
 
@@ -348,30 +348,30 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 shadow-soft backdrop-blur-xl dark:bg-[#07140b]/90 dark:border-b dark:border-white/10">
       <div className="bg-[#0b3d1e] text-white">
-        <div className="premium-container flex flex-wrap items-center justify-between gap-3 px-3 py-2 text-xs font-black uppercase tracking-[0.2em] text-white/90 sm:text-sm">
+        <div className="premium-container flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-[clamp(0.65rem,0.9vw,0.8rem)] font-black uppercase tracking-[0.2em] text-white/90 sm:gap-3 sm:text-sm">
           <span>Free delivery above ₹499</span>
           <span className="hidden sm:inline-flex">COD available • 7-day easy returns • Premium nursery care</span>
           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">Green luxury</span>
         </div>
       </div>
 
-      <div className="premium-container flex min-h-20 items-center justify-between gap-2 py-3 sm:gap-3">
+      <div className="premium-container flex min-h-16 items-center justify-between gap-2 py-2.5 sm:min-h-20 sm:gap-3 sm:py-3">
         <Link to="/" className="flex min-w-0 items-center gap-3" onClick={closeMobileMenu}>
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0b3d1e] text-lg font-black text-white shadow-button">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0b3d1e] text-base font-black text-white shadow-button sm:h-12 sm:w-12 sm:text-lg">
             GN
           </span>
           <span className="hidden sm:block">
-            <span className="block font-serif text-2xl font-black leading-none text-[#0b3d1e]">Gaurav Nursery</span>
+            <span className="block font-serif text-[clamp(1.25rem,1.8vw,1.8rem)] font-black leading-none text-[#0b3d1e]">Gaurav Nursery</span>
             <span className="text-xs font-bold uppercase tracking-[0.22em] text-[#4caf50]">Premium Plant Studio</span>
           </span>
         </Link>
 
-        <form className="hidden min-w-[18rem] flex-1 items-center lg:flex lg:max-w-2xl" onSubmit={handleSearch}>
+        <form className="hidden min-w-[16rem] flex-1 items-center lg:flex lg:max-w-2xl" onSubmit={handleSearch}>
           <label className="relative w-full">
             <span className="sr-only">Search products</span>
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
             <input
-              className="form-input input-with-leading-icon input-with-search-button h-12 bg-[#f8fff5] text-sm"
+              className="form-input input-with-leading-icon input-with-search-button h-11 bg-[#f8fff5] text-sm xl:h-12"
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search plants, seeds, planters, gifts"
               value={searchTerm}
@@ -382,19 +382,19 @@ export default function Header() {
           </label>
         </form>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <button type="button" className="rounded-full border border-[#dbe8d8] bg-white/95 p-3 text-[#0b3d1e] transition hover:bg-[#f4fff2]" onClick={handleThemeToggle} aria-label="Toggle theme">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <button type="button" className="rounded-full border border-[#dbe8d8] bg-white/95 p-2.5 text-[#0b3d1e] transition hover:bg-[#f4fff2] sm:p-3" onClick={handleThemeToggle} aria-label="Toggle theme">
             {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
           </button>
-          <button className="rounded-full border border-[#dbe8d8] bg-white/95 p-3 text-[#0b3d1e] transition hover:bg-[#f4fff2]" aria-label="Notifications">
+          <button className="rounded-full border border-[#dbe8d8] bg-white/95 p-2.5 text-[#0b3d1e] transition hover:bg-[#f4fff2] sm:p-3" aria-label="Notifications">
             <Bell size={18} />
           </button>
-          <button className="rounded-full p-3 text-[#0b3d1e] transition hover:bg-[#eaf7e8] lg:hidden" onClick={() => setIsMenuOpen(true)} aria-label="Open mobile menu">
+          <button className="rounded-full p-2.5 text-[#0b3d1e] transition hover:bg-[#eaf7e8] lg:hidden sm:p-3" onClick={() => setIsMenuOpen(true)} aria-label="Open mobile menu">
             <Menu size={20} />
           </button>
           <button
             type="button"
-            className="relative rounded-full p-3 text-[#0b3d1e] transition hover:bg-[#eaf7e8]"
+            className="relative rounded-full p-2.5 text-[#0b3d1e] transition hover:bg-[#eaf7e8] sm:p-3"
             aria-label="Wishlist"
             onClick={() => {
               if (!isAuthenticated) {
@@ -441,18 +441,18 @@ export default function Header() {
               </AnimatePresence>
             </div>
           ) : (
-            <Link className="hidden items-center gap-2 rounded-full bg-[#0b3d1e] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#4caf50] sm:inline-flex" to="/login">
+            <Link className="hidden items-center gap-2 rounded-full bg-[#0b3d1e] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#4caf50] sm:inline-flex lg:px-4" to="/login">
               <UserRound size={20} />
               Login/Register
             </Link>
           )}
 
-          <a className="hidden items-center gap-2 rounded-full bg-[#25d366] px-4 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-[#1ebe5d] lg:inline-flex" href={whatsappUrl} rel="noreferrer" target="_blank">
+          <a className="hidden items-center gap-2 rounded-full bg-[#25d366] px-3.5 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-[#1ebe5d] lg:inline-flex lg:px-4" href={whatsappUrl} rel="noreferrer" target="_blank">
             <MessageCircle size={18} />
             WhatsApp
           </a>
 
-          <Link className="hidden items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-4 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] 2xl:inline-flex" to="/orders">
+          <Link className="hidden items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-3.5 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] 2xl:inline-flex lg:px-4" to="/orders">
             <PackageSearch size={18} />
             Track Order
           </Link>
@@ -460,13 +460,13 @@ export default function Header() {
       </div>
 
       <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block" onMouseLeave={() => setActiveMenu(null)}>
-        <div className="premium-container flex min-h-14 items-center justify-center gap-1">
+        <div className="premium-container flex min-h-12 items-center justify-center gap-1">
           {megaMenuItems.map((item) => (
             <div key={item.slug} className="py-2" onMouseEnter={() => setActiveMenu(item.slug)}>
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-full px-3 py-2 text-sm font-black transition ${isActive || activeMenu === item.slug ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`
+                  `flex items-center gap-2 rounded-full px-2.5 py-2 text-sm font-black transition xl:px-3 ${isActive || activeMenu === item.slug ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`
                 }
               >
                 <MenuIcon name={item.icon} size={16} />
@@ -476,7 +476,7 @@ export default function Header() {
             </div>
           ))}
           {quickLinks.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => `rounded-full px-3 py-2 text-sm font-black transition ${isActive ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`}>
+            <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => `rounded-full px-2.5 py-2 text-sm font-black transition xl:px-3 ${isActive ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`}>
               {item.label}
             </NavLink>
           ))}
@@ -508,20 +508,20 @@ export default function Header() {
 
               <div className="grid gap-2 rounded-2xl border border-leaf-100 bg-white p-3">
                 {quickLinks.map((item) => (
-                  <NavLink key={item.to} to={item.to} onClick={closeMobileMenu} className={({ isActive }) => `rounded-xl px-4 py-3 text-sm font-bold transition ${isActive ? 'bg-[#eaf7e8] text-[#0b3d1e]' : 'text-stone-600 hover:bg-[#f8fff5]'}`}>
+                  <NavLink key={item.to} to={item.to} onClick={closeMobileMenu} className={({ isActive }) => `rounded-xl px-3.5 py-3 text-sm font-bold transition ${isActive ? 'bg-[#eaf7e8] text-[#0b3d1e]' : 'text-stone-600 hover:bg-[#f8fff5]'}`}>
                     {item.label}
                   </NavLink>
                 ))}
                 {!isAuthenticated && (
-                  <Link className="rounded-xl bg-[#0b3d1e] px-4 py-3 text-sm font-bold text-white" to="/login" onClick={closeMobileMenu}>
+                  <Link className="rounded-xl bg-[#0b3d1e] px-3.5 py-3 text-sm font-bold text-white" to="/login" onClick={closeMobileMenu}>
                     Login/Register
                   </Link>
                 )}
-                <Link className="flex items-center gap-3 rounded-xl border border-[#dbe8d8] px-4 py-3 text-sm font-black text-[#0b3d1e]" to="/orders" onClick={closeMobileMenu}>
+                <Link className="flex items-center gap-3 rounded-xl border border-[#dbe8d8] px-3.5 py-3 text-sm font-black text-[#0b3d1e]" to="/orders" onClick={closeMobileMenu}>
                   <PackageSearch size={18} />
                   Track Order
                 </Link>
-                <a className="flex items-center gap-3 rounded-xl bg-[#25d366] px-4 py-3 text-sm font-black text-white" href={whatsappUrl} rel="noreferrer" target="_blank">
+                <a className="flex items-center gap-3 rounded-xl bg-[#25d366] px-3.5 py-3 text-sm font-black text-white" href={whatsappUrl} rel="noreferrer" target="_blank">
                   <MessageCircle size={18} />
                   WhatsApp
                 </a>
