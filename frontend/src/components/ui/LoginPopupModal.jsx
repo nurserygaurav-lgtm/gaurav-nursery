@@ -3,17 +3,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   CheckCircle,
-  Close,
   Eye,
   EyeOff,
-  Google,
+  Globe,
   Lock,
   Mail,
   Phone,
   ShieldCheck,
   Sparkles,
-  Whatsapp,
-  User
+  MessageCircle,
+  User,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -288,7 +288,7 @@ export default function LoginPopupModal() {
               onClick={closePopup}
               aria-label="Close login popup"
             >
-              <Close size={20} />
+              <X size={20} />
             </button>
 
             <div className="grid min-h-[620px] gap-6 lg:grid-cols-[1.1fr_1fr]">
@@ -318,7 +318,7 @@ export default function LoginPopupModal() {
                       Get ₹100 OFF on first order
                     </div>
                     <div className="flex items-center gap-3">
-                      <Whatsapp size={18} className="text-[#c7f2bd]" />
+                      <MessageCircle size={18} className="text-[#c7f2bd]" />
                       WhatsApp support ready for fast help
                     </div>
                     <div className="flex items-center gap-3">
@@ -548,7 +548,7 @@ export default function LoginPopupModal() {
                     disabled={!env.googleClientId || googleLoading}
                     className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-[1.5rem] border border-stone-200 bg-white px-5 text-sm font-black text-stone-800 shadow-soft transition hover:-translate-y-0.5 hover:bg-[#f6fff3] disabled:cursor-not-allowed disabled:opacity-70"
                   >
-                    <Google className="text-[#4285f4]" size={20} />
+                    <Globe className="text-[#4285f4]" size={20} />
                     {googleLoading ? 'Opening Google login…' : 'Continue with Google'}
                   </button>
                   <button
