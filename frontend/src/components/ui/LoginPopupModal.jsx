@@ -8,12 +8,16 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
 import { getRoleHome } from '../../utils/auth.js';
 import { validateLoginForm } from '../../utils/formValidation.js';
+import {
+  safeLocalStorageGet,
+  safeLocalStorageSet
+} from '../../utils/storage.js';
 
 const DISMISS_KEY = 'gn_login_modal_dismissed_at';
 const DISMISS_TTL = 24 * 60 * 60 * 1000;
 
 function getDismissedAt() {
-  const value = localStorage.getItem(DISMISS_KEY);
+  const value = safeLocalStorageGet(DISMISS_KEY);
   if (!value) return null;
   const timestamp = Number(value);
   return Number.isFinite(timestamp) ? timestamp : null;
@@ -45,12 +49,12 @@ export default function LoginPopupModal() {
     setForm({ name: '', email: '', password: '' });
     setErrors({});
     setShowPassword(false);
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    safeLocalStorageSet(DISMISS_KEY, String(Date.now()));
   }, []);
 
   const continueGuest = useCallback(() => {
     setIsOpen(false);
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    safeLocalStorageSet(DISMISS_KEY, String(Date.now()));
     showToast('Continuing as guest', 'success');
   }, [showToast]);
 

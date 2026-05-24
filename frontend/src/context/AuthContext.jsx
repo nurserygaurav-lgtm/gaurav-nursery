@@ -1,21 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getCurrentUser, loginUser, loginWithGoogle, registerUser } from '../services/authService.js';
 import { getApiError, TOKEN_KEY } from '../utils/auth.js';
+import {
+  safeLocalStorageGet,
+  safeLocalStorageRemove,
+  safeLocalStorageSet,
+  safeSessionStorageGet,
+  safeSessionStorageRemove,
+  safeSessionStorageSet
+} from '../utils/storage.js';
 import { AuthContext } from './authContext.js';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY));
-  const [isLoading, setIsLoading] = useState(Boolean(localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY)));
+  const [token, setToken] = useState(() => safeLocalStorageGet(TOKEN_KEY) || safeSessionStorageGet(TOKEN_KEY));
+  const [isLoading, setIsLoading] = useState(Boolean(safeLocalStorageGet(TOKEN_KEY) || safeSessionStorageGet(TOKEN_KEY)));
   const [authError, setAuthError] = useState('');
 
   const persistSession = useCallback((data, remember = true) => {
     if (remember) {
-      localStorage.setItem(TOKEN_KEY, data.token);
-      sessionStorage.removeItem(TOKEN_KEY);
+      safeLocalStorageSet(TOKEN_KEY, data.token);
+      safeSessionStorageRemove(TOKEN_KEY);
     } else {
-      sessionStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.removeItem(TOKEN_KEY);
+      safeSessionStorageSet(TOKEN_KEY, data.token);
+      safeLocalStorageRemove(TOKEN_KEY);
     }
     setToken(data.token);
     setUser(data.user);
@@ -69,8 +77,8 @@ export function AuthProvider({ children }) {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
+    safeLocalStorageRemove(TOKEN_KEY);
+    safeSessionStorageRemove(TOKEN_KEY);
     setToken(null);
     setUser(null);
     setAuthError('');
@@ -89,8 +97,8 @@ export function AuthProvider({ children }) {
         const data = await getCurrentUser();
         if (isMounted) setUser(data.user);
       } catch {
-        localStorage.removeItem(TOKEN_KEY);
-        sessionStorage.removeItem(TOKEN_KEY);
+        safeLocalStorageRemove(TOKEN_KEY);
+        safeSessionStorageRemove(TOKEN_KEY);
         if (isMounted) {
           setToken(null);
           setUser(null);

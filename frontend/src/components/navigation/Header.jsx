@@ -39,6 +39,11 @@ import { useToast } from '../../hooks/useToast.js';
 import { getCart, readStoredCartCount } from '../../services/cartService.js';
 import { getWishlist, readStoredWishlistCount } from '../../services/wishlistService.js';
 import { getRoleHome } from '../../utils/auth.js';
+import {
+  safeLocalStorageGet,
+  safeLocalStorageRemove,
+  safeLocalStorageSet
+} from '../../utils/storage.js';
 
 const iconMap = {
   Building2,
@@ -231,18 +236,20 @@ export default function Header() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cartCount, setCartCount] = useState(() => readStoredCartCount());
   const [wishlistCount, setWishlistCount] = useState(() => readStoredWishlistCount());
-  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
-  const [deliveryPincode, setDeliveryPincode] = useState(() => localStorage.getItem(PINCODE_KEY) || '');
+  const [isDarkMode, setIsDarkMode] = useState(() => safeLocalStorageGet('theme') === 'dark');
+  const [deliveryPincode, setDeliveryPincode] = useState(() => safeLocalStorageGet(PINCODE_KEY) || '');
 
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('dark', isDarkMode);
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    safeLocalStorageSet('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   useEffect(() => {
     if (deliveryPincode) {
-      localStorage.setItem(PINCODE_KEY, deliveryPincode);
+      safeLocalStorageSet(PINCODE_KEY, deliveryPincode);
+    } else {
+      safeLocalStorageRemove(PINCODE_KEY);
     }
   }, [deliveryPincode]);
 
@@ -297,7 +304,7 @@ export default function Header() {
 
     async function loadCartCount() {
       if (!isAuthenticated) {
-        localStorage.setItem('gaurav_nursery_cart_count', '0');
+        safeLocalStorageSet('gaurav_nursery_cart_count', '0');
         if (isMounted) setCartCount(0);
         return;
       }
@@ -321,7 +328,7 @@ export default function Header() {
 
     async function loadWishlistCount() {
       if (!isAuthenticated) {
-        localStorage.setItem('gaurav_nursery_wishlist_count', '0');
+        safeLocalStorageSet('gaurav_nursery_wishlist_count', '0');
         if (isMounted) setWishlistCount(0);
         return;
       }

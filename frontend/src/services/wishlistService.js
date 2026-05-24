@@ -1,4 +1,10 @@
 import api from './api.js';
+import {
+  safeCustomEvent,
+  safeDispatchEvent,
+  safeLocalStorageGet,
+  safeLocalStorageSet
+} from '../utils/storage.js';
 
 export const WISHLIST_COUNT_STORAGE_KEY = 'gaurav_nursery_wishlist_count';
 
@@ -11,14 +17,14 @@ function getWishlistCountFromResponse(data) {
 }
 
 export function readStoredWishlistCount() {
-  const storedCount = Number(localStorage.getItem(WISHLIST_COUNT_STORAGE_KEY));
+  const storedCount = Number(safeLocalStorageGet(WISHLIST_COUNT_STORAGE_KEY));
   return Number.isFinite(storedCount) ? storedCount : 0;
 }
 
 export function syncWishlistCountFromResponse(data) {
   const count = getWishlistCountFromResponse(data);
-  localStorage.setItem(WISHLIST_COUNT_STORAGE_KEY, String(count));
-  window.dispatchEvent(new window.CustomEvent('wishlist-count-updated', { detail: { count } }));
+  safeLocalStorageSet(WISHLIST_COUNT_STORAGE_KEY, String(count));
+  safeDispatchEvent(safeCustomEvent('wishlist-count-updated', { count }));
   return count;
 }
 

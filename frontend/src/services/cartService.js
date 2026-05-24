@@ -1,4 +1,10 @@
 import api from './api.js';
+import {
+  safeCustomEvent,
+  safeDispatchEvent,
+  safeLocalStorageGet,
+  safeLocalStorageSet
+} from '../utils/storage.js';
 
 export const CART_COUNT_STORAGE_KEY = 'gaurav_nursery_cart_count';
 
@@ -11,14 +17,14 @@ function getItemCountFromResponse(data) {
 }
 
 export function readStoredCartCount() {
-  const storedCount = Number(localStorage.getItem(CART_COUNT_STORAGE_KEY));
+  const storedCount = Number(safeLocalStorageGet(CART_COUNT_STORAGE_KEY));
   return Number.isFinite(storedCount) ? storedCount : 0;
 }
 
 export function syncCartCountFromResponse(data) {
   const count = getItemCountFromResponse(data);
-  localStorage.setItem(CART_COUNT_STORAGE_KEY, String(count));
-  window.dispatchEvent(new window.CustomEvent('cart-count-updated', { detail: { count } }));
+  safeLocalStorageSet(CART_COUNT_STORAGE_KEY, String(count));
+  safeDispatchEvent(safeCustomEvent('cart-count-updated', { count }));
   return count;
 }
 

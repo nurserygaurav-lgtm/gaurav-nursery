@@ -17,6 +17,8 @@ function setMetaAttribute(selector, attribute, value) {
 
 export function usePageMeta({ title, description, image = '/brand.svg', type = 'website', url } = {}) {
   useEffect(() => {
+    if (typeof document === 'undefined') return;
+
     const nextTitle = title ? `${title} | ${env.appName}` : env.appName;
     const nextDescription = description || 'Shop premium plants, planters, seeds, tools, and garden essentials from Gaurav Nursery.';
     const nextUrl = url || window.location.href;

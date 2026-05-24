@@ -27,6 +27,7 @@ import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { getProductImage, getProductTitle, getSellerName, handleImageError } from '../../utils/product.js';
+import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storage.js';
 
 function AccordionItem({ item, isOpen, onToggle }) {
   return (
@@ -109,7 +110,7 @@ export default function ProductDetails() {
   useEffect(() => {
     if (!product?._id) return;
     try {
-      const current = JSON.parse(localStorage.getItem('recentlyViewedProducts') || '[]');
+      const current = JSON.parse(safeLocalStorageGet('recentlyViewedProducts') || '[]');
       const nextProduct = {
         _id: product._id,
         name: getProductTitle(product),
@@ -121,7 +122,7 @@ export default function ProductDetails() {
         images: product.images
       };
       const next = [nextProduct, ...(Array.isArray(current) ? current.filter((item) => item._id !== product._id) : [])].slice(0, 8);
-      localStorage.setItem('recentlyViewedProducts', JSON.stringify(next));
+      safeLocalStorageSet('recentlyViewedProducts', JSON.stringify(next));
     } catch {
       // ignore storage failures
     }

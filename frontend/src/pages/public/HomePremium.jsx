@@ -33,6 +33,7 @@ import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { FALLBACK_PLANT_IMAGE, getProductImage, getProductTitle, handleImageError } from '../../utils/product.js';
+import { safeLocalStorageGet } from '../../utils/storage.js';
 
 const categoryArtwork = [
   { name: 'Indoor Plants', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85' },
@@ -283,7 +284,7 @@ export default function HomePremium() {
 
   useEffect(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('recentlyViewedProducts') || '[]');
+      const stored = JSON.parse(safeLocalStorageGet('recentlyViewedProducts') || '[]');
       if (Array.isArray(stored)) setRecentlyViewed(stored.slice(0, 6));
     } catch {
       setRecentlyViewed([]);
