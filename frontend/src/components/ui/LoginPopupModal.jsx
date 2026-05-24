@@ -39,6 +39,127 @@ export default function LoginPopupModal() {
   const [googleReady, setGoogleReady] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  const closePopup = useCallback(() => {
+    setIsOpen(false);
+    setView('login');
+    setForm({ name: '', email: '', password: '' });
+    setErrors({});
+    setShowPassword(false);
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+  }, []);
+
+  const continueGuest = useCallback(() => {
+    setIsOpen(false);
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    showToast('Continuing as guest', 'success');
+  }, [showToast]);
+
+  const handleGoogleResponse = useCallback(
+    async (response) => {
+      setGoogleLoading(false);
+      if (!response?.credential) {
+        showToast('Google login was cancelled or blocked.', 'error');
+        return;
+      }
+
+      try {
+        setIsSubmitting(true);
+        const user = await loginWithGoogle({ credential: response.credential }, true);
+        showToast('Logged in with Google');
+        closePopup();
+        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+      } catch (error) {
+        showToast(error.message, 'error');
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [closePopup, location.state?.from?.pathname, loginWithGoogle, navigate, showToast]
+  );
+
+  const handleGoogleLogin = useCallback(() => {
+    if (!env.googleClientId) {
+      showToast('Google Client ID is not configured.', 'error');
+      return;
+    }
+    if (!googleReady || !window.google?.accounts?.id) {
+      showToast('Google login is still loading. Please try again shortly.', 'error');
+      return;
+    }
+
+    setGoogleLoading(true);
+    window.google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        setGoogleLoading(false);
+        showToast('Google login was not completed.', 'error');
+      }
+    });
+  }, [googleReady, showToast]);
+
+  const handleOverlayClick = useCallback(
+    (event) => {
+      if (event.target === event.currentTarget) closePopup();
+    },
+    [closePopup]
+  );
+
+  const handleChange = useCallback((event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+    setErrors((current) => ({ ...current, [name]: '' }));
+  }, []);
+
+  const handleLoginSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      const nextErrors = validateLoginForm(form);
+      setErrors(nextErrors);
+      if (Object.keys(nextErrors).length) return;
+
+      try {
+        setIsSubmitting(true);
+        const user = await login({ email: form.email, password: form.password }, true);
+        showToast('Welcome back');
+        closePopup();
+        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+      } catch (error) {
+        showToast(error.message, 'error');
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [closePopup, form, login, location.state?.from?.pathname, navigate, showToast]
+  );
+
+  const handleSignupSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      const nextErrors = validateLoginForm(form);
+      if (!form.name.trim()) nextErrors.name = 'Name is required';
+      setErrors(nextErrors);
+      if (Object.keys(nextErrors).length) return;
+
+      try {
+        setIsSubmitting(true);
+        const user = await register({ name: form.name.trim(), email: form.email, password: form.password }, true);
+        showToast('Account created successfully');
+        closePopup();
+        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+      } catch (error) {
+        showToast(error.message, 'error');
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [closePopup, form, location.state?.from?.pathname, navigate, register, showToast]
+  );
+
+  const switchView = useCallback((nextView) => {
+    setView(nextView);
+    setErrors({});
+    setForm((current) => ({ ...current, password: '' }));
+  }, []);
+
   useEffect(() => {
     if (isAuthenticated || location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || isPopupDismissed()) return undefined;
     const timer = window.setTimeout(() => setIsOpen(true), 1800);
@@ -91,115 +212,6 @@ export default function LoginPopupModal() {
       auto_select: false
     });
   }, [googleReady, handleGoogleResponse]);
-
-  const closePopup = useCallback(() => {
-    setIsOpen(false);
-    setView('login');
-    setForm({ name: '', email: '', password: '' });
-    setErrors({});
-    setShowPassword(false);
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
-  }, []);
-
-  const continueGuest = useCallback(() => {
-    setIsOpen(false);
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
-    showToast('Continuing as guest', 'success');
-  }, [showToast]);
-
-  const handleOverlayClick = (event) => {
-    if (event.target === event.currentTarget) closePopup();
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: '' }));
-  };
-
-  const handleGoogleResponse = useCallback(async (response) => {
-    setGoogleLoading(false);
-    if (!response?.credential) {
-      showToast('Google login was cancelled or blocked.', 'error');
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const user = await loginWithGoogle({ credential: response.credential }, true);
-      showToast('Logged in with Google');
-      closePopup();
-      navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
-    } catch (error) {
-      showToast(error.message, 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [closePopup, location.state?.from?.pathname, loginWithGoogle, navigate, showToast]);
-
-  const handleGoogleLogin = () => {
-    if (!env.googleClientId) {
-      showToast('Google Client ID is not configured.', 'error');
-      return;
-    }
-    if (!googleReady || !window.google?.accounts?.id) {
-      showToast('Google login is still loading. Please try again shortly.', 'error');
-      return;
-    }
-
-    setGoogleLoading(true);
-    window.google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        setGoogleLoading(false);
-        showToast('Google login was not completed.', 'error');
-      }
-    });
-  };
-
-  const handleLoginSubmit = async (event) => {
-    event.preventDefault();
-    const nextErrors = validateLoginForm(form);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) return;
-
-    try {
-      setIsSubmitting(true);
-      const user = await login({ email: form.email, password: form.password }, true);
-      showToast('Welcome back');
-      closePopup();
-      navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
-    } catch (error) {
-      showToast(error.message, 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSignupSubmit = async (event) => {
-    event.preventDefault();
-    const nextErrors = validateLoginForm(form);
-    if (!form.name.trim()) nextErrors.name = 'Name is required';
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) return;
-
-    try {
-      setIsSubmitting(true);
-      const user = await register({ name: form.name.trim(), email: form.email, password: form.password }, true);
-      showToast('Account created successfully');
-      closePopup();
-      navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
-    } catch (error) {
-      showToast(error.message, 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const switchView = (nextView) => {
-    setView(nextView);
-    setErrors({});
-    setForm((current) => ({ ...current, password: '' }));
-  };
 
   const isOpenMemo = useMemo(() => isOpen && !isAuthenticated && !location.pathname.startsWith('/login') && !location.pathname.startsWith('/register'), [isOpen, isAuthenticated, location.pathname]);
 
