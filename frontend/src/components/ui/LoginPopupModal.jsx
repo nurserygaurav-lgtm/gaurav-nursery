@@ -271,24 +271,24 @@ export default function LoginPopupModal() {
           className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm px-4 py-6 sm:px-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.24, ease: 'easeInOut' } }}
           onClick={handleOverlayClick}
         >
           <motion.div
             ref={contentRef}
-            className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/95 shadow-[0_35px_90px_rgba(12,36,12,0.32)] backdrop-blur-xl"
-            initial={{ scale: 0.94, y: 18, opacity: 0 }}
+            className="relative mx-auto w-full max-w-[min(100vw-2rem,72rem)] overflow-hidden rounded-[2rem] border border-white/20 bg-white/95 shadow-[0_35px_90px_rgba(12,36,12,0.32)] backdrop-blur-xl"
+            initial={{ scale: 0.94, y: 24, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.96, y: 16, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
+            exit={{ scale: 0.94, opacity: 0, transition: { duration: 0.24, ease: 'easeInOut' } }}
+            transition={{ duration: 0.28, ease: 'easeOut' }}
           >
             <button
               type="button"
-              className="absolute right-4 top-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/90 text-stone-700 shadow-soft transition hover:bg-white focus:outline-none"
+              className="absolute top-4 right-4 z-40 inline-flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/30 bg-gradient-to-br from-white/80 via-white/75 to-white/60 p-2 text-emerald-800 shadow-xl backdrop-blur-md transition duration-300 ease-out hover:scale-110 hover:rotate-90 hover:bg-green-50 hover:text-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:h-11 sm:w-11 md:h-12 md:w-12"
               onClick={closePopup}
               aria-label="Close login popup"
             >
-              <X size={20} />
+              <X size={18} strokeWidth={3} />
             </button>
 
             <div className="grid min-h-[620px] gap-6 lg:grid-cols-[1.1fr_1fr]">
