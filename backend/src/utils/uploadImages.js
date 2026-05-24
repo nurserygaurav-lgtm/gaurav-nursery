@@ -76,16 +76,25 @@ export async function uploadProductImageUrls(urls = []) {
 
   return Promise.all(
     cleanUrls.map(async (url) => {
-      const result = await cloudinary.uploader.upload(url, {
-        folder: 'gaurav-nursery/products',
-        resource_type: 'image',
-        overwrite: false,
-        quality: 'auto',
-        fetch_format: 'auto'
-      });
+      try {
+        const result = await cloudinary.uploader.upload(url, {
+          folder: 'gaurav-nursery/products',
+          resource_type: 'image',
+          overwrite: false,
+          quality: 'auto',
+          fetch_format: 'auto'
+        });
 
-      if (!result?.secure_url || !result?.public_id) throw new Error('Cloudinary URL upload failed');
-      return { url: result.secure_url, publicId: result.public_id };
+        if (!result?.secure_url || !result?.public_id) {
+          console.warn(`Cloudinary upload failed for URL: ${url}`);
+          return { url, publicId: '' };
+        }
+
+        return { url: result.secure_url, publicId: result.public_id };
+      } catch (uploadError) {
+        console.warn(`Cloudinary remote image upload failed for URL: ${url}`, uploadError?.message || uploadError);
+        return { url, publicId: '' };
+      }
     })
   );
 }
