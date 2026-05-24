@@ -32,7 +32,7 @@ import { getStoreSummary } from '../../services/publicService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
-import { FALLBACK_PLANT_IMAGE, getProductImage, getProductTitle, handleImageError } from '../../utils/product.js';
+import { FALLBACK_PLANT_IMAGE, getProductImage, getProductTitle, getSellerName, handleImageError } from '../../utils/product.js';
 import { safeLocalStorageGet } from '../../utils/storage.js';
 
 const categoryArtwork = [
