@@ -71,7 +71,7 @@ export default function LoginPopupModal() {
         const user = await loginWithGoogle({ credential: response.credential }, true);
         showToast('Logged in with Google');
         closePopup();
-        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+        navigate(location.state?.from?.pathname || getRoleHome(user?.role), { replace: true });
       } catch (error) {
         showToast(error.message, 'error');
       } finally {
@@ -125,7 +125,7 @@ export default function LoginPopupModal() {
         const user = await login({ email: form.email, password: form.password }, true);
         showToast('Welcome back');
         closePopup();
-        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+        navigate(location.state?.from?.pathname || getRoleHome(user?.role), { replace: true });
       } catch (error) {
         showToast(error.message, 'error');
       } finally {
@@ -148,7 +148,7 @@ export default function LoginPopupModal() {
         const user = await register({ name: form.name.trim(), email: form.email, password: form.password }, true);
         showToast('Account created successfully');
         closePopup();
-        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+        navigate(location.state?.from?.pathname || getRoleHome(user?.role), { replace: true });
       } catch (error) {
         showToast(error.message, 'error');
       } finally {

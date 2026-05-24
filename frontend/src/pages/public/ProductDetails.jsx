@@ -56,6 +56,7 @@ export default function ProductDetails() {
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const productId = product?._id || id;
 
   usePageMeta({
     title: product ? getProductTitle(product) : 'Product',
@@ -129,13 +130,18 @@ export default function ProductDetails() {
   }, [product]);
 
   async function handleAddToCart() {
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return;
+    }
+
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/products/${id}` } } });
+      navigate('/login', { state: { from: { pathname: `/products/${productId}` } } });
       return;
     }
 
     try {
-      await addToCart(id, quantity);
+      await addToCart(productId, quantity);
       showToast('Added to cart');
     } catch (err) {
       showToast(getApiError(err, 'Unable to add to cart'), 'error');
@@ -143,13 +149,18 @@ export default function ProductDetails() {
   }
 
   async function handleWishlist() {
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return;
+    }
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
     try {
-      await addToWishlist(id);
+      await addToWishlist(productId);
       showToast('Saved to wishlist');
     } catch (err) {
       showToast(getApiError(err, 'Unable to update wishlist'), 'error');
@@ -157,13 +168,18 @@ export default function ProductDetails() {
   }
 
   async function handleBuyNow() {
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return;
+    }
+
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/products/${id}` } } });
+      navigate('/login', { state: { from: { pathname: `/products/${productId}` } } });
       return;
     }
 
     try {
-      await addToCart(id, quantity);
+      await addToCart(productId, quantity);
       navigate('/checkout');
     } catch (err) {
       showToast(getApiError(err, 'Unable to continue to checkout'), 'error');
@@ -220,7 +236,7 @@ export default function ProductDetails() {
   const careItems = [
     { icon: SunMedium, label: 'Sunlight', value: product?.care?.sunlight || product?.sunlight || 'Bright indirect sunlight' },
     { icon: Droplets, label: 'Watering', value: product?.care?.watering || product?.waterLevel || 'Water when top soil feels dry' },
-    { icon: Leaf, label: 'Indoor/Outdoor', value: product?.care?.placement || (product?.category?.toLowerCase().includes('outdoor') ? 'Outdoor' : 'Indoor friendly') },
+    { icon: Leaf, label: 'Indoor/Outdoor', value: product?.care?.placement || ((product?.category || '').toLowerCase().includes('outdoor') ? 'Outdoor' : 'Indoor friendly') },
     { icon: Box, label: 'Pot Size', value: product?.care?.potSize || 'Standard nursery pot' },
     { icon: Ruler, label: 'Height', value: product?.care?.height || 'Nursery grown healthy plant' },
     { icon: Sprout, label: 'Fertilizer', value: product?.care?.fertilizer || 'Organic fertilizer monthly' },

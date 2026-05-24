@@ -65,7 +65,7 @@ export default function Login() {
       try {
         const user = await loginWithGoogle({ credential: response.credential }, rememberMe);
         showToast('Logged in with Google');
-        navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+        navigate(location.state?.from?.pathname || getRoleHome(user?.role), { replace: true });
       } catch (error) {
         showToast(error.message, 'error');
       } finally {
@@ -103,7 +103,7 @@ export default function Login() {
       setIsSubmitting(true);
       const user = await login(values, rememberMe);
       showToast('Welcome back');
-      navigate(location.state?.from?.pathname || getRoleHome(user.role), { replace: true });
+      navigate(location.state?.from?.pathname || getRoleHome(user?.role), { replace: true });
     } catch (error) {
       showToast(error.message, 'error');
     } finally {

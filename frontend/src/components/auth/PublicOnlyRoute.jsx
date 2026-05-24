@@ -15,7 +15,7 @@ export default function PublicOnlyRoute() {
   }
 
   if (isAuthenticated) {
-    return <Navigate to={getRoleHome(user.role)} replace />;
+    return <Navigate to={getRoleHome(user?.role)} replace />;
   }
 
   return <Outlet />;

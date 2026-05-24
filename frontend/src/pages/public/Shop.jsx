@@ -108,13 +108,19 @@ export default function Shop() {
   }
 
   async function handleAddToCart(product) {
+    const productId = product?._id || product?.id;
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return false;
+    }
+
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
+      navigate('/login', { state: { from: { pathname: `/products/${productId}` } } });
       return false;
     }
 
     try {
-      await addToCart(product._id, 1);
+      await addToCart(productId, 1);
       showToast('Added to cart');
       return true;
     } catch (err) {
@@ -124,13 +130,19 @@ export default function Shop() {
   }
 
   async function handleWishlist(product) {
+    const productId = product?._id || product?.id;
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return;
+    }
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
     try {
-      await addToWishlist(product._id);
+      await addToWishlist(productId);
       showToast('Saved to wishlist');
     } catch (err) {
       showToast(getApiError(err, 'Unable to update wishlist'), 'error');

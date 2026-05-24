@@ -71,7 +71,7 @@ export default function Register() {
       };
       const user = await register(payload);
       showToast('Account created successfully');
-      navigate(getRoleHome(user.role), { replace: true });
+      navigate(getRoleHome(user?.role), { replace: true });
     } catch (error) {
       showToast(error.message, 'error');
     } finally {

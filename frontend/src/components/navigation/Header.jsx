@@ -476,7 +476,7 @@ export default function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    <Link className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold text-[#0b3d1e] hover:bg-[#eaf7e8]" to={getRoleHome(user.role)} onClick={() => setIsProfileOpen(false)}>
+                    <Link className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold text-[#0b3d1e] hover:bg-[#eaf7e8]" to={getRoleHome(user?.role)} onClick={() => setIsProfileOpen(false)}>
                       <UserRound size={17} />
                       My Account
                     </Link>

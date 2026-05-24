@@ -27,15 +27,18 @@ function getStockCopy(product) {
 export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const productId = product?._id || product?.id;
   const stock = getStockCopy(product);
   const isOutOfStock = Number(product?.stock ?? product?.quantity ?? 1) <= 0;
   const size = product?.size || 'M';
   const water = product?.waterLevel || 'Moderate';
   const sunlight = product?.sunlight || 'Partial';
 
+  if (!productId) return null;
+
   async function handleBuyNow() {
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
+      navigate('/login', { state: { from: { pathname: `/products/${productId}` } } });
       return;
     }
 
@@ -52,7 +55,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
       viewport={{ once: true, margin: '-40px' }}
     >
       <div className="relative overflow-hidden">
-        <Link to={`/products/${product._id}`} className="block">
+        <Link to={`/products/${productId}`} className="block">
           <img
             className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105"
             src={getProductImage(product)}
@@ -80,7 +83,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
         </button>
         <Link
           className="absolute bottom-4 left-4 right-4 hidden items-center justify-center rounded-full bg-white/95 py-3 text-sm font-black text-[#0b3d1e] shadow-soft transition duration-300 group-hover:flex"
-          to={`/products/${product._id}`}
+          to={`/products/${productId}`}
         >
           <Eye className="mr-2" size={16} /> Quick View
         </Link>
@@ -93,7 +96,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${stock.tone}`}>{stock.text}</span>
         </div>
         <Link
-          to={`/products/${product._id}`}
+          to={`/products/${productId}`}
           className="block line-clamp-2 break-words text-xl font-black leading-tight text-[#10210f] transition hover:text-[#3d7d36]"
         >
           {getProductTitle(product)}

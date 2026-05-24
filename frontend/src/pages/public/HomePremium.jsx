@@ -116,6 +116,8 @@ function getDiscount(product) {
 }
 
 function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
+  const productId = product?._id || product?.id;
+  if (!productId) return null;
   const stock = Number(product?.stock ?? product?.quantity ?? 12);
   const urgency = stock > 10 ? 'Nursery fresh stock' : `Only ${stock} left`;
   const sunlight = product?.sunlight || product?.care?.sunlight || 'Bright indirect light';
@@ -137,7 +139,7 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
           <span className="rounded-full bg-white/90 px-3 py-1 text-[#0b3d1e] shadow-soft">{getDiscount(product)}</span>
           <span className="rounded-full bg-[#0b3d1e]/90 px-3 py-1 text-white shadow-soft">{urgency}</span>
         </div>
-        <Link className="absolute inset-0 z-0" to={`/products/${product._id}`} aria-label={getProductTitle(product)} />
+        <Link className="absolute inset-0 z-0" to={`/products/${productId}`} aria-label={getProductTitle(product)} />
         <div className="absolute bottom-4 right-4 z-10 flex gap-2">
           <button
             type="button"
@@ -171,7 +173,7 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
           <span className="text-xs font-black uppercase tracking-[0.18em] text-[#4a7d41]">{product.category || 'Plants'}</span>
           <span className="rounded-full bg-[#f1faf1] px-3 py-1 text-[11px] font-black uppercase tracking-[0.15em] text-[#2f5f34]">COD</span>
         </div>
-        <Link to={`/products/${product._id}`} className="block truncate text-lg font-black leading-snug text-[#0b3d1e] transition hover:text-[#4caf50]">
+        <Link to={`/products/${productId}`} className="block truncate text-lg font-black leading-snug text-[#0b3d1e] transition hover:text-[#4caf50]">
           {getProductTitle(product)}
         </Link>
         <div className="flex items-center gap-2 text-sm font-bold text-stone-500">
@@ -314,13 +316,19 @@ export default function HomePremium() {
   const sellerTicker = useMemo(() => [...featuredSellers, ...featuredSellers], [featuredSellers]);
   const deliveryTicker = useMemo(() => [...deliveryTickerMessages, ...deliveryTickerMessages], []);
   async function handleAddToCart(product) {
+    const productId = product?._id || product?.id;
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return false;
+    }
+
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
+      navigate('/login', { state: { from: { pathname: `/products/${productId}` } } });
       return false;
     }
 
     try {
-      await addToCart(product._id, 1);
+      await addToCart(productId, 1);
       showToast('Added to cart');
       return true;
     } catch (err) {
@@ -330,13 +338,19 @@ export default function HomePremium() {
   }
 
   async function handleWishlist(product) {
+    const productId = product?._id || product?.id;
+    if (!productId) {
+      showToast('Product is still loading, please try again.', 'error');
+      return;
+    }
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
     try {
-      await addToWishlist(product._id);
+      await addToWishlist(productId);
       showToast('Saved to wishlist');
     } catch (err) {
       showToast(getApiError(err, 'Unable to update wishlist'), 'error');

@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       token,
-      isAuthenticated: Boolean(user && token),
+      isAuthenticated: Boolean(token),
       isLoading,
       authError,
       login,
