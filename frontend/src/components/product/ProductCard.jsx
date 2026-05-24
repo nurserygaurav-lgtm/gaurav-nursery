@@ -116,10 +116,10 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Button className="h-12 w-full bg-[#0b3d1e] px-4 font-black text-white hover:bg-[#4caf50]" disabled={isOutOfStock} onClick={() => onAddToCart?.(product)}>
+          <Button variant="primary" className="h-12 w-full" disabled={isOutOfStock} onClick={() => onAddToCart?.(product)}>
             <ShoppingCart size={16} /> Add
           </Button>
-          <Button className="h-12 w-full border border-[#e2e9de] bg-white text-[#0b3d1e] hover:bg-[#f4fbf2]" disabled={isOutOfStock} onClick={handleBuyNow}>
+          <Button variant="outline" className="h-12 w-full" disabled={isOutOfStock} onClick={handleBuyNow}>
             Buy Now
           </Button>
         </div>

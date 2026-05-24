@@ -14,6 +14,8 @@
   --premium-green: #14532D;
   --premium-green-dark: #166534;
   --premium-green-bright: #22C55E;
+  --button-gradient: linear-gradient(135deg, #0f5132, #198754);
+  --button-shadow: 0 20px 45px rgba(24, 81, 50, 0.28);
   --surface: rgba(255, 255, 255, 0.82);
   --surface-strong: rgba(255, 255, 255, 0.96);
   --glass: rgba(255, 255, 255, 0.18);
@@ -27,6 +29,12 @@
   --shadow-card: 0 28px 90px rgba(13, 31, 14, 0.12);
   --shadow-button: 0 20px 45px rgba(61, 125, 54, 0.22);
   --border-soft: rgba(77, 156, 69, 0.12);
+}
+html {
+  font-size: clamp(15px, 1vw + 0.2rem, 18px);
+}
+body {
+  font-size: 1rem;
 }
 
 .dark {
@@ -117,6 +125,100 @@ img {
 .premium-container {
   width: min(100% - 2rem, 88rem);
   margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.mobile-bottom-nav__link {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.75rem 0.65rem;
+  border-radius: 16px;
+  color: #0b3d1e;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #f4fff2;
+  transition: transform 200ms ease, background 200ms ease, box-shadow 200ms ease;
+}
+
+.mobile-bottom-nav__link:hover,
+.mobile-bottom-nav__link:focus-visible {
+  background: #e4f7e5;
+  transform: translateY(-1px);
+}
+
+.hero-heading,
+.section-heading {
+  word-break: break-word;
+}
+
+.text-fluid {
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+}
+
+.shimmer-surface {
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.06), rgba(255, 255, 255, 0.95));
+}
+
+@media (max-width: 1280px) {
+  .premium-container {
+    width: min(100% - 1.5rem, 100%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .premium-container {
+    padding-inline: 0.95rem;
+  }
+
+  body {
+    font-size: clamp(0.95rem, 1.5vw, 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .premium-container {
+    padding-inline: 0.85rem;
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+  }
+
+  body {
+    padding-bottom: 5.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-input {
+    padding: 0.85rem 1rem;
+  }
+
+  .premium-container {
+    padding-inline: 0.75rem;
+  }
 }
 
 .glass-panel {
