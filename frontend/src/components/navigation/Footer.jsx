@@ -1,23 +1,27 @@
-import { CreditCard, Leaf, Mail, MapPin, MessageCircle, PackageCheck, Phone, RotateCcw, ShieldCheck, Sparkles, Truck, UserRound } from 'lucide-react';
+import { CreditCard, Leaf, Mail, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const whatsappUrl = 'https://wa.me/916352031504';
+import { brandContact } from '../../data/brandContent.js';
 
 const trustItems = [
-  { icon: PackageCheck, label: 'Secure Packaging' },
+  { icon: Truck, label: 'Pan India Delivery' },
   { icon: ShieldCheck, label: 'Live Arrival Guarantee' },
-  { icon: CreditCard, label: 'COD Available' },
-  { icon: RotateCcw, label: 'Easy Returns' },
-  { icon: UserRound, label: 'Expert Guidance' }
+  { icon: CreditCard, label: 'Secure Payments' },
+  { icon: Sparkles, label: 'Plant Care Support' },
+  { icon: Leaf, label: 'Nursery Fresh Stock' }
 ];
 
-const policyLinks = [
-  'About Us',
-  'Privacy Policy',
-  'Terms & Conditions',
-  'Shipping Policy',
-  'Refund Policy',
-  'Contact Us'
+const footerLinks = [
+  { label: 'About Us', to: '/about' },
+  { label: 'Plant Care', to: '/blog' },
+  { label: 'Shipping Policy', to: '/contact' },
+  { label: 'Replacement Policy', to: '/contact' },
+  { label: 'Terms', to: '/contact' },
+  { label: 'Privacy', to: '/contact' },
+  { label: 'Track Order', to: '/orders' },
+  { label: 'Contact', to: '/contact' },
+  { label: 'WhatsApp', to: `https://wa.me/${brandContact.whatsappPhone}` },
+  { label: 'Instagram', to: 'https://instagram.com/' },
+  { label: 'YouTube', to: 'https://youtube.com/' }
 ];
 
 export default function Footer() {
@@ -41,12 +45,12 @@ export default function Footer() {
           <Link className="flex items-center gap-3" to="/">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-black text-[#0b3d1e]">GN</span>
             <div>
-              <h2 className="font-serif text-2xl font-black leading-none">Gaurav Nursery</h2>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#eaf7e8]">Premium Plant Studio</p>
+              <h2 className="font-serif text-2xl font-black leading-none">{brandContact.name}</h2>
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#eaf7e8]">Trusted Plant Studio</p>
             </div>
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-7 text-[#eaf7e8]">
-            Healthy plants, seeds, planters, fertilizers, and garden tools delivered with care from our nursery to your home.
+            Premium plants, safe packaging, and real support from our nursery in Sultanpur.
           </p>
           <div className="mt-6 flex gap-3">
             {[Leaf, Sparkles, Truck].map((Icon, index) => (
@@ -60,41 +64,47 @@ export default function Footer() {
         <div>
           <h3 className="font-black">Company</h3>
           <div className="mt-4 grid gap-3 text-sm text-[#eaf7e8]">
-            {policyLinks.map((label) => (
-              <Link key={label} className="transition hover:text-white" to={label === 'About Us' ? '/about' : '/contact'}>
-                {label}
+            {footerLinks.slice(0, 6).map((item) => (
+              <Link key={item.label} className="transition hover:text-white" to={item.to}>
+                {item.label}
               </Link>
             ))}
           </div>
         </div>
 
         <div>
-          <h3 className="font-black">Shop</h3>
+          <h3 className="font-black">Quick Links</h3>
           <div className="mt-4 grid gap-3 text-sm text-[#eaf7e8]">
-            <Link className="transition hover:text-white" to="/shop?category=Plants">Plants</Link>
-            <Link className="transition hover:text-white" to="/shop?category=Seeds">Seeds</Link>
-            <Link className="transition hover:text-white" to="/shop?category=Pots%20%26%20Planters">Pots & Planters</Link>
-            <Link className="transition hover:text-white" to="/shop?category=Fertilizers">Fertilizers</Link>
-            <Link className="transition hover:text-white" to="/shop?category=Tools%20%26%20Accessories">Tools & Accessories</Link>
-            <Link className="transition hover:text-white" to="/orders">Track Order</Link>
+            {footerLinks.slice(6, 9).map((item) =>
+              item.to.startsWith('http') ? (
+                <a key={item.label} className="transition hover:text-white" href={item.to} rel="noreferrer" target="_blank">
+                  {item.label}
+                </a>
+              ) : (
+                <Link key={item.label} className="transition hover:text-white" to={item.to}>
+                  {item.label}
+                </Link>
+              )
+            )}
           </div>
         </div>
 
         <div>
           <h3 className="font-black">Contact</h3>
           <div className="mt-4 grid gap-3 text-sm text-[#eaf7e8]">
-            <span className="flex items-start gap-3"><MapPin className="mt-0.5 shrink-0" size={17} /> Aliganj Bazar, Sultanpur</span>
-            <a className="flex items-center gap-3 transition hover:text-white" href="tel:+916352031504"><Phone size={17} /> +91 63520 31504</a>
-            <a className="flex items-center gap-3 transition hover:text-white" href="mailto:nurserygaurav@gmail.com"><Mail size={17} /> nurserygaurav@gmail.com</a>
-            <a className="flex items-center gap-3 transition hover:text-white" href={whatsappUrl} rel="noreferrer" target="_blank"><MessageCircle size={17} /> Chat on WhatsApp</a>
-          </div>
-          <div className="mt-6">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#eaf7e8]">Payments</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {['Visa', 'Mastercard', 'UPI', 'RuPay'].map((item) => (
-                <span key={item} className="rounded-lg bg-white px-3 py-2 text-xs font-black text-[#0b3d1e]">{item}</span>
-              ))}
-            </div>
+            <span className="flex items-start gap-3">
+              <MapPin className="mt-0.5 shrink-0" size={17} />
+              {brandContact.address}
+            </span>
+            <a className="flex items-center gap-3 transition hover:text-white" href={`tel:${brandContact.supportPhone.replace(/\s+/g, '')}`}>
+              <Phone size={17} /> Official Support Number
+            </a>
+            <a className="flex items-center gap-3 transition hover:text-white" href={`mailto:${brandContact.supportEmail}`}>
+              <Mail size={17} /> {brandContact.supportEmail}
+            </a>
+            <a className="flex items-center gap-3 transition hover:text-white" href={`https://wa.me/${brandContact.whatsappPhone}`} rel="noreferrer" target="_blank">
+              <MessageCircle size={17} /> Chat on WhatsApp
+            </a>
           </div>
         </div>
       </div>
@@ -103,9 +113,11 @@ export default function Footer() {
         <div className="premium-container flex flex-col gap-3 py-5 text-sm text-[#eaf7e8] lg:flex-row lg:items-center lg:justify-between">
           <p>Copyright 2026 Gaurav Nursery. All rights reserved.</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <Link className="transition hover:text-white" to="/contact">Privacy Policy</Link>
-            <Link className="transition hover:text-white" to="/contact">Terms & Conditions</Link>
-            <Link className="transition hover:text-white" to="/contact">Refund Policy</Link>
+            {footerLinks.slice(9).map((item) => (
+              <a key={item.label} className="transition hover:text-white" href={item.to} rel="noreferrer" target="_blank">
+                {item.label}
+              </a>
+            ))}
           </div>
         </div>
       </div>

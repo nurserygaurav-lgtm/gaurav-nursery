@@ -3,6 +3,7 @@ import {
   Bell,
   Building2,
   ChevronDown,
+  CircleX,
   Flower2,
   Gem,
   Gift,
@@ -11,6 +12,7 @@ import {
   LogOut,
   Menu,
   MessageCircle,
+  MapPin,
   Moon,
   Package,
   PackageSearch,
@@ -28,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { brandContact } from '../../data/brandContent.js';
 import { megaMenuItems } from '../../data/megaMenuData.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -131,6 +134,10 @@ function MegaMenuPanel({ menu }) {
           </div>
 
           <aside className="border-l border-leaf-100 bg-gradient-to-b from-leaf-50 via-white to-[#f7fbf0] p-4 lg:p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-leaf-600">Featured Picks</p>
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-700">Trending</span>
+            </div>
             <Link className="group relative block overflow-hidden rounded-2xl bg-leaf-950" to={menu.to}>
               <img className="h-40 w-full object-cover opacity-80 transition duration-700 group-hover:scale-105 lg:h-44" src={menu.image} alt={menu.label} loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-gradient-to-t from-leaf-950 via-leaf-950/25 to-transparent" />
@@ -327,6 +334,10 @@ export default function Header() {
     setIsMenuOpen(false);
   }
 
+  function closeDesktopMenu() {
+    setActiveMenu(null);
+  }
+
   function handleThemeToggle() {
     setIsDarkMode((current) => !current);
   }
@@ -349,9 +360,9 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white/90 shadow-soft backdrop-blur-xl dark:bg-[#07140b]/90 dark:border-b dark:border-white/10">
       <div className="bg-[#0b3d1e] text-white">
         <div className="premium-container flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-[clamp(0.65rem,0.9vw,0.8rem)] font-black uppercase tracking-[0.2em] text-white/90 sm:gap-3 sm:text-sm">
-          <span>Free delivery above ₹499</span>
-          <span className="hidden sm:inline-flex">COD available • 7-day easy returns • Premium nursery care</span>
-          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">Green luxury</span>
+          <span className="inline-flex items-center gap-2"><MapPin size={14} /> {brandContact.address}</span>
+          <span className="hidden sm:inline-flex">Official support: {brandContact.supportPhone}</span>
+          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">Customer support across India</span>
         </div>
       </div>
 
@@ -459,7 +470,7 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block" onMouseLeave={() => setActiveMenu(null)}>
+      <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block">
         <div className="premium-container flex min-h-12 items-center justify-center gap-1">
           {megaMenuItems.map((item) => (
             <div key={item.slug} className="py-2" onMouseEnter={() => setActiveMenu(item.slug)}>
@@ -468,6 +479,7 @@ export default function Header() {
                 className={({ isActive }) =>
                   `flex items-center gap-2 rounded-full px-2.5 py-2 text-sm font-black transition xl:px-3 ${isActive || activeMenu === item.slug ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`
                 }
+                onClick={() => setActiveMenu(item.slug)}
               >
                 <MenuIcon name={item.icon} size={16} />
                 {item.label}
@@ -480,6 +492,12 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
+          {activeMenu && (
+            <button type="button" className="ml-2 inline-flex items-center gap-2 rounded-full bg-[#0b3d1e] px-3 py-2 text-sm font-black text-white shadow-soft" onClick={closeDesktopMenu}>
+              <CircleX size={16} />
+              Close menu
+            </button>
+          )}
         </div>
         <AnimatePresence>{activeMenu && <MegaMenuPanel key={activeMenu} menu={megaMenuItems.find((item) => item.slug === activeMenu)} />}</AnimatePresence>
       </nav>

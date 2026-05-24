@@ -14,6 +14,8 @@ const CategoryLanding = lazy(() => import('./pages/public/CategoryLanding.jsx'))
 const ProductDetails = lazy(() => import('./pages/public/ProductDetails.jsx'));
 const About = lazy(() => import('./pages/public/About.jsx'));
 const Contact = lazy(() => import('./pages/public/Contact.jsx'));
+const Blog = lazy(() => import('./pages/public/Blog.jsx'));
+const BlogPost = lazy(() => import('./pages/public/BlogPost.jsx'));
 const SupportHome = lazy(() => import('./pages/SupportHome.jsx'));
 const Login = lazy(() => import('./pages/auth/Login.jsx'));
 const Register = lazy(() => import('./pages/auth/Register.jsx'));
@@ -57,6 +59,8 @@ export default function App() {
           <Route path="products/:id" element={<ProductDetails />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="blog" element={<Blog />} />
+          <Route path="blog/:slug" element={<BlogPost />} />
           <Route path="support" element={<SupportHome />} />
           <Route element={<PublicOnlyRoute />}>
             <Route path="login" element={<Login />} />

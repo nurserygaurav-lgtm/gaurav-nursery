@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Eye, Heart, PackageCheck, ShoppingCart, Star, Truck, Watch } from 'lucide-react';
+import { Eye, Heart, PackageCheck, ShoppingCart, Truck, Watch } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import Button from '../ui/Button.jsx';
@@ -28,8 +28,6 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const stock = getStockCopy(product);
-  const rating = Number(product?.rating || product?.averageRating || 4.8);
-  const reviewCount = Number(product?.reviewCount || product?.reviewsCount || 0);
   const isOutOfStock = Number(product?.stock ?? product?.quantity ?? 1) <= 0;
   const size = product?.size || 'M';
   const water = product?.waterLevel || 'Moderate';
@@ -93,8 +91,8 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
         </Link>
         <p className="text-sm text-stone-500">{getSellerName(product)}</p>
         <div className="flex flex-wrap items-center gap-2 text-sm text-[#3a5f38]">
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#eff7ef] px-3 py-1 font-black">{rating.toFixed(1)} <Star className="text-amber-400" size={13} fill="currentColor" /></span>
-          <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">{reviewCount ? `${reviewCount} reviews` : 'Top pick'}</span>
+          <span className="rounded-full bg-[#eff7ef] px-3 py-1 font-black">Live plant</span>
+          <span className="rounded-full bg-[#eff7ef] px-3 py-1 font-black">Safe packaging</span>
         </div>
         <div className="grid grid-cols-3 gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#526f58]">
           <span className="rounded-2xl bg-[#f2fbf1] px-2 py-2">Size {size}</span>
