@@ -28,6 +28,34 @@ function uploadBuffer(file) {
   });
 }
 
+function uploadBase64Image(base64, folder = 'gaurav-nursery/products') {
+  return new Promise((resolve, reject) => {
+    const cleanBase64 = String(base64 || '').replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '').trim();
+    if (!cleanBase64) {
+      reject(new Error('Invalid generated image data'));
+      return;
+    }
+
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: 'image',
+        overwrite: false,
+        quality: 'auto',
+        fetch_format: 'auto'
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else if (!result?.secure_url || !result?.public_id) reject(new Error('Cloudinary upload failed'));
+        else resolve({ url: result.secure_url, publicId: result.public_id });
+      }
+    );
+
+    stream.on('error', reject);
+    Readable.from(Buffer.from(cleanBase64, 'base64')).pipe(stream);
+  });
+}
+
 export async function uploadProductImages(files = []) {
   if (!files.length) return [];
 
@@ -60,4 +88,12 @@ export async function uploadProductImageUrls(urls = []) {
       return { url: result.secure_url, publicId: result.public_id };
     })
   );
+}
+
+export async function uploadGeneratedImage(base64) {
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    throw new Error('Cloudinary credentials are not configured');
+  }
+
+  return uploadBase64Image(base64);
 }

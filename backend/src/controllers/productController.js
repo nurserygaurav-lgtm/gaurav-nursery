@@ -1,7 +1,8 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Product from '../models/Product.js';
+import { generateProductImageSet } from '../utils/openaiImages.js';
 import { validateProductInput } from '../utils/productValidators.js';
-import { uploadProductImages, uploadProductImageUrls } from '../utils/uploadImages.js';
+import { uploadGeneratedImage, uploadProductImages, uploadProductImageUrls } from '../utils/uploadImages.js';
 
 const sampleHeaders = [
   'Product Name',
@@ -77,6 +78,32 @@ function splitTags(value) {
     .flatMap((part) => part.split(','))
     .map((tag) => tag.trim())
     .filter(Boolean);
+}
+
+function parseStringList(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map((entry) => String(entry || '').trim()).filter(Boolean);
+
+  const text = String(value || '').trim();
+  if (!text) return [];
+
+  if (text.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) return parsed.map((entry) => String(entry || '').trim()).filter(Boolean);
+    } catch (_error) {
+      // Fall through to delimiter parsing.
+    }
+  }
+
+  return text
+    .split(/[|,\n;]/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function collectImageUrls(body) {
+  return [...parseStringList(body.imageUrls), ...parseStringList(body.generatedImageUrls)];
 }
 
 function inferCategory(name, category) {
@@ -300,6 +327,8 @@ export const createProduct = asyncHandler(async (req, res) => {
   }
 
   const uploadedImages = await uploadProductImages(req.files);
+  const remoteImageUrls = collectImageUrls(req.body);
+  const uploadedRemoteImages = remoteImageUrls.length ? await uploadProductImageUrls(remoteImageUrls) : [];
   const title = req.body.title || req.body.name;
 
   const product = await Product.create({
@@ -328,7 +357,7 @@ export const createProduct = asyncHandler(async (req, res) => {
       metaDescription: req.body.metaDescription || req.body.description.trim().slice(0, 155),
       altText: req.body.altText || `${title.trim()} at Gaurav Nursery`
     },
-    images: uploadedImages,
+    images: [...uploadedImages, ...uploadedRemoteImages],
     slug: `${slugify(title)}-${Date.now()}`,
     seller: req.user._id,
     status: req.body.status || 'active'
@@ -356,6 +385,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 
   const uploadedImages = await uploadProductImages(req.files);
+  const remoteImageUrls = collectImageUrls(req.body);
+  const uploadedRemoteImages = remoteImageUrls.length ? await uploadProductImageUrls(remoteImageUrls) : [];
   const title = req.body.title || req.body.name;
 
   if (title !== undefined) {
@@ -388,7 +419,9 @@ export const updateProduct = asyncHandler(async (req, res) => {
     altText: req.body.altText ?? product.seo?.altText
   };
   if (req.body.status !== undefined) product.status = req.body.status;
-  if (uploadedImages.length) product.images = [...product.images, ...uploadedImages];
+  if (uploadedImages.length || uploadedRemoteImages.length) {
+    product.images = [...product.images, ...uploadedImages, ...uploadedRemoteImages];
+  }
 
   await product.save();
 
@@ -430,6 +463,45 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   await product.save();
 
   res.json({ message: 'Product archived' });
+});
+
+export const generateProductImages = asyncHandler(async (req, res) => {
+  const title = req.body.title || req.body.name;
+  const category = req.body.category;
+
+  if (!title?.trim() || !category?.trim()) {
+    res.status(400);
+    throw new Error('Product title and category are required to generate AI images');
+  }
+
+  const count = Math.min(Math.max(Number(req.body.count) || 3, 1), 3);
+  const generated = await generateProductImageSet(
+    {
+      title: title.trim(),
+      category: category.trim(),
+      description: req.body.description || '',
+      benefits: req.body.benefits || '',
+      height: req.body.height || '',
+      potSize: req.body.potSize || '',
+      watering: req.body.watering || '',
+      sunlight: req.body.sunlight || '',
+      fertilizer: req.body.fertilizer || ''
+    },
+    count
+  );
+
+  const images = [];
+  for (const item of generated) {
+    const stored = await uploadGeneratedImage(item.base64);
+    images.push({
+      ...stored,
+      variant: item.variant,
+      revisedPrompt: item.revisedPrompt,
+      prompt: item.prompt
+    });
+  }
+
+  res.status(201).json({ images });
 });
 
 export const deleteTodayProducts = asyncHandler(async (req, res) => {
@@ -539,5 +611,4 @@ export const debugTodayProducts = asyncHandler(async (req, res) => {
     createdAtValues: sample.map((p) => ({ id: p._id, createdAt: p.createdAt }))
   });
 });
-
 

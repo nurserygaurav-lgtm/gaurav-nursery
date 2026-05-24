@@ -34,6 +34,11 @@ export async function updateProduct(id, formData) {
   return data;
 }
 
+export async function generateProductImages(payload) {
+  const { data } = await api.post('/products/ai-images', payload);
+  return data;
+}
+
 export async function deleteProduct(id) {
   const { data } = await api.delete(`/products/${id}`);
   return data;

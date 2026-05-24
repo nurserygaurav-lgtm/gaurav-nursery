@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createProduct,
+  generateProductImages,
   deleteProduct,
   bulkDeleteProducts,
   deleteTodayProducts,
@@ -25,6 +26,7 @@ router.get('/search', searchProducts);
 router.get('/seller', protect, authorize('seller', 'admin'), getSellerProducts);
 router.get('/import/sample', protect, authorize('seller', 'admin'), downloadProductImportSample);
 router.post('/import', protect, authorize('seller', 'admin'), importUpload.single('file'), bulkImportProducts);
+router.post('/ai-images', protect, authorize('seller', 'admin'), generateProductImages);
 router.get('/:id', getProductById);
 router.post('/', protect, authorize('seller', 'admin'), upload.array('images', 6), createProduct);
 router.put('/:id', protect, authorize('seller', 'admin'), upload.array('images', 6), updateProduct);
@@ -38,5 +40,4 @@ router.delete('/delete-today-products', protect, authorize('admin'), deleteToday
 router.get('/debug-today-products', protect, authorize('admin'), debugTodayProducts);
 
 export default router;
-
 

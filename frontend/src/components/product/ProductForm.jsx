@@ -1,8 +1,10 @@
 import { UploadCloud, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useToast } from '../../hooks/useToast.js';
+import { generateProductImages as generateAiProductImages } from '../../services/productService.js';
 import Button from '../ui/Button.jsx';
 import Spinner from '../ui/Spinner.jsx';
+import { getApiError } from '../../utils/auth.js';
 import { buildProductFormData, validateProductForm } from '../../utils/productValidation.js';
 
 const MAX_IMAGES = 6;
@@ -57,15 +59,18 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     metaDescription: initialProduct?.seo?.metaDescription || '',
     altText: initialProduct?.seo?.altText || '',
     status: initialProduct?.status || 'active'
-  }));
+  })); 
   const [images, setImages] = useState([]);
+  const [generatedImages, setGeneratedImages] = useState([]);
   const [errors, setErrors] = useState({});
   const [dragActive, setDragActive] = useState(false);
   const [isProcessingImages, setIsProcessingImages] = useState(false);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
 
-  const previews = useMemo(
+  const filePreviews = useMemo(
     () =>
       images.map((file) => ({
+        kind: 'file',
         id: `${file.name}-${file.size}-${file.lastModified}`,
         name: file.name,
         url: URL.createObjectURL(file)
@@ -73,11 +78,25 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     [images]
   );
 
+  const generatedPreviews = useMemo(
+    () =>
+      generatedImages.map((image) => ({
+        kind: 'generated',
+        id: image.publicId || image.url,
+        name: image.variant || 'AI generated',
+        url: image.url,
+        revisedPrompt: image.revisedPrompt
+      })),
+    [generatedImages]
+  );
+
+  const previews = useMemo(() => [...filePreviews, ...generatedPreviews], [filePreviews, generatedPreviews]);
+
   useEffect(() => {
     return () => {
-      previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+      filePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
     };
-  }, [previews]);
+  }, [filePreviews]);
 
   useEffect(() => {
     const handleWindowPaste = (event) => {
@@ -100,7 +119,7 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
 
     window.addEventListener('paste', handleWindowPaste);
     return () => window.removeEventListener('paste', handleWindowPaste);
-  }, [images]);
+  }, [images, generatedImages]);
 
   function validateImageFile(file) {
     if (!file.type.startsWith('image/')) {
@@ -120,7 +139,7 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
 
     setIsProcessingImages(true);
     const nextImages = [...images];
-    const availableSlots = Math.max(0, MAX_IMAGES - nextImages.length);
+    const availableSlots = Math.max(0, MAX_IMAGES - nextImages.length - generatedImages.length);
     const filesToAdd = files.slice(0, availableSlots);
     const rejectedMessages = [];
 
@@ -149,6 +168,41 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     setIsProcessingImages(false);
   }
 
+  async function handleGenerateImages() {
+    const title = values.title.trim();
+    const category = values.category.trim();
+
+    if (!title || !category) {
+      showToast('Add product title and category before generating AI images.', 'error');
+      return;
+    }
+
+    const availableSlots = Math.max(0, MAX_IMAGES - images.length - generatedImages.length);
+    if (!availableSlots) {
+      showToast(`Only ${MAX_IMAGES} images allowed. Remove one image to generate more.`, 'error');
+      return;
+    }
+
+    try {
+      setIsGeneratingImages(true);
+      const response = await generateAiProductImages({
+        ...values,
+        count: Math.min(3, availableSlots)
+      });
+
+      const nextGenerated = (response.images || []).slice(0, availableSlots);
+      setGeneratedImages((current) => [...current, ...nextGenerated]);
+
+      if (nextGenerated.length) {
+        showToast(`Generated ${nextGenerated.length} AI image${nextGenerated.length > 1 ? 's' : ''}.`);
+      }
+    } catch (error) {
+      showToast(getApiError(error, 'Unable to generate AI images'), 'error');
+    } finally {
+      setIsGeneratingImages(false);
+    }
+  }
+
   function handleImageChange(event) {
     processFiles(event.target.files);
     event.target.value = '';
@@ -170,8 +224,13 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     setDragActive(false);
   }
 
-  function removeImage(id) {
-    setImages((current) => current.filter((file) => `${file.name}-${file.size}-${file.lastModified}` !== id));
+  function removePreview(preview) {
+    if (preview.kind === 'generated') {
+      setGeneratedImages((current) => current.filter((image) => (image.publicId || image.url) !== preview.id));
+      return;
+    }
+
+    setImages((current) => current.filter((file) => `${file.name}-${file.size}-${file.lastModified}` !== preview.id));
   }
 
   function handleChange(event) {
@@ -187,7 +246,7 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
 
     if (Object.keys(nextErrors).length) return;
 
-    onSubmit(buildProductFormData(values, images));
+    onSubmit(buildProductFormData(values, images, generatedImages));
   }
 
   return (
@@ -285,6 +344,22 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
           <UploadCloud size={34} className="mx-auto text-leaf-700" />
           <p className="mt-3 text-sm font-semibold text-leaf-900">Drag & Drop / Click / CTRL + V Paste Images</p>
           <p className="mt-1 text-xs text-stone-600">Up to 6 images, 5MB each. PNG, JPG, WEBP supported.</p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-leaf-900 px-4 text-sm font-black text-white transition hover:bg-leaf-800 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={isGeneratingImages}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleGenerateImages();
+              }}
+              type="button"
+            >
+              {isGeneratingImages ? 'Generating AI images...' : 'Generate AI images'}
+            </button>
+            <span className="text-xs font-semibold text-stone-500">
+              Premium white background, lifestyle, and detail shots from your product details.
+            </span>
+          </div>
           <input
             ref={fileInputRef}
             accept="image/*"
@@ -309,7 +384,7 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
                 <img className="aspect-square w-full object-cover transition duration-200 group-hover:scale-105" src={preview.url} alt={preview.name} />
                 <button
                   className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-leaf-900 shadow hover:bg-white"
-                  onClick={() => removeImage(preview.id)}
+                  onClick={() => removePreview(preview)}
                   type="button"
                   aria-label="Remove image"
                 >

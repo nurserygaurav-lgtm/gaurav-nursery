@@ -12,7 +12,7 @@ export function validateProductForm(values) {
   return errors;
 }
 
-export function buildProductFormData(values, images) {
+export function buildProductFormData(values, images, generatedImages = []) {
   const formData = new FormData();
 
   formData.append('title', values.title.trim());
@@ -45,6 +45,15 @@ export function buildProductFormData(values, images) {
   images.forEach((image) => {
     formData.append('images', image);
   });
+
+  const generatedUrls = generatedImages
+    .map((image) => image?.url || image)
+    .map((url) => String(url || '').trim())
+    .filter(Boolean);
+
+  if (generatedUrls.length) {
+    formData.append('generatedImageUrls', JSON.stringify(generatedUrls));
+  }
 
   return formData;
 }
