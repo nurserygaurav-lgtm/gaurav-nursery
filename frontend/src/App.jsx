@@ -11,7 +11,7 @@ const MainLayout = lazy(() => import('./layouts/MainLayout.jsx'));
 const AdminLayout = lazy(() => import('./layouts/AdminLayout.jsx'));
 const SellerLayout = lazy(() => import('./layouts/SellerLayout.jsx'));
 
-const Home = lazy(() => import('./pages/public/Home.jsx'));
+const HomePremium = lazy(() => import('./pages/public/HomePremium.jsx'));
 const About = lazy(() => import('./pages/public/About.jsx'));
 const Blog = lazy(() => import('./pages/public/Blog.jsx'));
 const BlogPost = lazy(() => import('./pages/public/BlogPost.jsx'));
@@ -61,9 +61,8 @@ export default function App() {
     <BrowserRouter>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={<Home />} />
-
           <Route element={<MainLayout />}>
+            <Route index element={<HomePremium />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
