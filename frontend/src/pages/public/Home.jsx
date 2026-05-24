@@ -261,9 +261,9 @@ export default function Home() {
           ))}
         </div>
         <div className="premium-container grid gap-8 py-10 lg:grid-cols-[1fr_22rem] xl:grid-cols-[1fr_24rem]">
-          <motion.div className="grid gap-8 rounded-[2rem] border border-white/15 bg-white/10 p-6 text-white shadow-[0_30px_100px_rgba(0,0,0,0.34)] backdrop-blur md:grid-cols-[0.9fr_1.1fr] md:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+          <motion.div className="grid gap-8 rounded-[2rem] border border-white/15 bg-[#0f172a]/90 p-6 text-white shadow-[0_30px_100px_rgba(0,0,0,0.34)] backdrop-blur md:grid-cols-[0.9fr_1.1fr] md:p-9" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <div className="flex flex-col justify-center">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-emerald-50 backdrop-blur">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-[#14532d]/95 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white backdrop-blur">
                 <Leaf size={16} />
                 Premium Botanical Store
               </span>
@@ -271,7 +271,7 @@ export default function Home() {
               <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-emerald-50/85">Healthy Plants. Happy Homes. Delivered with Love.</p>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 {heroBadges.map((badge) => (
-                  <div key={badge} className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/12 px-4 py-3 text-sm font-black text-white backdrop-blur">
+                  <div key={badge} className="flex items-center gap-2 rounded-2xl border border-white/15 bg-[#0f172a]/70 px-4 py-3 text-sm font-black text-white backdrop-blur">
                     <Check size={17} className="text-emerald-200" />
                     {badge}
                   </div>
@@ -281,7 +281,7 @@ export default function Home() {
                 <Link className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-black text-[#0b3d1e] shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition hover:-translate-y-1 hover:bg-emerald-50" to="/shop">
                   Shop Now <ArrowRight className="ml-2" size={18} />
                 </Link>
-                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-7 text-sm font-black text-white backdrop-blur transition hover:-translate-y-1 hover:bg-white/20" to="/categories">
+                <Link className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 bg-[#14532d]/95 px-7 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-[#166534]" to="/categories">
                   Explore Collections
                 </Link>
               </div>
@@ -295,14 +295,14 @@ export default function Home() {
                 <span className="text-3xl font-black">GN</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.16em]">Gaurav Nursery</span>
               </div>
-              <div className="absolute bottom-7 right-0 rotate-[-3deg] rounded-2xl border border-white/20 bg-white/15 px-5 py-4 text-center font-serif text-lg font-black text-white shadow-card backdrop-blur">
+              <div className="absolute bottom-7 right-0 rotate-[-3deg] rounded-2xl border border-white/20 bg-[#0f172a]/80 px-5 py-4 text-center font-serif text-lg font-black text-white shadow-card backdrop-blur">
                 From Our Nursery<br />To Your Home
               </div>
             </div>
           </motion.div>
 
           <aside className="grid gap-5">
-            <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-5 text-white shadow-soft backdrop-blur">
+            <div className="rounded-[1.5rem] border border-white/15 bg-[#0f172a]/85 p-5 text-white shadow-soft backdrop-blur">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-serif text-2xl font-black text-white">Best Sellers</h2>
                 <Link className="text-sm font-black text-emerald-100" to="/shop">View all</Link>
@@ -312,7 +312,7 @@ export default function Home() {
               {!isLoading && !error && (
                 <div className="grid gap-4">
                   {bestSellers.map((product) => (
-                    <div key={product._id} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl border border-white/10 bg-white/12 p-2 backdrop-blur">
+                    <div key={product._id} className="grid grid-cols-[5rem_1fr] gap-3 rounded-2xl border border-white/10 bg-[#0f172a]/65 p-2 backdrop-blur">
                       <Link to={`/products/${product._id}`}><img className="h-20 w-20 rounded-xl object-cover" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" onError={handleImageError} /></Link>
                       <div className="min-w-0">
                         <p className="truncate text-xs font-black uppercase tracking-[0.12em] text-emerald-100">{product.category || 'Plants'}</p>
@@ -326,8 +326,8 @@ export default function Home() {
               )}
             </div>
 
-            <Link className="block rounded-[1.5rem] border border-white/15 bg-white/10 p-6 text-white shadow-card backdrop-blur transition hover:-translate-y-1" to="/shop">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#eaf7e8]">Summer Green Sale</p>
+            <Link className="block rounded-[1.5rem] border border-white/15 bg-[#14532d]/85 p-6 text-white shadow-card backdrop-blur transition hover:-translate-y-1 hover:bg-[#166534]" to="/shop">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#c8f8c9]">Summer Green Sale</p>
               <h3 className="mt-2 font-serif text-3xl font-black">Up to 40% OFF</h3>
               <span className="mt-4 inline-flex items-center text-sm font-black">Shop offers <ArrowRight className="ml-2" size={17} /></span>
             </Link>
@@ -391,8 +391,8 @@ export default function Home() {
                 ['Minutes', timeLeft.minutes],
                 ['Seconds', timeLeft.seconds]
               ].map(([label, value]) => (
-                <div key={label} className="rounded-2xl border border-white/15 bg-white/10 p-4 text-center backdrop-blur">
-                  <span className="block text-3xl font-black">{value}</span>
+                <div key={label} className="rounded-2xl border border-white/15 bg-[#0f172a]/70 p-4 text-center backdrop-blur shadow-soft">
+                  <span className="block text-3xl font-black text-white">{value}</span>
                   <span className="mt-1 block text-[11px] font-black uppercase tracking-[0.16em] text-emerald-100">{label}</span>
                 </div>
               ))}
@@ -437,7 +437,7 @@ export default function Home() {
             <h2 className="mt-3 font-serif text-4xl font-black sm:text-5xl">Handpicked | Hygienic | Carefully Delivered</h2>
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
               {featureList.map((feature) => (
-                <div key={feature} className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 font-black backdrop-blur">
+                <div key={feature} className="flex items-center gap-3 rounded-2xl bg-[#0f172a]/60 px-4 py-3 font-black text-white backdrop-blur shadow-soft">
                   <Check size={18} className="text-[#eaf7e8]" />
                   {feature}
                 </div>

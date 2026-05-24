@@ -358,8 +358,8 @@ export default function HomePremium() {
                 >
                   <img src={heroSlides[activeSlide].image} alt={heroSlides[activeSlide].title} className="h-full w-full object-cover" loading="eager" decoding="async" onError={handleImageError} />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#072110]/80 via-transparent to-transparent" />
-                  <div className="absolute left-5 bottom-5 right-5 rounded-[1.75rem] border border-white/15 bg-white/10 p-6 text-white backdrop-blur-lg">
-                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#ffffff]/10 px-3 py-2 text-xs font-black uppercase tracking-[0.22em] text-white">
+                  <div className="absolute left-5 bottom-5 right-5 rounded-[1.75rem] border border-white/15 bg-[#0f172a]/90 p-6 text-white shadow-card backdrop-blur-lg">
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#14532d]/95 px-3 py-2 text-xs font-black uppercase tracking-[0.22em] text-white">
                       {heroSlides[activeSlide].badge}
                     </div>
                     <h2 className="text-3xl font-black tracking-tight sm:text-4xl">{heroSlides[activeSlide].title}</h2>
@@ -368,14 +368,14 @@ export default function HomePremium() {
                       <Button className="h-12 bg-[#ffffff] px-6 text-sm font-black text-[#0b3d1e] hover:bg-[#f4f7f1]" onClick={() => navigate('/shop?category=' + encodeURIComponent(heroSlides[activeSlide].category))}>
                         {heroSlides[activeSlide].action}
                       </Button>
-                      <Button className="h-12 border border-white/40 bg-white/10 text-sm font-black text-white hover:bg-white/20" variant="glass" onClick={() => navigate('/products')}>
+                      <Button className="h-12 border border-white/40 bg-[#14532d] text-sm font-black text-white shadow-button hover:bg-[#166534]" onClick={() => navigate('/products')}>
                         Explore now
                       </Button>
                     </div>
                   </div>
                 </motion.div>
                 <div className="absolute inset-x-0 bottom-5 flex items-center justify-between px-5 sm:px-8">
-                  <button type="button" className="rounded-full border border-white/25 bg-white/10 p-3 text-white shadow-soft transition hover:bg-white/20" onClick={() => changeSlide(-1)} aria-label="Previous slide">
+                  <button type="button" className="rounded-full border border-white/25 bg-[#0f172a]/70 p-3 text-white shadow-soft transition hover:bg-[#14532d]/80" onClick={() => changeSlide(-1)} aria-label="Previous slide">
                     <ArrowRight className="rotate-180" size={18} />
                   </button>
                   <div className="flex items-center gap-2">
@@ -383,7 +383,7 @@ export default function HomePremium() {
                       <button key={index} type="button" className={`h-2.5 w-2.5 rounded-full transition ${index === activeSlide ? 'bg-white' : 'bg-white/40'}`} onClick={() => setActiveSlide(index)} aria-label={`Select slide ${index + 1}`} />
                     ))}
                   </div>
-                  <button type="button" className="rounded-full border border-white/25 bg-white/10 p-3 text-white shadow-soft transition hover:bg-white/20" onClick={() => changeSlide(1)} aria-label="Next slide">
+                  <button type="button" className="rounded-full border border-white/25 bg-[#0f172a]/70 p-3 text-white shadow-soft transition hover:bg-[#14532d]/80" onClick={() => changeSlide(1)} aria-label="Next slide">
                     <ArrowRight size={18} />
                   </button>
                 </div>
@@ -412,7 +412,7 @@ export default function HomePremium() {
               </div>
               <div className="mt-6 grid grid-cols-3 gap-3">
                 {Object.entries(timeLeft).map(([label, value]) => (
-                  <div key={label} className="rounded-3xl bg-white/10 px-4 py-3 text-center text-sm font-black text-white backdrop-blur">
+                  <div key={label} className="rounded-3xl bg-[#0f172a]/75 px-4 py-3 text-center text-sm font-black text-white backdrop-blur shadow-soft">
                     <span className="block text-2xl">{value}</span>
                     <span className="block text-[11px] uppercase tracking-[0.22em] text-emerald-100">{label}</span>
                   </div>

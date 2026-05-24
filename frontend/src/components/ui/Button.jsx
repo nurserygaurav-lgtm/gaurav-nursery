@@ -5,7 +5,7 @@ const variants = {
   secondary: 'bg-leaf-100 text-leaf-900 shadow-soft hover:-translate-y-0.5 hover:bg-white',
   outline: 'border border-leaf-200 bg-white/90 text-leaf-900 hover:-translate-y-0.5 hover:border-leaf-400 hover:bg-leaf-50',
   dark: 'bg-leaf-950 text-white hover:-translate-y-0.5 hover:bg-leaf-800',
-  glass: 'bg-white/15 text-white border border-white/20 shadow-soft backdrop-blur hover:bg-white/25'
+  glass: 'bg-white/20 text-white border border-white/25 shadow-soft backdrop-blur-lg hover:bg-white/30'
 };
 
 export default function Button({ children, className = '', variant = 'primary', ...props }) {
