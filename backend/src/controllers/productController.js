@@ -132,6 +132,55 @@ async function createUniqueSlug(name) {
   return slug;
 }
 
+async function generateImagesForProduct(productId) {
+  try {
+    const product = await Product.findById(productId).lean();
+    if (!product || (product.images && product.images.length > 0)) return;
+
+    const generated = await generateProductImageSet(
+      {
+        title: product.name,
+        category: product.category,
+        description: product.description || '',
+        benefits: product.benefits || '',
+        height: product.care?.height || '',
+        potSize: product.care?.potSize || '',
+        watering: product.care?.watering || '',
+        sunlight: product.care?.sunlight || '',
+        fertilizer: product.care?.fertilizer || ''
+      },
+      1
+    );
+
+    if (!generated.length) {
+      throw new Error('No image was generated');
+    }
+
+    const stored = await uploadGeneratedImage(generated[0].base64);
+    await Product.updateOne(
+      { _id: product._id, 'images.0': { $exists: false } },
+      {
+        $push: {
+          images: {
+            ...stored,
+            variant: generated[0].variant,
+            prompt: generated[0].prompt,
+            revisedPrompt: generated[0].revisedPrompt
+          }
+        }
+      }
+    );
+  } catch (error) {
+    console.error(`Bulk import image generation failed for product ${productId}:`, error?.message || error);
+  }
+}
+
+async function generateImagesForProducts(productIds) {
+  for (const productId of productIds) {
+    await generateImagesForProduct(productId);
+  }
+}
+
 function mapImportRow(row, headerIndex) {
   const get = (name) => row[headerIndex[normalizeHeader(name)]] || '';
   const name = get('Product Name');
@@ -283,6 +332,9 @@ export const bulkImportProducts = asyncHandler(async (req, res) => {
   const summary = { total: rows.length - 1, created: 0, duplicates: 0, failed: 0 };
   const errors = [];
   const imported = [];
+  const pendingImageProductIds = [];
+
+  const shouldAutoGenerate = req.body.autoGenerateImages === 'true' || req.body.autoGenerateImages === true;
 
   for (const [index, row] of rows.slice(1).entries()) {
     const rowNumber = index + 2;
@@ -299,14 +351,20 @@ export const bulkImportProducts = asyncHandler(async (req, res) => {
         continue;
       }
 
+      const images = await uploadProductImageUrls(productInput.imageUrls);
+
       const product = await Product.create({
         ...productInput,
-        images: await uploadProductImageUrls(productInput.imageUrls),
+        images,
         imageUrls: undefined,
         slug: await createUniqueSlug(productInput.name),
         seller: req.user._id,
         status: 'active'
       });
+
+      if (!images.length && shouldAutoGenerate) {
+        pendingImageProductIds.push(product._id);
+      }
 
       summary.created += 1;
       imported.push({ id: product._id, name: product.name, sku: product.sku, slug: product.slug });
@@ -314,6 +372,16 @@ export const bulkImportProducts = asyncHandler(async (req, res) => {
       summary.failed += 1;
       errors.push({ row: rowNumber, message: error.message });
     }
+  }
+
+  if (pendingImageProductIds.length) {
+    setImmediate(async () => {
+      try {
+        await generateImagesForProducts(pendingImageProductIds);
+      } catch (backgroundError) {
+        console.error('Bulk import background image generation failed:', backgroundError?.message || backgroundError);
+      }
+    });
   }
 
   res.status(201).json({ summary, imported, errors });

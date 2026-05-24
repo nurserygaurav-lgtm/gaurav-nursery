@@ -58,9 +58,14 @@ export async function deleteTodayProducts() {
 export async function bulkImportProducts(file, onUploadProgress) {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('autoGenerateImages', 'true');
+
   const { data } = await api.post('/products/import', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-    onUploadProgress
+    onUploadProgress,
+    timeout: 900000,
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity
   });
   return data;
 }

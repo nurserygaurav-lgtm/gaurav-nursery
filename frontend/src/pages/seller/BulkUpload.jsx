@@ -89,6 +89,7 @@ export default function BulkUpload() {
           <span className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
             Columns supported: Product Name, Price, Offer Price, Category, Subcategory, Image URL, Description, Benefits,
             Height, Pot Size, Watering, Sunlight, Fertilizer, Stock, SKU, Tags, SEO Title, Meta Description.
+            If no Image URL is provided, AI image generation will run automatically for that row. This can take several minutes, so please wait for completion.
           </span>
           <input ref={inputRef} accept=".csv,text/csv" className="sr-only" onChange={handleFileChange} type="file" />
         </button>

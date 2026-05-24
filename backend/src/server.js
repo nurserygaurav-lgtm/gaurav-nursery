@@ -7,6 +7,8 @@ let server;
 connectDB()
   .then(() => {
     server = app.listen(config.port, () => {
+      server.timeout = 900000;
+      server.keepAliveTimeout = 900000;
       console.log(`Server running on port ${config.port}`);
     });
   })
