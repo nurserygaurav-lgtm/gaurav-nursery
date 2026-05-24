@@ -8,12 +8,12 @@ export default function CartItem({ item, isUpdating, onRemove, onQuantityChange 
   const product = item.product;
 
   return (
-    <article className="grid gap-4 rounded-lg bg-white p-4 shadow-soft sm:grid-cols-[96px_1fr_auto] sm:items-center">
+    <article className="grid gap-4 rounded-lg bg-white p-4 shadow-soft sm:grid-cols-[96px_minmax(0,1fr)_auto] sm:items-center">
       <Link to={`/products/${product._id}`}>
         <img className="h-24 w-24 rounded-lg object-cover" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" />
       </Link>
       <div>
-        <Link to={`/products/${product._id}`} className="font-bold text-leaf-900">
+        <Link to={`/products/${product._id}`} className="block line-clamp-2 break-words font-bold text-leaf-900">
           {getProductTitle(product)}
         </Link>
         <p className="mt-1 text-sm text-stone-600">{product.category}</p>

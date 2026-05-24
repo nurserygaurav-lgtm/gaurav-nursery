@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +7,9 @@
 :root {
   color: #0F172A;
   background: #f2faf0;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-body);
   --text-dark: #0F172A;
   --text-dark-strong: #111827;
   --text-mid: #1F2937;
@@ -56,7 +60,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-body);
   background: radial-gradient(circle at top left, rgba(145, 209, 144, 0.15), transparent 30rem),
     radial-gradient(circle at bottom right, rgba(56, 99, 53, 0.12), transparent 28rem),
     linear-gradient(180deg, #f8fff5 0%, #ffffff 48%, #f8fff5 100%);
@@ -100,7 +104,16 @@ img {
 }
 
 .font-serif {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-heading);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: anywhere;
 }
 
 .form-input {

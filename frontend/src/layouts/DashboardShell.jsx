@@ -12,6 +12,7 @@ import {
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import BrandLogo from '../components/brand/BrandLogo.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import { useToast } from '../hooks/useToast.js';
 
@@ -32,7 +33,7 @@ export default function DashboardShell({ title, navItems }) {
     <aside className="flex h-full flex-col bg-leaf-950 text-white">
       <div className="border-b border-white/10 p-5">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-lg font-black text-leaf-950">GN</span>
+          <BrandLogo compact inverse />
           <div>
             <h1 className="text-lg font-black leading-none">{title}</h1>
             <p className="mt-1 text-xs font-bold uppercase tracking-[0.22em] text-leaf-200">Nursery OS</p>

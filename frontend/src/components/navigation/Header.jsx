@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import BrandLogo from '../brand/BrandLogo.jsx';
 import { brandContact } from '../../data/brandContent.js';
 import { megaMenuItems } from '../../data/megaMenuData.js';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -368,13 +369,8 @@ export default function Header() {
 
       <div className="premium-container flex min-h-16 items-center justify-between gap-2 py-2.5 sm:min-h-20 sm:gap-3 sm:py-3">
         <Link to="/" className="flex min-w-0 items-center gap-3" onClick={closeMobileMenu}>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0b3d1e] text-base font-black text-white shadow-button sm:h-12 sm:w-12 sm:text-lg">
-            GN
-          </span>
-          <span className="hidden sm:block">
-            <span className="block font-serif text-[clamp(1.25rem,1.8vw,1.8rem)] font-black leading-none text-[#0b3d1e]">Gaurav Nursery</span>
-            <span className="text-xs font-bold uppercase tracking-[0.22em] text-[#4caf50]">Premium Plant Studio</span>
-          </span>
+          <BrandLogo compact className="sm:hidden" />
+          <BrandLogo className="hidden sm:inline-flex max-w-[14rem]" />
         </Link>
 
         <form className="hidden min-w-[16rem] flex-1 items-center lg:flex lg:max-w-2xl" onSubmit={handleSearch}>

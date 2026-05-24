@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Sparkles, Truck, CreditCard, ShieldCheck, PackageSearch, CircleDollarSign, Zap } from 'lucide-react';
+import { Search, Sparkles, Truck, CreditCard, ShieldCheck, PackageSearch, CircleDollarSign, UploadCloud, Zap } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.js';
 
 const categories = [

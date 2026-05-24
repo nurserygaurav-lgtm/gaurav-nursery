@@ -1,4 +1,5 @@
 import React from 'react';
+import BrandLogo from '../../components/brand/BrandLogo.jsx';
 
 const highlights = ['Fresh nursery plants', 'Safe packaging', 'Delivery support', 'Plant care guidance'];
 
@@ -23,7 +24,7 @@ export default function Home() {
         minHeight: '100vh',
         background: 'linear-gradient(180deg, #eff8ea 0%, #f8fbf5 36%, #ffffff 100%)',
         color: '#12321b',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: 'var(--font-body)'
       }}
     >
       <header
@@ -82,23 +83,7 @@ export default function Home() {
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <span
-              style={{
-                margin: 0,
-                display: 'inline-flex',
-                width: 'fit-content',
-                padding: '8px 14px',
-                borderRadius: 999,
-                background: '#e4f4df',
-                color: '#2f6d38',
-                fontSize: 12,
-                fontWeight: 800,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase'
-              }}
-            >
-              Gaurav Nursery
-            </span>
+            <BrandLogo className="mb-4" />
 
             <h1
               style={{

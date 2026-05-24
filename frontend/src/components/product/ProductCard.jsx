@@ -63,8 +63,12 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           />
         </Link>
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3">
-          <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#0b3d1e] shadow-soft">{getDiscountLabel(product)}</span>
-          <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#0b3d1e] shadow-soft">COD</span>
+          <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#0b3d1e] shadow-soft">
+            {getDiscountLabel(product)}
+          </span>
+          <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#0b3d1e] shadow-soft">
+            COD
+          </span>
         </div>
         <button
           type="button"
@@ -83,10 +87,15 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
       </div>
       <div className="space-y-4 p-5">
         <div className="flex items-center justify-between gap-3">
-          <span className="truncate text-xs font-black uppercase tracking-[0.18em] text-[#4f7a58]">{product.category || 'Plants'}</span>
+          <span className="truncate text-xs font-black uppercase tracking-[0.18em] text-[#4f7a58]">
+            {product.category || 'Plants'}
+          </span>
           <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${stock.tone}`}>{stock.text}</span>
         </div>
-        <Link to={`/products/${product._id}`} className="block truncate text-xl font-black leading-tight text-[#10210f] transition hover:text-[#3d7d36]">
+        <Link
+          to={`/products/${product._id}`}
+          className="block line-clamp-2 break-words text-xl font-black leading-tight text-[#10210f] transition hover:text-[#3d7d36]"
+        >
           {getProductTitle(product)}
         </Link>
         <p className="text-sm text-stone-500">{getSellerName(product)}</p>
@@ -94,7 +103,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           <span className="rounded-full bg-[#eff7ef] px-3 py-1 font-black">Live plant</span>
           <span className="rounded-full bg-[#eff7ef] px-3 py-1 font-black">Safe packaging</span>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#526f58]">
+        <div className="grid grid-cols-1 gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#526f58] sm:grid-cols-3">
           <span className="rounded-2xl bg-[#f2fbf1] px-2 py-2">Size {size}</span>
           <span className="rounded-2xl bg-[#f2fbf1] px-2 py-2">{water} water</span>
           <span className="rounded-2xl bg-[#f2fbf1] px-2 py-2">{sunlight}</span>
@@ -106,7 +115,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           </div>
           <div className="flex items-center gap-2">
             <PackageCheck size={16} className="text-[#4caf50]" />
-            <span>Free shipping above ₹499</span>
+            <span>Free shipping above Rs. 499</span>
           </div>
           <div className="flex items-center gap-2">
             <Watch size={16} className="text-[#4caf50]" />

@@ -1,5 +1,6 @@
-import { CreditCard, Leaf, Mail, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles, Truck } from 'lucide-react';
+import { BadgeCheck, CreditCard, Leaf, Mail, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import BrandLogo from '../brand/BrandLogo.jsx';
 import { brandContact } from '../../data/brandContent.js';
 
 const trustItems = [
@@ -13,15 +14,22 @@ const trustItems = [
 const footerLinks = [
   { label: 'About Us', to: '/about' },
   { label: 'Plant Care', to: '/blog' },
-  { label: 'Shipping Policy', to: '/contact' },
-  { label: 'Replacement Policy', to: '/contact' },
-  { label: 'Terms', to: '/contact' },
-  { label: 'Privacy', to: '/contact' },
+  { label: 'Shipping Policy', to: '/shipping-policy' },
+  { label: 'Replacement Policy', to: '/replacement-policy' },
+  { label: 'Terms & Conditions', to: '/terms' },
+  { label: 'Privacy Policy', to: '/privacy' },
   { label: 'Track Order', to: '/orders' },
   { label: 'Contact', to: '/contact' },
   { label: 'WhatsApp', to: `https://wa.me/${brandContact.whatsappPhone}` },
   { label: 'Instagram', to: 'https://instagram.com/' },
   { label: 'YouTube', to: 'https://youtube.com/' }
+];
+
+const footerTrustBadges = [
+  'SSL Secured',
+  'UPI, Card & COD',
+  'Razorpay Protected',
+  'Live Plant Support'
 ];
 
 export default function Footer() {
@@ -40,14 +48,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="premium-container grid gap-10 py-12 lg:grid-cols-[1.2fr_0.9fr_0.9fr_1fr]">
+        <div className="premium-container grid gap-10 py-12 lg:grid-cols-[1.2fr_0.9fr_0.9fr_1fr]">
         <div>
           <Link className="flex items-center gap-3" to="/">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-black text-[#0b3d1e]">GN</span>
-            <div>
-              <h2 className="font-serif text-2xl font-black leading-none">{brandContact.name}</h2>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#eaf7e8]">Trusted Plant Studio</p>
-            </div>
+            <BrandLogo inverse />
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-7 text-[#eaf7e8]">
             Premium plants, safe packaging, and real support from our nursery in Sultanpur.
@@ -119,6 +123,16 @@ export default function Footer() {
               </a>
             ))}
           </div>
+        </div>
+      </div>
+      <div className="border-t border-white/10 bg-white/[0.04]">
+        <div className="premium-container flex flex-wrap items-center justify-center gap-2 py-4 text-xs font-black uppercase tracking-[0.18em] text-white/90">
+          {footerTrustBadges.map((badge) => (
+            <span key={badge} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2">
+              <BadgeCheck size={14} className="text-emerald-200" />
+              {badge}
+            </span>
+          ))}
         </div>
       </div>
     </footer>
