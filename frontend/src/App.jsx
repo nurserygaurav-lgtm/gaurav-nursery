@@ -7,7 +7,10 @@ import MainLayout from './layouts/MainLayout.jsx';
 import AdminLayout from './layouts/AdminLayout.jsx';
 import SellerLayout from './layouts/SellerLayout.jsx';
 
-const Home = lazy(() => import('./pages/public/Home.jsx'));
+import Home from './pages/public/Home.jsx';
+
+// HomePremium temporarily disabled for production stabilization.
+// const HomeLazy = lazy(() => import('./pages/public/HomePremium.jsx'));
 const Shop = lazy(() => import('./pages/public/Shop.jsx'));
 const Categories = lazy(() => import('./pages/public/Categories.jsx'));
 const CategoryLanding = lazy(() => import('./pages/public/CategoryLanding.jsx'));
