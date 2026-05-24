@@ -5,6 +5,7 @@ import {
   BadgePercent,
   Check,
   Clock,
+  Droplet,
   Heart,
   Instagram,
   Leaf,
@@ -13,10 +14,14 @@ import {
   MessageCircle,
   PackageCheck,
   Phone,
+  RefreshCcw,
   RotateCcw,
+  Scissors,
   ShieldCheck,
   ShoppingCart,
+  Sparkles,
   Star,
+  Sun,
   UserRound,
   Youtube
 } from 'lucide-react';
@@ -69,21 +74,33 @@ const trustBar = [
   { icon: RotateCcw, label: 'Eco Packaging' }
 ];
 
+const topOfferItems = ['Free Delivery Above ₹499', 'COD Available', 'Live Plant Guarantee', '7 Day Easy Returns', 'Same Day Dispatch'];
+
+const heroFeatures = ['100% Live Plants', 'Eco Packaging', 'COD Available', 'Plant Care Support'];
+
+const careCards = [
+  { title: 'Watering', description: 'Keep soil moist with deep watering sessions and mist leaves regularly.' },
+  { title: 'Sunlight', description: 'Place plants in soft morning light and avoid harsh afternoon sun.' },
+  { title: 'Fertilizer', description: 'Feed monthly with balanced plant nutrients for lush growth.' },
+  { title: 'Pruning', description: 'Trim spent leaves to keep plants healthy and elegant.' },
+  { title: 'Repotting', description: 'Refresh roots every season to support bigger, healthier plants.' }
+];
+
 const videoReels = [
   {
-    title: 'Green Delivery Reel',
+    title: 'Plant Unboxing',
     embedUrl: 'https://www.youtube.com/embed/Ev1iWygUL5Y',
-    description: 'Quick plant delivery moments and care-ready pack styling.'
+    description: 'Fresh nursery arrivals unboxed with plant care notes.'
   },
   {
-    title: 'Indoor Plant Styling',
+    title: 'Home Plant Styling',
     embedUrl: 'https://www.youtube.com/embed/6YC0kK0mY0U',
-    description: 'Simple styling tips for brighter indoor green corners.'
+    description: 'Luxury indoor styling and living space greenery inspiration.'
   },
   {
-    title: 'Easy Plant Care',
+    title: 'Easy Care Routine',
     embedUrl: 'https://www.youtube.com/embed/zQVIPu3M-cE',
-    description: 'Short tutorials for watering, light, and nurturing your plants.'
+    description: 'Gentle daily care tips for busy plant parents.'
   }
 ];
 
