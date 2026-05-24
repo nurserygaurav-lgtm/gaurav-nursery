@@ -1,20 +1,14 @@
-import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/public/Home.jsx';
 
-function App() {
+export default function App() {
   return (
-    <div
-      style={{
-        padding: '40px',
-        fontFamily: 'Arial',
-        textAlign: 'center'
-      }}
-    >
-      <h1>Gaurav Nursery</h1>
-      <p>Production recovery mode active.</p>
-      <p>Recovery Build v2</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-export default App;
 
