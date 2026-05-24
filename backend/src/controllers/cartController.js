@@ -8,22 +8,35 @@ const cartPopulate = {
   populate: { path: 'seller', select: 'name sellerProfile.shopName' }
 };
 
+function getValidCartItems(cart) {
+  return cart.items.filter((item) => item?.product?._id);
+}
+
 async function getCustomerCart(customerId) {
   let cart = await Cart.findOne({ customer: customerId }).populate(cartPopulate);
   if (!cart) {
     cart = await Cart.create({ customer: customerId, items: [] });
     cart = await cart.populate(cartPopulate);
   }
+
+  const validItems = getValidCartItems(cart);
+  if (validItems.length !== cart.items.length) {
+    cart.items = validItems;
+    await cart.save();
+    cart = await cart.populate(cartPopulate);
+  }
+
   return cart;
 }
 
 function cartSummary(cart) {
-  const subtotal = cart.items.reduce((total, item) => total + Number(item.product?.price || 0) * item.quantity, 0);
+  const validItems = getValidCartItems(cart);
+  const subtotal = validItems.reduce((total, item) => total + Number(item.product.price || 0) * item.quantity, 0);
   return {
     cart,
     summary: {
       subtotal,
-      itemCount: cart.items.reduce((total, item) => total + item.quantity, 0)
+      itemCount: validItems.reduce((total, item) => total + item.quantity, 0)
     }
   };
 }
@@ -54,7 +67,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   }
 
   const cart = await getCustomerCart(req.user._id);
-  const existingItem = cart.items.find((item) => item.product._id.toString() === productId);
+  const existingItem = cart.items.find((item) => item?.product?._id?.toString() === productId);
 
   if (existingItem) {
     existingItem.quantity = Math.min(existingItem.quantity + nextQuantity, product.stock);
@@ -76,7 +89,7 @@ export const updateCartItem = asyncHandler(async (req, res) => {
   }
 
   const cart = await getCustomerCart(req.user._id);
-  const item = cart.items.find((cartItem) => cartItem.product._id.toString() === req.params.id);
+  const item = cart.items.find((cartItem) => cartItem?.product?._id?.toString() === req.params.id);
 
   if (!item) {
     res.status(404);
@@ -96,7 +109,7 @@ export const updateCartItem = asyncHandler(async (req, res) => {
 
 export const removeCartItem = asyncHandler(async (req, res) => {
   const cart = await getCustomerCart(req.user._id);
-  cart.items = cart.items.filter((item) => item.product._id.toString() !== req.params.id);
+  cart.items = cart.items.filter((item) => item?.product?._id?.toString() !== req.params.id);
   await cart.save();
   await cart.populate(cartPopulate);
   res.json(cartSummary(cart));

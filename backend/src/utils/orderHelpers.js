@@ -9,6 +9,10 @@ const cartPopulate = {
   populate: { path: 'seller', select: 'name sellerProfile.shopName' }
 };
 
+function getValidCartItems(cart) {
+  return cart.items.filter((item) => item?.product?._id);
+}
+
 export function validateShippingAddress(address = {}) {
   const requiredFields = ['name', 'phone', 'street', 'city', 'state', 'pincode'];
   const missingField = requiredFields.find((field) => !address[field]?.trim());
@@ -25,17 +29,28 @@ function createHttpError(message, statusCode = 400) {
 }
 
 export async function getCartForCheckout(customerId) {
-  return Cart.findOne({ customer: customerId }).populate(cartPopulate);
+  const cart = await Cart.findOne({ customer: customerId }).populate(cartPopulate);
+
+  if (!cart) return cart;
+
+  const validItems = getValidCartItems(cart);
+  if (validItems.length !== cart.items.length) {
+    cart.items = validItems;
+    await cart.save();
+    return cart.populate(cartPopulate);
+  }
+
+  return cart;
 }
 
 export function calculateCartTotal(cart) {
-  return cart.items.reduce((total, item) => total + Number(item.product.price) * Number(item.quantity), 0);
+  return getValidCartItems(cart).reduce((total, item) => total + Number(item.product.price) * Number(item.quantity), 0);
 }
 
 function buildOrderItems(cart) {
-  return cart.items.map((item) => ({
+  return getValidCartItems(cart).map((item) => ({
     product: item.product._id,
-    seller: item.product.seller._id || item.product.seller,
+    seller: item.product.seller?._id || item.product.seller,
     name: item.product.title || item.product.name,
     image: item.product.images?.[0]?.url,
     quantity: item.quantity,
@@ -55,7 +70,12 @@ export async function createOrderFromCart({ customerId, expectedAmountPaise, shi
         throw createHttpError('Cart is empty');
       }
 
-      for (const item of cart.items) {
+      const validItems = getValidCartItems(cart);
+      if (!validItems.length) {
+        throw createHttpError('Cart is empty');
+      }
+
+      for (const item of validItems) {
         if (!item.product || item.product.status !== 'active') {
           throw createHttpError('One or more products are no longer available');
         }
@@ -85,7 +105,7 @@ export async function createOrderFromCart({ customerId, expectedAmountPaise, shi
         { session }
       );
 
-      for (const item of cart.items) {
+      for (const item of validItems) {
         const stockUpdate = await Product.updateOne(
           { _id: item.product._id, stock: { $gte: item.quantity } },
           { $inc: { stock: -item.quantity } },

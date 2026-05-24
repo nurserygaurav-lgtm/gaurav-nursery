@@ -8,12 +8,24 @@ const wishlistPopulate = {
   populate: { path: 'seller', select: 'name sellerProfile.shopName' }
 };
 
+function getValidWishlistProducts(wishlist) {
+  return wishlist.products.filter((product) => product?._id);
+}
+
 async function getCustomerWishlist(customerId) {
   let wishlist = await Wishlist.findOne({ customer: customerId }).populate(wishlistPopulate);
   if (!wishlist) {
     wishlist = await Wishlist.create({ customer: customerId, products: [] });
     wishlist = await wishlist.populate(wishlistPopulate);
   }
+
+  const validProducts = getValidWishlistProducts(wishlist);
+  if (validProducts.length !== wishlist.products.length) {
+    wishlist.products = validProducts;
+    await wishlist.save();
+    wishlist = await wishlist.populate(wishlistPopulate);
+  }
+
   return wishlist;
 }
 
@@ -37,7 +49,7 @@ export const addToWishlist = asyncHandler(async (req, res) => {
   }
 
   const wishlist = await getCustomerWishlist(req.user._id);
-  const alreadySaved = wishlist.products.some((item) => item._id.toString() === productId);
+  const alreadySaved = wishlist.products.some((item) => item?._id?.toString() === productId);
 
   if (!alreadySaved) wishlist.products.push(productId);
 
@@ -48,7 +60,7 @@ export const addToWishlist = asyncHandler(async (req, res) => {
 
 export const removeFromWishlist = asyncHandler(async (req, res) => {
   const wishlist = await getCustomerWishlist(req.user._id);
-  wishlist.products = wishlist.products.filter((product) => product._id.toString() !== req.params.id);
+  wishlist.products = wishlist.products.filter((product) => product?._id?.toString() !== req.params.id);
   await wishlist.save();
   await wishlist.populate(wishlistPopulate);
   res.json({ wishlist });
