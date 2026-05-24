@@ -1,4 +1,4 @@
-import { UploadCloud, X } from 'lucide-react';
+import { UploadCloud, Scissors, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useToast } from '../../hooks/useToast.js';
 import { generateProductImages as generateAiProductImages } from '../../services/productService.js';
@@ -387,8 +387,9 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
                   onClick={() => removePreview(preview)}
                   type="button"
                   aria-label="Remove image"
+                  title="Cut / remove this image"
                 >
-                  <X size={16} />
+                  <Scissors size={16} />
                 </button>
               </div>
             ))}
