@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   CheckCircle2,
@@ -226,6 +226,14 @@ export default function ProductDetails() {
     { icon: ShieldCheck, label: 'Pet Safety', value: product?.care?.petSafety || 'Check species-specific safety before placing near pets' },
     { icon: Truck, label: 'Delivery Notes', value: product?.care?.deliveryNotes || 'Packed carefully for live arrival' }
   ];
+  const whatsInTheBox = product?.packageIncludes?.length
+    ? product.packageIncludes
+    : [
+        '1 healthy plant',
+        '1 nursery pot',
+        '1 plant care guide card'
+      ];
+  const packagingPromise = product?.packagingNote || 'Safe packaging guarantee: cushioned, root-secured, and ready for transit.';
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -283,7 +291,9 @@ export default function ProductDetails() {
           <p className="text-sm font-bold uppercase tracking-wide text-[#4caf50]">{product.subcategory || product.category}</p>
           <h1 className="mt-2 text-[clamp(1.9rem,3.5vw,3.5rem)] font-black text-[#0b3d1e]">{getProductTitle(product)}</h1>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm font-bold text-stone-600">
-            <span>Sold by {getSellerName(product)}</span>
+            <Link className="rounded-full bg-[#f1faf1] px-3 py-1 text-[#0b3d1e] transition hover:bg-[#e2f3df]" to={`/shop?seller=${encodeURIComponent(getSellerName(product))}`}>
+              Sold by {getSellerName(product)}
+            </Link>
             <span className="inline-flex items-center gap-2 rounded-full bg-[#f1faf1] px-3 py-1 text-[#2f5f34]">
               <ShieldCheck size={15} /> Trusted nursery supply
             </span>
@@ -328,6 +338,11 @@ export default function ProductDetails() {
             <span className="rounded-full bg-[#f1faf1] px-3 py-2 text-sm font-black text-[#2f5f34]">Safe packaging</span>
             <span className="rounded-full bg-[#f1faf1] px-3 py-2 text-sm font-black text-[#2f5f34]">Replacement support</span>
           </div>
+
+          <div className="mt-6 rounded-[1.5rem] border border-[#dbe8d8] bg-[#f7fff5] p-5 shadow-soft">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#4caf50]">Safe Packaging Guarantee</p>
+            <p className="mt-2 text-sm leading-7 text-stone-600">{packagingPromise}</p>
+          </div>
         </div>
       </div>
 
@@ -340,6 +355,19 @@ export default function ProductDetails() {
                 <item.icon className="text-[#4caf50]" size={22} />
                 <p className="mt-3 text-sm font-black text-[#0b3d1e]">{item.label}</p>
                 <p className="mt-1 text-sm leading-6 text-stone-600">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[2rem] bg-white p-5 shadow-soft sm:p-6">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#4caf50]">What&apos;s in the box</p>
+          <h2 className="mt-3 text-[clamp(1.4rem,2.4vw,2rem)] font-black text-[#0b3d1e]">Clear package contents</h2>
+          <div className="mt-5 grid gap-3">
+            {whatsInTheBox.map((item) => (
+              <div key={item} className="flex items-center gap-3 rounded-[1.25rem] border border-[#e5f0e0] bg-[#f7fff5] px-4 py-3">
+                <CheckCircle2 size={18} className="text-[#4caf50]" />
+                <span className="text-sm font-semibold text-stone-700">{item}</span>
               </div>
             ))}
           </div>

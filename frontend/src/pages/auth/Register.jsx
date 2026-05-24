@@ -1,6 +1,6 @@
 import { ArrowRight, BadgeCheck, Eye, EyeOff, Facebook, Headphones, Leaf, Lock, Mail, Phone, ShieldCheck, Sparkles, Store, Truck, Undo2, UserRound } from 'lucide-react';
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -21,6 +21,8 @@ const initialValues = {
 };
 
 export default function Register() {
+  const location = useLocation();
+  const isSellerSignup = new URLSearchParams(location.search).get('role') === 'seller';
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -29,6 +31,11 @@ export default function Register() {
   const { register, authError } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isSellerSignup) return;
+    setValues((current) => ({ ...current, role: 'seller' }));
+  }, [isSellerSignup]);
 
   usePageMeta({
     title: 'Register',

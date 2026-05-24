@@ -24,6 +24,7 @@ import {
   Sun,
   Tag,
   TrendingUp,
+  Store,
   UserRound,
   Wheat,
   Wrench
@@ -60,6 +61,7 @@ const quickLinks = [
 ];
 
 const whatsappUrl = 'https://wa.me/916352031504';
+const PINCODE_KEY = 'gaurav_nursery_pincode';
 
 function MenuIcon({ name, className = '', size = 18 }) {
   const Icon = iconMap[name] || Leaf;
@@ -230,12 +232,19 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(() => readStoredCartCount());
   const [wishlistCount, setWishlistCount] = useState(() => readStoredWishlistCount());
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+  const [deliveryPincode, setDeliveryPincode] = useState(() => localStorage.getItem(PINCODE_KEY) || '');
 
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('dark', isDarkMode);
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (deliveryPincode) {
+      localStorage.setItem(PINCODE_KEY, deliveryPincode);
+    }
+  }, [deliveryPincode]);
 
   useEffect(() => {
     async function syncCounts() {
@@ -357,11 +366,29 @@ export default function Header() {
     setIsMenuOpen(false);
   }
 
+  function handlePinClick() {
+    const nextPin = window.prompt('Enter delivery pincode', deliveryPincode);
+    if (nextPin === null) return;
+
+    const normalized = nextPin.trim();
+    if (normalized && !/^\d{6}$/.test(normalized)) {
+      showToast('Please enter a valid 6 digit pincode', 'error');
+      return;
+    }
+
+    setDeliveryPincode(normalized);
+    showToast(normalized ? `Delivery pin set to ${normalized}` : 'Delivery pin cleared');
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-white/90 shadow-soft backdrop-blur-xl dark:bg-[#07140b]/90 dark:border-b dark:border-white/10">
       <div className="bg-[#0b3d1e] text-white">
         <div className="premium-container flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-[clamp(0.65rem,0.9vw,0.8rem)] font-black uppercase tracking-[0.2em] text-white/90 sm:gap-3 sm:text-sm">
-          <span className="inline-flex items-center gap-2"><MapPin size={14} /> {brandContact.address}</span>
+          <button type="button" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 transition hover:bg-white/15" onClick={handlePinClick}>
+            <MapPin size={14} />
+            Deliver to {deliveryPincode || 'enter pin'}
+          </button>
+          <span className="hidden sm:inline-flex">{brandContact.address}</span>
           <span className="hidden sm:inline-flex">Official support: {brandContact.supportPhone}</span>
           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">Customer support across India</span>
         </div>
@@ -448,10 +475,16 @@ export default function Header() {
               </AnimatePresence>
             </div>
           ) : (
-            <Link className="hidden items-center gap-2 rounded-full bg-[#0b3d1e] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#4caf50] sm:inline-flex lg:px-4" to="/login">
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link className="inline-flex items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-3.5 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] lg:px-4" to="/register?role=seller">
+                <Store size={18} />
+                Sell on Gaurav Nursery
+              </Link>
+              <Link className="inline-flex items-center gap-2 rounded-full bg-[#0b3d1e] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#4caf50] lg:px-4" to="/login">
               <UserRound size={20} />
               Login/Register
-            </Link>
+              </Link>
+            </div>
           )}
 
           <a className="hidden items-center gap-2 rounded-full bg-[#25d366] px-3.5 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-[#1ebe5d] lg:inline-flex lg:px-4" href={whatsappUrl} rel="noreferrer" target="_blank">
@@ -521,6 +554,13 @@ export default function Header() {
               ))}
 
               <div className="grid gap-2 rounded-2xl border border-leaf-100 bg-white p-3">
+                <button type="button" className="rounded-xl bg-[#f7fff5] px-3.5 py-3 text-left text-sm font-black text-[#0b3d1e]" onClick={handlePinClick}>
+                  <span className="block text-[11px] uppercase tracking-[0.18em] text-stone-500">Deliver to</span>
+                  {deliveryPincode || 'Enter your pincode'}
+                </button>
+                <Link className="rounded-xl border border-[#dbe8d8] bg-white px-3.5 py-3 text-sm font-black text-[#0b3d1e]" to="/register?role=seller" onClick={closeMobileMenu}>
+                  Sell on Gaurav Nursery
+                </Link>
                 {quickLinks.map((item) => (
                   <NavLink key={item.to} to={item.to} onClick={closeMobileMenu} className={({ isActive }) => `rounded-xl px-3.5 py-3 text-sm font-bold transition ${isActive ? 'bg-[#eaf7e8] text-[#0b3d1e]' : 'text-stone-600 hover:bg-[#f8fff5]'}`}>
                     {item.label}

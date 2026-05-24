@@ -12,11 +12,12 @@ import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
+import { getSellerName } from '../../utils/product.js';
 
 const baseCategories = ['', 'Indoor Plants', 'Outdoor Plants', 'Flowering Plants', 'Fruit Plants', 'Pots & Planters', 'Seeds', 'Fertilizers', 'Gardening Tools'];
 
 function matchFilter(product, activeFilters) {
-  const text = `${product.category || ''} ${product.subcategory || ''} ${product.name || ''} ${product.title || ''} ${(product.tags || []).join(' ')}`.toLowerCase();
+  const text = `${product.category || ''} ${product.subcategory || ''} ${product.name || ''} ${product.title || ''} ${getSellerName(product)} ${(product.tags || []).join(' ')}`.toLowerCase();
   if (!activeFilters.length) return true;
   const checks = {
     'indoor': text.includes('indoor'),
@@ -52,6 +53,7 @@ export default function Shop() {
   const currentPage = Number(searchParams.get('page') || 1);
   const category = searchParams.get('category') || '';
   const search = searchParams.get('search') || '';
+  const seller = searchParams.get('seller') || '';
 
   usePageMeta({
     title: category || search ? `Shop ${category || search}` : 'Shop',
@@ -65,7 +67,7 @@ export default function Shop() {
       try {
         setIsLoading(true);
         setError('');
-        const data = await getProducts({ page: currentPage, limit: 48, category, search });
+        const data = await getProducts({ page: currentPage, limit: 48, category, search, seller });
         if (isMounted) {
           setProducts(data.products || []);
           setPagination(data.pagination || { page: 1, pages: 1, total: 0 });
@@ -81,7 +83,7 @@ export default function Shop() {
     return () => {
       isMounted = false;
     };
-  }, [category, currentPage, search]);
+  }, [category, currentPage, search, seller]);
 
   function updateParams(nextValues) {
     const nextParams = new URLSearchParams(searchParams);
@@ -144,7 +146,8 @@ export default function Shop() {
   const filteredProducts = useMemo(() => {
     const base = products.filter((product) => {
       const price = Number(product.price || 0);
-      return price >= priceRange[0] && price <= priceRange[1] && matchFilter(product, activeFilters);
+      const sellerMatch = !seller || getSellerName(product).toLowerCase().includes(seller.toLowerCase());
+      return price >= priceRange[0] && price <= priceRange[1] && sellerMatch && matchFilter(product, activeFilters);
     });
 
     const sorted = [...base];
@@ -165,7 +168,7 @@ export default function Shop() {
         break;
     }
     return sorted;
-  }, [activeFilters, priceRange, products, sortBy]);
+  }, [activeFilters, priceRange, products, seller, sortBy]);
 
   return (
     <section className="premium-container py-10">

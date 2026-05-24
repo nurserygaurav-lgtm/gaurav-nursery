@@ -1,5 +1,5 @@
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { IndianRupee, PackageSearch, ShoppingBag, Store, TrendingUp, Users } from 'lucide-react';
+import { BadgeCheck, IndianRupee, PackageSearch, Percent, ShoppingBag, ShieldCheck, Store, TrendingUp, Users } from 'lucide-react';
 import { ActivityFeed, Panel, PageHeader, MetricCard, StatusPill } from '../../components/dashboard/DashboardUI.jsx';
 import { categoryData, chartData } from '../../components/dashboard/dashboardData.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
@@ -123,6 +123,52 @@ export default function AdminDashboard() {
               { title: 'High-value order', text: 'A cart above Rs. 10,000 was successfully paid.' }
             ]}
           />
+        </Panel>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        <Panel title="Seller Verification Desk" subtitle="Approve or block new marketplace sellers">
+          <div className="space-y-3">
+            {[
+              { title: 'Aadhaar / GST check', text: 'Verify seller identity and business documents before activation.' },
+              { title: 'Nursery proof review', text: 'Confirm plant inventory and business location.' },
+              { title: 'Approval action', text: 'Approve, request changes, or block suspicious applications.' }
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl bg-leaf-50 p-4">
+                <p className="flex items-center gap-2 font-black text-leaf-950"><BadgeCheck size={16} className="text-emerald-700" /> {item.title}</p>
+                <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        <Panel title="Commission Setup" subtitle="Set platform share and payout rules">
+          <div className="grid gap-3">
+            {[
+              { title: 'Default commission', value: '10% - 15%' },
+              { title: 'Seller payout cycle', value: 'Weekly or monthly' },
+              { title: 'Settlement status', value: 'Auto split after order completion' }
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl border border-leaf-100 bg-white p-4">
+                <p className="flex items-center gap-2 text-sm font-bold text-stone-500"><Percent size={15} /> {item.title}</p>
+                <p className="mt-2 text-2xl font-black text-leaf-950">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        <Panel title="Business Analytics" subtitle="Overall marketplace health and trust">
+          <div className="space-y-3">
+            {[
+              { title: 'Live orders today', value: '248' },
+              { title: 'Refund requests', value: '7' },
+              { title: 'Top seller rating', value: '4.9/5' },
+              { title: 'Support SLA', value: '92% on time' }
+            ].map((item) => (
+              <div key={item.title} className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-soft">
+                <span className="text-sm font-bold text-stone-600">{item.title}</span>
+                <span className="inline-flex items-center gap-2 font-black text-leaf-950"><ShieldCheck size={15} className="text-emerald-700" /> {item.value}</span>
+              </div>
+            ))}
+          </div>
         </Panel>
       </div>
     </section>

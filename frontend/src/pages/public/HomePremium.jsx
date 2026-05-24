@@ -8,9 +8,14 @@ import {
   Leaf,
   Mail,
   MessageCircle,
+  MapPin,
   PackageCheck,
+  Plus,
+  ShoppingBag,
   ShoppingCart,
   Sparkles,
+  Star,
+  Store,
   Truck
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -45,6 +50,53 @@ const heroHighlights = [
   'Plant care support'
 ];
 
+const quickCategories = [
+  { name: 'Plants', href: '/categories', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Seeds', href: '/shop?category=Seeds', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Pots & Planters', href: '/shop?category=Pots%20%26%20Planters', image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Soil & Fertilizer', href: '/shop?search=soil', image: 'https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Garden Tools', href: '/shop?search=tools', image: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Combo Packs', href: '/shop?search=combo', image: 'https://images.unsplash.com/photo-1524593166156-312f362cada0?auto=format&fit=crop&w=700&q=85' }
+];
+
+const roomCollections = [
+  {
+    title: 'Bedroom Plants',
+    text: 'Air-purifying plants that stay calm in low-light spaces.',
+    href: '/shop?search=air%20purifying',
+    image: 'https://images.unsplash.com/photo-1444392061186-9fc38f84f726?auto=format&fit=crop&w=900&q=85'
+  },
+  {
+    title: 'Balcony Plants',
+    text: 'Sun-loving greenery for balconies, terraces, and sunny windows.',
+    href: '/shop?search=balcony',
+    image: 'https://images.unsplash.com/photo-1509423350716-97f2360af5e4?auto=format&fit=crop&w=900&q=85'
+  },
+  {
+    title: 'Office Desk Plants',
+    text: 'Low-maintenance desk-friendly plants for workspaces.',
+    href: '/shop?search=office',
+    image: 'https://images.unsplash.com/photo-1524593166156-312f362cada0?auto=format&fit=crop&w=900&q=85'
+  }
+];
+
+const deliveryTickerMessages = [
+  'Order delivered safely in Delhi',
+  'Dispatched from Pune nursery hub',
+  'Fresh indoor plants packed in Lucknow',
+  'Combo pack shipped to Bangalore',
+  'COD order completed in Mumbai'
+];
+
+const fallbackSellerTicker = [
+  { name: 'Krishna Nursery', city: 'Lucknow', rating: 4.8, speciality: 'Indoor specialists' },
+  { name: 'Shyam Nursery', city: 'Malihabad', rating: 4.9, speciality: 'Mango experts' },
+  { name: 'Green Thumb Nursery', city: 'Kolkata', rating: 4.7, speciality: 'Flowering plants' },
+  { name: 'Urban Leaf Seller', city: 'Pune', rating: 4.6, speciality: 'Office greens' },
+  { name: 'Bloom House', city: 'Delhi', rating: 4.7, speciality: 'Combo packs' },
+  { name: 'Pot Studio', city: 'Mumbai', rating: 4.5, speciality: 'Pots & planters' }
+];
+
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 }
@@ -67,6 +119,8 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
   const urgency = stock > 10 ? 'Nursery fresh stock' : `Only ${stock} left`;
   const sunlight = product?.sunlight || product?.care?.sunlight || 'Bright indirect light';
   const watering = product?.waterLevel || product?.care?.watering || 'Moderate watering';
+  const sellerName = getSellerName(product);
+  const sellerRating = Number(product?.rating || product?.seller?.rating || 4.7);
 
   return (
     <motion.article
@@ -76,13 +130,41 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
     >
-      <Link to={`/products/${product._id}`} className="relative block overflow-hidden bg-[#f3fbf3]">
+      <div className="relative overflow-hidden bg-[#f3fbf3]">
         <img className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105" src={getProductImage(product)} alt={getProductTitle(product)} loading="lazy" decoding="async" onError={handleImageError} />
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-3 text-[11px] font-black uppercase tracking-[0.16em]">
           <span className="rounded-full bg-white/90 px-3 py-1 text-[#0b3d1e] shadow-soft">{getDiscount(product)}</span>
           <span className="rounded-full bg-[#0b3d1e]/90 px-3 py-1 text-white shadow-soft">{urgency}</span>
         </div>
-      </Link>
+        <Link className="absolute inset-0 z-0" to={`/products/${product._id}`} aria-label={getProductTitle(product)} />
+        <div className="absolute bottom-4 right-4 z-10 flex gap-2">
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[#0b3d1e] shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:bg-[#f2fbf1]"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onAddToWishlist(product);
+            }}
+            aria-label="Save to wishlist"
+          >
+            <Heart size={16} />
+          </button>
+          <button
+            type="button"
+            className="flex h-10 items-center gap-2 rounded-full bg-[#0b3d1e] px-3 text-xs font-black text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-[#4caf50]"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onAddToCart(product);
+            }}
+            aria-label="Quick add to cart"
+          >
+            <Plus size={15} />
+            Quick add
+          </button>
+        </div>
+      </div>
       <div className="space-y-3 p-5">
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs font-black uppercase tracking-[0.18em] text-[#4a7d41]">{product.category || 'Plants'}</span>
@@ -91,6 +173,14 @@ function ProductMiniCard({ product, onAddToCart, onAddToWishlist }) {
         <Link to={`/products/${product._id}`} className="block truncate text-lg font-black leading-snug text-[#0b3d1e] transition hover:text-[#4caf50]">
           {getProductTitle(product)}
         </Link>
+        <div className="flex items-center gap-2 text-sm font-bold text-stone-500">
+          <Store size={14} className="text-[#4caf50]" />
+          <span className="truncate">Sold by: {sellerName}</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#f2fbf1] px-2 py-1 text-[11px] font-black text-[#2f5f34]">
+            <Star size={11} />
+            {sellerRating.toFixed(1)}
+          </span>
+        </div>
         <div className="grid grid-cols-2 gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-stone-500">
           <span className="rounded-2xl bg-[#f2fbf1] px-2 py-2">{watering}</span>
           <span className="rounded-2xl bg-[#f2fbf1] px-2 py-2">{sunlight}</span>
@@ -202,6 +292,26 @@ export default function HomePremium() {
 
   const bestSellers = useMemo(() => products.slice(0, 4), [products]);
   const newArrivals = useMemo(() => products.slice(0, 8), [products]);
+  const featuredSellers = useMemo(() => {
+    const sellers = new Map();
+
+    products.forEach((product) => {
+      const name = getSellerName(product);
+      if (!name || sellers.has(name)) return;
+
+      sellers.set(name, {
+        name,
+        city: product?.seller?.city || product?.seller?.sellerProfile?.city || product?.sellerCity || 'Pan India',
+        rating: Number(product?.seller?.rating || product?.rating || 4.7),
+        speciality: product?.seller?.speciality || product?.category || 'Nursery fresh stock'
+      });
+    });
+
+    return sellers.size ? Array.from(sellers.values()).slice(0, 6) : fallbackSellerTicker;
+  }, [products]);
+
+  const sellerTicker = useMemo(() => [...featuredSellers, ...featuredSellers], [featuredSellers]);
+  const deliveryTicker = useMemo(() => [...deliveryTickerMessages, ...deliveryTickerMessages], []);
   async function handleAddToCart(product) {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: `/products/${product._id}` } } });
@@ -358,6 +468,90 @@ export default function HomePremium() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="premium-container py-10">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <Link className="flex items-center justify-center gap-2 rounded-[1.35rem] bg-[#0b3d1e] px-5 py-4 text-sm font-black text-white shadow-soft transition hover:-translate-y-1 hover:bg-[#4caf50]" to="/shop">
+            <ShoppingBag size={18} />
+            Shop Catalog
+          </Link>
+          <Link className="flex items-center justify-center gap-2 rounded-[1.35rem] border border-[#dbe8d8] bg-white px-5 py-4 text-sm font-black text-[#0b3d1e] shadow-soft transition hover:-translate-y-1 hover:bg-[#f7fff5]" to="/register?role=seller">
+            <Store size={18} />
+            Sell on Gaurav Nursery
+          </Link>
+          <button className="flex items-center justify-center gap-2 rounded-[1.35rem] border border-[#dbe8d8] bg-white px-5 py-4 text-sm font-black text-[#0b3d1e] shadow-soft transition hover:-translate-y-1 hover:bg-[#f7fff5]" type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <MapPin size={18} />
+            Check Delivery Pin
+          </button>
+          <Link className="flex items-center justify-center gap-2 rounded-[1.35rem] border border-[#dbe8d8] bg-white px-5 py-4 text-sm font-black text-[#0b3d1e] shadow-soft transition hover:-translate-y-1 hover:bg-[#f7fff5]" to="/orders">
+            <Truck size={18} />
+            Track Order
+          </Link>
+        </div>
+      </section>
+
+      <section className="premium-container pb-10">
+        <SectionTitle eyebrow="Quick Categories" title="Shop the essentials at a glance" text="Direct shortcuts for the most common nursery purchases." />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {quickCategories.map((category, index) => (
+            <motion.div key={category.name} className="group relative overflow-hidden rounded-[1.75rem] border border-[#dbe8d8] bg-white text-center shadow-soft transition hover:-translate-y-1 hover:shadow-card" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45, delay: index * 0.04 }}>
+              <Link className="block p-3 sm:p-4" to={category.href}>
+                <div className="mx-auto aspect-square w-24 overflow-hidden rounded-full border-4 border-[#f1faf1] shadow-soft sm:w-28">
+                  <img className="h-full w-full object-cover transition duration-700 group-hover:scale-105" src={category.image} alt={category.name} loading="lazy" decoding="async" onError={handleImageError} />
+                </div>
+                <p className="mt-4 text-sm font-black text-[#0b3d1e]">{category.name}</p>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section className="premium-container pb-10">
+        <SectionTitle eyebrow="Shop by Purpose" title="Choose plants by room or need" text="Helpful shortcuts for buyers who want a specific result, not just a product." />
+        <div className="grid gap-5 lg:grid-cols-3">
+          {roomCollections.map((collection, index) => (
+            <motion.article key={collection.title} className="group relative overflow-hidden rounded-[2rem] border border-[#dbe8d8] bg-white shadow-soft transition hover:-translate-y-1 hover:shadow-card" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.05 }}>
+              <img className="h-60 w-full object-cover transition duration-700 group-hover:scale-105" src={collection.image} alt={collection.title} loading="lazy" decoding="async" onError={handleImageError} />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#08170c]/80 via-transparent to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#b7f2bb]">Smart collection</p>
+                <h3 className="mt-2 text-2xl font-black">{collection.title}</h3>
+                <p className="mt-2 max-w-md text-sm leading-6 text-white/80">{collection.text}</p>
+                <Link className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-black text-[#0b3d1e]" to={collection.href}>
+                  Explore
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-[#0b3d1e] py-5 text-white">
+        <div className="premium-container overflow-hidden">
+          <motion.div className="flex w-max gap-3" animate={{ x: ['0%', '-50%'] }} transition={{ duration: 18, ease: 'linear', repeat: Infinity }}>
+            {sellerTicker.map((seller, index) => (
+              <span key={`${seller.name}-${index}`} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-black text-white">
+                <Store size={14} className="text-emerald-200" />
+                {seller.name} - {seller.city} <Star size={13} className="text-emerald-200" /> {seller.rating.toFixed(1)} {seller.speciality}
+              </span>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="bg-[#eef8eb] py-4">
+        <div className="premium-container overflow-hidden">
+          <motion.div className="flex w-max gap-3" animate={{ x: ['0%', '-50%'] }} transition={{ duration: 20, ease: 'linear', repeat: Infinity }}>
+            {deliveryTicker.map((message, index) => (
+              <span key={`${message}-${index}`} className="inline-flex items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-4 py-2 text-sm font-black text-[#0b3d1e] shadow-soft">
+                <Truck size={14} className="text-[#4caf50]" />
+                {message}
+              </span>
+            ))}
+          </motion.div>
         </div>
       </section>
 
