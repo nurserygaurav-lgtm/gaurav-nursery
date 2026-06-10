@@ -3,7 +3,6 @@ import {
   Bell,
   Building2,
   ChevronDown,
-  CircleX,
   Flower2,
   Gem,
   Gift,
@@ -12,18 +11,14 @@ import {
   LogOut,
   Menu,
   MessageCircle,
-  MapPin,
   Moon,
   Package,
   PackageSearch,
   Search,
   Shovel,
   ShoppingCart,
-  Sparkles,
   Sprout,
   Sun,
-  Tag,
-  TrendingUp,
   Store,
   UserRound,
   Wheat,
@@ -32,7 +27,6 @@ import {
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import BrandLogo from '../brand/BrandLogo.jsx';
-import { brandContact } from '../../data/brandContent.js';
 import { megaMenuItems } from '../../data/megaMenuData.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -60,7 +54,6 @@ const iconMap = {
 
 const quickLinks = [
   { label: 'Offers', to: '/shop' },
-  { label: 'All Categories', to: '/categories' },
   { label: 'Support', to: '/support' },
   { label: 'Contact', to: '/contact' }
 ];
@@ -78,108 +71,6 @@ function CountBadge({ children }) {
     <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#4caf50] px-1 text-[10px] font-black text-white">
       {children}
     </span>
-  );
-}
-
-function MegaMenuPanel({ menu }) {
-  return (
-    <motion.div
-      className="absolute left-1/2 top-full z-50 w-[min(96vw,72rem)] -translate-x-1/2 px-2 pt-3"
-      initial={{ opacity: 0, y: 14, scale: 0.985 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 10, scale: 0.99 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
-    >
-      <div className="overflow-hidden rounded-[1.25rem] border border-white/80 bg-white/95 shadow-[0_28px_80px_rgba(13,31,14,0.18)] backdrop-blur-xl">
-        <div className="grid max-h-[74vh] grid-cols-[minmax(0,1fr)_18rem] overflow-y-auto">
-          <div className="p-5 lg:p-6">
-            <div className="mb-4 flex items-center justify-between gap-4 border-b border-leaf-100 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-leaf-100 text-leaf-800 shadow-soft">
-                  <MenuIcon name={menu.icon} size={23} />
-                </span>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-leaf-600">{menu.badge}</p>
-                  <h2 className="text-[clamp(1.25rem,1.8vw,2rem)] font-black text-leaf-950">{menu.label}</h2>
-                  <p className="text-[clamp(0.8rem,1vw,0.95rem)] font-semibold text-stone-500">{menu.tagline}</p>
-                </div>
-              </div>
-              <Link
-                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-leaf-900 px-3.5 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-leaf-700"
-                to={menu.shopAllTo}
-              >
-                Shop All
-                <Sparkles size={16} />
-              </Link>
-            </div>
-
-            <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
-              {menu.sections.map((section) => (
-                <div key={section.title} className="min-w-0">
-                  <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-leaf-950">
-                    <span className="h-2 w-2 rounded-full bg-leaf-500" />
-                    {section.title}
-                  </h3>
-                  <div className="grid gap-1.5">
-                    {section.items.map((item, index) => (
-                      <Link
-                        key={item.label}
-                        className="group flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-bold text-stone-600 transition hover:bg-leaf-50 hover:text-leaf-900"
-                        to={item.to}
-                      >
-                        <span className="truncate">{item.label}</span>
-                        {(index === 0 || item.label.includes('Best Seller') || item.label.includes('Top')) && (
-                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-700 opacity-90 transition group-hover:bg-emerald-600 group-hover:text-white">
-                            Trending
-                          </span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <aside className="border-l border-leaf-100 bg-gradient-to-b from-leaf-50 via-white to-[#f7fbf0] p-4 lg:p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-leaf-600">Featured Picks</p>
-              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-700">Trending</span>
-            </div>
-            <Link className="group relative block overflow-hidden rounded-2xl bg-leaf-950" to={menu.to}>
-              <img className="h-40 w-full object-cover opacity-80 transition duration-700 group-hover:scale-105 lg:h-44" src={menu.image} alt={menu.label} loading="lazy" decoding="async" />
-              <div className="absolute inset-0 bg-gradient-to-t from-leaf-950 via-leaf-950/25 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-                <span className="mb-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-[11px] font-black uppercase backdrop-blur">
-                  <Tag size={12} />
-                  Featured Banner
-                </span>
-                <h3 className="text-[clamp(1.05rem,1.3vw,1.25rem)] font-black">{menu.label} Collection</h3>
-                <p className="mt-1 text-[clamp(0.82rem,1vw,0.95rem)] font-semibold text-white/80">Curated picks from Gaurav Nursery.</p>
-              </div>
-            </Link>
-
-            <div className="mt-5">
-              <h3 className="mb-3 flex items-center gap-2 text-sm font-black text-leaf-950">
-                <TrendingUp size={17} />
-                Top Selling
-              </h3>
-              <div className="grid gap-3">
-                {menu.featured.map((product) => (
-                  <Link key={product.name} className="group flex gap-3 rounded-2xl border border-leaf-100 bg-white p-2 shadow-soft transition hover:-translate-y-0.5 hover:border-leaf-300 hover:shadow-card" to={menu.shopAllTo}>
-                    <img className="h-16 w-16 shrink-0 rounded-xl object-cover" src={product.image} alt={product.name} loading="lazy" decoding="async" />
-                    <span className="min-w-0 py-1">
-                      <span className="block truncate text-sm font-black text-leaf-950 group-hover:text-leaf-700">{product.name}</span>
-                      <span className="mt-1 inline-flex rounded-full bg-leaf-100 px-2.5 py-1 text-[11px] font-black text-leaf-800">{product.price}</span>
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -232,7 +123,6 @@ export default function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState(null);
   const [openMobileMenu, setOpenMobileMenu] = useState(megaMenuItems[1]?.slug || '');
   const [searchTerm, setSearchTerm] = useState('');
   const [cartCount, setCartCount] = useState(() => readStoredCartCount());
@@ -325,7 +215,6 @@ export default function Header() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    setActiveMenu(null);
     setIsMenuOpen(false);
     setIsProfileOpen(false);
   }, [location.pathname]);
@@ -356,10 +245,6 @@ export default function Header() {
 
   function closeMobileMenu() {
     setIsMenuOpen(false);
-  }
-
-  function closeDesktopMenu() {
-    setActiveMenu(null);
   }
 
   function handleThemeToggle() {
@@ -396,18 +281,6 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 shadow-soft backdrop-blur-xl dark:bg-[#07140b]/90 dark:border-b dark:border-white/10">
-      <div className="bg-[#0b3d1e] text-white">
-        <div className="premium-container flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-[clamp(0.65rem,0.9vw,0.8rem)] font-black uppercase tracking-[0.2em] text-white/90 sm:gap-3 sm:text-sm">
-          <button type="button" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 transition hover:bg-white/15" onClick={handlePinClick}>
-            <MapPin size={14} />
-            Deliver to {deliveryPincode || 'enter pin'}
-          </button>
-          <span className="hidden sm:inline-flex">{brandContact.address}</span>
-          <span className="hidden sm:inline-flex">Official support: {brandContact.supportPhone}</span>
-          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">Customer support across India</span>
-        </div>
-      </div>
-
       <div className="premium-container grid min-h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-2.5 sm:min-h-20 sm:gap-3 sm:py-3">
         <Link to="/" className="flex min-w-0 shrink-0 items-center gap-3" onClick={closeMobileMenu}>
           <BrandLogo compact className="sm:hidden" />
@@ -437,7 +310,7 @@ export default function Header() {
           <button className="rounded-full border border-[#dbe8d8] bg-white/95 p-2.5 text-[#0b3d1e] transition hover:bg-[#f4fff2] sm:p-3" aria-label="Notifications">
             <Bell size={18} />
           </button>
-          <button className="rounded-full p-2.5 text-[#0b3d1e] transition hover:bg-[#eaf7e8] lg:hidden sm:p-3" onClick={() => setIsMenuOpen(true)} aria-label="Open mobile menu">
+          <button className="rounded-full p-2.5 text-[#0b3d1e] transition hover:bg-[#eaf7e8] xl:hidden sm:p-3" onClick={() => setIsMenuOpen(true)} aria-label="Open menu">
             <Menu size={20} />
           </button>
           <button
@@ -513,41 +386,29 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block" onMouseLeave={closeDesktopMenu}>
-        <div className="premium-container flex min-h-12 items-center justify-center gap-1">
-          {megaMenuItems.map((item) => (
-            <div key={item.slug} className="py-2" onMouseEnter={() => setActiveMenu(item.slug)}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-full px-2.5 py-2 text-sm font-black transition xl:px-3 ${isActive || activeMenu === item.slug ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`
-                }
-                onClick={() => setActiveMenu(item.slug)}
-              >
-                <MenuIcon name={item.icon} size={16} />
-                {item.label}
-                <ChevronDown size={14} />
-              </NavLink>
-            </div>
-          ))}
+      <nav className="relative hidden border-t border-[#dbe8d8] bg-[#f8fff5]/95 xl:block">
+        <div className="premium-container flex min-h-12 items-center justify-center gap-2">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-full bg-[#0b3d1e] px-4 py-2 text-sm font-black text-white shadow-soft transition hover:bg-[#4caf50]"
+            onClick={() => setIsMenuOpen((current) => !current)}
+            aria-expanded={isMenuOpen}
+          >
+            <Menu size={16} />
+            Categories
+            <ChevronDown className={`transition ${isMenuOpen ? 'rotate-180' : ''}`} size={14} />
+          </button>
           {quickLinks.map((item) => (
             <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => `rounded-full px-2.5 py-2 text-sm font-black transition xl:px-3 ${isActive ? 'bg-white text-[#0b3d1e] shadow-soft' : 'text-stone-600 hover:bg-white hover:text-[#4caf50]'}`}>
               {item.label}
             </NavLink>
           ))}
-          {activeMenu && (
-            <button type="button" className="ml-2 inline-flex items-center gap-2 rounded-full bg-[#0b3d1e] px-3 py-2 text-sm font-black text-white shadow-soft" onClick={closeDesktopMenu}>
-              <CircleX size={16} />
-              Close menu
-            </button>
-          )}
         </div>
-        <AnimatePresence>{activeMenu && <MegaMenuPanel key={activeMenu} menu={megaMenuItems.find((item) => item.slug === activeMenu)} />}</AnimatePresence>
       </nav>
 
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div className="absolute inset-x-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[#dbe8d8] bg-[#f7faf5] shadow-card xl:hidden" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+          <motion.div className="absolute inset-x-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[#dbe8d8] bg-[#f7faf5] shadow-card" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
             <nav className="premium-container grid gap-3 py-4">
               <form className="relative" onSubmit={handleSearch}>
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />

@@ -35,6 +35,21 @@ const footerTrustBadges = [
 export default function Footer() {
   return (
     <footer className="bg-[#0b3d1e] text-white">
+      <div className="border-b border-white/10 bg-[#0b3d1e] text-white">
+        <div className="premium-container flex flex-wrap items-center justify-between gap-2 px-3 py-3 text-[clamp(0.65rem,0.9vw,0.8rem)] font-black uppercase tracking-[0.2em] text-white/90 sm:gap-3 sm:text-sm">
+          <span className="inline-flex items-center gap-2">
+            <MapPin size={14} />
+            {brandContact.address}
+          </span>
+          <a className="inline-flex items-center gap-2 transition hover:text-white" href={`tel:${brandContact.supportPhone.replace(/\s+/g, '')}`}>
+            <Phone size={14} />
+            Official support: {brandContact.supportPhone}
+          </a>
+          <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/95">
+            Customer support across India
+          </span>
+        </div>
+      </div>
       <div className="border-b border-white/10 bg-white/[0.04]">
         <div className="premium-container grid gap-4 py-5 sm:grid-cols-2 lg:grid-cols-5">
           {trustItems.map((item) => (
