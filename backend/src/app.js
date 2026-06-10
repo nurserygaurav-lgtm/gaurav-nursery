@@ -11,13 +11,15 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
 
 const app = express();
-const allowedOrigins = [
+const allowedOrigins = new Set([
+  ...config.corsOrigins,
+  config.clientUrl,
   'https://gaurav-nursery.vercel.app',
   'https://www.gauravnursery.online',
   'https://gauravnursery.online',
   'http://localhost:5173',
   'http://localhost:3000'
-];
+].filter(Boolean));
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
@@ -31,7 +33,7 @@ app.use(morgan(config.isProduction ? 'combined' : 'dev'));
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.has(origin)) {
         return callback(null, true);
       }
       return callback(new Error('Not allowed by CORS'));

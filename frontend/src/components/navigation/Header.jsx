@@ -408,13 +408,13 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="premium-container flex min-h-16 items-center justify-between gap-2 py-2.5 sm:min-h-20 sm:gap-3 sm:py-3">
-        <Link to="/" className="flex min-w-0 items-center gap-3" onClick={closeMobileMenu}>
+      <div className="premium-container grid min-h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-2.5 sm:min-h-20 sm:gap-3 sm:py-3">
+        <Link to="/" className="flex min-w-0 shrink-0 items-center gap-3" onClick={closeMobileMenu}>
           <BrandLogo compact className="sm:hidden" />
-          <BrandLogo className="hidden sm:inline-flex max-w-[14rem]" />
+          <BrandLogo className="hidden max-w-[9.5rem] sm:inline-flex xl:max-w-[11rem] 2xl:max-w-[14rem]" />
         </Link>
 
-        <form className="hidden min-w-[16rem] flex-1 items-center lg:flex lg:max-w-2xl" onSubmit={handleSearch}>
+        <form className="hidden min-w-0 items-center lg:flex" onSubmit={handleSearch}>
           <label className="relative w-full">
             <span className="sr-only">Search products</span>
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
@@ -430,7 +430,7 @@ export default function Header() {
           </label>
         </form>
 
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+        <div className="flex min-w-0 shrink-0 items-center justify-end gap-1.5 sm:gap-2 xl:gap-3">
           <button type="button" className="rounded-full border border-[#dbe8d8] bg-white/95 p-2.5 text-[#0b3d1e] transition hover:bg-[#f4fff2] sm:p-3" onClick={handleThemeToggle} aria-label="Toggle theme">
             {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
           </button>
@@ -490,23 +490,23 @@ export default function Header() {
             </div>
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
-              <Link className="inline-flex items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-3.5 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] lg:px-4" to="/register?role=seller">
+              <Link className="hidden items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-3.5 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] 2xl:inline-flex" to="/register?role=seller">
                 <Store size={18} />
                 Sell on Gaurav Nursery
               </Link>
-              <Link className="inline-flex items-center gap-2 rounded-full bg-[#0b3d1e] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#4caf50] lg:px-4" to="/login">
+              <Link className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[#0b3d1e] px-3.5 py-2 text-sm font-bold text-white transition hover:bg-[#4caf50] lg:px-4" to="/login">
               <UserRound size={20} />
               Login/Register
               </Link>
             </div>
           )}
 
-          <a className="hidden items-center gap-2 rounded-full bg-[#25d366] px-3.5 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-[#1ebe5d] lg:inline-flex lg:px-4" href={whatsappUrl} rel="noreferrer" target="_blank">
+          <a className="hidden items-center gap-2 whitespace-nowrap rounded-full bg-[#25d366] px-3.5 py-2 text-sm font-black text-white shadow-button transition hover:-translate-y-0.5 hover:bg-[#1ebe5d] xl:inline-flex lg:px-4" href={whatsappUrl} rel="noreferrer" target="_blank">
             <MessageCircle size={18} />
             WhatsApp
           </a>
 
-          <Link className="hidden items-center gap-2 rounded-full border border-[#dbe8d8] bg-white px-3.5 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] 2xl:inline-flex lg:px-4" to="/orders">
+          <Link className="hidden items-center gap-2 whitespace-nowrap rounded-full border border-[#dbe8d8] bg-white px-3.5 py-2 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-0.5 hover:bg-[#eaf7e8] 2xl:inline-flex lg:px-4" to="/orders">
             <PackageSearch size={18} />
             Track Order
           </Link>
