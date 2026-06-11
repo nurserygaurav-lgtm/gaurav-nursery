@@ -448,7 +448,13 @@ export default function ProductDetails() {
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {relatedProducts.map((item) => (
               <a key={item._id} className="rounded-[1.5rem] bg-white p-3 shadow-soft transition hover:-translate-y-1" href={`/products/${item._id}`}>
-                <img className="aspect-square rounded-xl object-cover" src={getProductImage(item)} alt={getProductTitle(item)} onError={handleImageError} />
+                <img
+                  className="aspect-square rounded-xl object-cover"
+                  src={getProductImage(item)}
+                  alt={getProductTitle(item)}
+                  onError={(e) => handleImageError(e, FALLBACK_PLANT_IMAGE)}
+                />
+
                 <p className="mt-3 line-clamp-2 font-black text-[#0b3d1e]">{getProductTitle(item)}</p>
                 <p className="mt-1 font-black text-[#2f5f34]">{formatCurrency(item.offerPrice || item.price)}</p>
               </a>
