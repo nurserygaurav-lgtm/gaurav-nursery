@@ -26,7 +26,8 @@ import { getProductById, getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
-import { getProductImage, getProductTitle, getSellerName, handleImageError } from '../../utils/product.js';
+import { getProductImage, getProductTitle, getSellerName, handleImageError, FALLBACK_PLANT_IMAGE } from '../../utils/product.js';
+
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storage.js';
 
 function AccordionItem({ item, isOpen, onToggle }) {
@@ -291,13 +292,27 @@ export default function ProductDetails() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.92fr)] xl:gap-8">
         <div>
           <div className="group overflow-hidden rounded-[2rem] bg-white shadow-soft">
-            <img className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105" src={selectedImage || getProductImage(product)} alt={product?.seo?.altText || getProductTitle(product)} loading="lazy" decoding="async" onError={handleImageError} />
+            <img
+              className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
+              src={selectedImage || getProductImage(product)}
+              alt={product?.seo?.altText || getProductTitle(product)}
+              loading="lazy"
+              decoding="async"
+              onError={(e) => handleImageError(e, FALLBACK_PLANT_IMAGE)}
+            />
           </div>
+
           {gallery.length > 1 && (
             <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-5 sm:gap-3">
               {gallery.slice(0, 5).map((image) => (
                 <button key={image} className={`overflow-hidden rounded-xl border-2 bg-white ${selectedImage === image ? 'border-[#0b3d1e]' : 'border-transparent'}`} onClick={() => setSelectedImage(image)} type="button">
-                  <img className="aspect-square w-full object-cover" src={image} alt={getProductTitle(product)} onError={handleImageError} />
+                  <img
+                    className="aspect-square w-full object-cover"
+                    src={image}
+                    alt={getProductTitle(product)}
+                    onError={(e) => handleImageError(e, FALLBACK_PLANT_IMAGE)}
+                  />
+
                 </button>
               ))}
             </div>

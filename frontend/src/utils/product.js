@@ -13,6 +13,14 @@ export function getSellerName(product) {
 }
 
 export function handleImageError(event, fallback = FALLBACK_PLANT_IMAGE) {
-  if (event.currentTarget.src === fallback) return;
-  event.currentTarget.src = fallback;
+  const img = event?.currentTarget;
+  if (!img) return;
+
+  // Prevent infinite loops
+  if (img.dataset?.fallbackApplied === 'true') return;
+  if (img.src === fallback) return;
+
+  img.dataset.fallbackApplied = 'true';
+  img.src = fallback;
 }
+
