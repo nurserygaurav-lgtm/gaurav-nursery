@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useToast } from '../../hooks/useToast.js';
 import { createTicket, getMyTickets, replyTicket, updateTicketStatus } from '../../services/ticketService.js';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { StatusPill } from '../../components/dashboard/DashboardUI.jsx';
-import { Paperclip, Send, Trash2 } from 'lucide-react';
+import { Paperclip, Send } from 'lucide-react';
 
 const ticketTypes = [
   'Product Issue',
@@ -67,11 +67,7 @@ export default function SupportTickets() {
     });
   }, [filterStatus, searchQuery, tickets]);
 
-  useEffect(() => {
-    loadTickets();
-  }, []);
-
-  async function loadTickets() {
+  const loadTickets = useCallback(async () => {
     try {
       setIsLoading(true);
       const { tickets: data } = await getMyTickets();
@@ -85,7 +81,11 @@ export default function SupportTickets() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [showToast]);
+
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
 
   function handleFileChange(event) {
     const incoming = Array.from(event.target.files || []);

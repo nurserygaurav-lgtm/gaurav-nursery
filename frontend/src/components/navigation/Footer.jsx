@@ -13,6 +13,7 @@ const trustItems = [
 
 const footerLinks = [
   { label: 'About Us', to: '/about' },
+  { label: 'Plant File', to: '/plant' },
   { label: 'Plant Care', to: '/blog' },
   { label: 'Shipping Policy', to: '/shipping-policy' },
   { label: 'Replacement Policy', to: '/replacement-policy' },

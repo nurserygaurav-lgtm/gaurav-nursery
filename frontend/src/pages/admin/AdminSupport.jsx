@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useToast } from '../../hooks/useToast.js';
 import { getAdminTickets, replyTicket, updateTicketStatus } from '../../services/ticketService.js';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { StatusPill } from '../../components/dashboard/DashboardUI.jsx';
-import { MessageSquare, Send, Search, Tag, Trash2 } from 'lucide-react';
+import { MessageSquare, Send, Search, Trash2 } from 'lucide-react';
 
 const statuses = ['all', 'open', 'pending', 'resolved', 'closed'];
 const priorities = ['all', 'Low', 'Medium', 'High', 'Urgent'];
+const emptyAnalytics = { totalTickets: 0, openTickets: 0, highPriorityCount: 0, resolvedToday: 0 };
 const ticketTypes = [
   'Product Issue',
   'Order Problem',
@@ -27,7 +28,7 @@ export default function AdminSupport() {
   const { showToast } = useToast();
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [analytics, setAnalytics] = useState({ totalTickets: 0, openTickets: 0, highPriorityCount: 0, resolvedToday: 0 });
+  const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [priority, setPriority] = useState('all');
@@ -46,16 +47,12 @@ export default function AdminSupport() {
     [priority, search, status, type]
   );
 
-  useEffect(() => {
-    loadTickets();
-  }, [query]);
-
-  async function loadTickets() {
+  const loadTickets = useCallback(async () => {
     try {
       setIsLoading(true);
       const { tickets: data, analytics: meta } = await getAdminTickets(query);
       setTickets(data || []);
-      setAnalytics(meta || analytics);
+      setAnalytics(meta || emptyAnalytics);
       setSelectedTicket((current) => {
         const updated = data?.find((ticket) => ticket._id === current?._id);
         return updated || data?.[0] || null;
@@ -65,7 +62,11 @@ export default function AdminSupport() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [query, showToast]);
+
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
 
   async function handleSelectTicket(ticket) {
     setSelectedTicket(ticket);

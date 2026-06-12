@@ -1,5 +1,5 @@
-import { UploadCloud, Scissors, X } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { UploadCloud, Scissors } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useToast } from '../../hooks/useToast.js';
 import { generateProductImages as generateAiProductImages } from '../../services/productService.js';
 import Button from '../ui/Button.jsx';
@@ -98,29 +98,6 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     };
   }, [filePreviews]);
 
-  useEffect(() => {
-    const handleWindowPaste = (event) => {
-      const clipboard = event.clipboardData || window.clipboardData;
-      if (!clipboard) return;
-
-      const imageFiles = [];
-      Array.from(clipboard.items || []).forEach((item) => {
-        if (item.kind === 'file' && item.type.startsWith('image/')) {
-          const file = item.getAsFile();
-          if (file) imageFiles.push(file);
-        }
-      });
-
-      if (!imageFiles.length) return;
-
-      event.preventDefault();
-      processFiles(imageFiles);
-    };
-
-    window.addEventListener('paste', handleWindowPaste);
-    return () => window.removeEventListener('paste', handleWindowPaste);
-  }, [images, generatedImages]);
-
   function validateImageFile(file) {
     if (!file.type.startsWith('image/')) {
       return `File ${file.name} is not an image.`;
@@ -133,7 +110,7 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
     return '';
   }
 
-  function processFiles(fileList) {
+  const processFiles = useCallback((fileList) => {
     const files = Array.from(fileList || []);
     if (!files.length) return;
 
@@ -166,7 +143,30 @@ export default function ProductForm({ initialProduct, isSubmitting, onSubmit }) 
 
     setImages(nextImages.slice(0, MAX_IMAGES));
     setIsProcessingImages(false);
-  }
+  }, [generatedImages, images, showToast]);
+
+  useEffect(() => {
+    const handleWindowPaste = (event) => {
+      const clipboard = event.clipboardData || window.clipboardData;
+      if (!clipboard) return;
+
+      const imageFiles = [];
+      Array.from(clipboard.items || []).forEach((item) => {
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) imageFiles.push(file);
+        }
+      });
+
+      if (!imageFiles.length) return;
+
+      event.preventDefault();
+      processFiles(imageFiles);
+    };
+
+    window.addEventListener('paste', handleWindowPaste);
+    return () => window.removeEventListener('paste', handleWindowPaste);
+  }, [processFiles]);
 
   async function handleGenerateImages() {
     const title = values.title.trim();

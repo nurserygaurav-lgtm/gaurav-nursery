@@ -29,7 +29,6 @@ export default function AdminProducts() {
 
   useEffect(() => {
     loadProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleDeleteToday() {

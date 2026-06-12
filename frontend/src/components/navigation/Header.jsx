@@ -53,6 +53,7 @@ const iconMap = {
 };
 
 const quickLinks = [
+  { label: 'Plant File', to: '/plant' },
   { label: 'Offers', to: '/shop' },
   { label: 'Support', to: '/support' },
   { label: 'Contact', to: '/contact' }

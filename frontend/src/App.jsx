@@ -18,6 +18,7 @@ const BlogPost = lazy(() => import('./pages/public/BlogPost.jsx'));
 const Categories = lazy(() => import('./pages/public/Categories.jsx'));
 const CategoryLanding = lazy(() => import('./pages/public/CategoryLanding.jsx'));
 const Contact = lazy(() => import('./pages/public/Contact.jsx'));
+const PlantTemplate = lazy(() => import('./pages/public/PlantTemplate.jsx'));
 const ProductDetails = lazy(() => import('./pages/public/ProductDetails.jsx'));
 const Shop = lazy(() => import('./pages/public/Shop.jsx'));
 const SupportHome = lazy(() => import('./pages/SupportHome.jsx'));
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:slug" element={<CategoryLanding />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/plant" element={<PlantTemplate />} />
             <Route path="/support" element={<SupportHome />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/products/:id" element={<ProductDetails />} />

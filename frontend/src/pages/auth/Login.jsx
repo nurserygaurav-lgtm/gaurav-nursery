@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Eye, EyeOff, Facebook, Leaf, Lock, Mail, ShieldCheck, Sparkles, Truck, Undo2, BadgeCheck, Headphones, Phone } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Leaf, Lock, Mail, ShieldCheck, Truck, Undo2, BadgeCheck, Headphones, Phone } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button.jsx';
@@ -133,7 +133,7 @@ export default function Login() {
           showToast('Google login was not completed.', 'error');
         }
       });
-    } catch (error) {
+    } catch {
       setGoogleLoading(false);
       setGoogleError('Unable to start Google login.');
       showToast('Unable to open Google login. Please allow popups.', 'error');
