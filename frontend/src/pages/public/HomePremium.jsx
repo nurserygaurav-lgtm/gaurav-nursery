@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight,
   BadgeCheck,
@@ -120,6 +120,25 @@ const procurementSteps = [
   { icon: Truck, title: 'Dispatch Support', text: 'Order support continues through delivery and plant-care handover.' }
 ];
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0 }
+};
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: 28 },
+  show: { opacity: 1, x: 0 }
+};
+
+const staggerGroup = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.09
+    }
+  }
+};
+
 function getOldPrice(product) {
   const price = Number(product?.price || 0);
   return Number(product?.mrp || product?.oldPrice || product?.originalPrice || Math.round(price * 1.25));
@@ -139,14 +158,36 @@ function sectionProducts(products, matcher, count = 4) {
 
 function SectionHeading({ eyebrow, title, text, action }) {
   return (
-    <div className="mb-7 flex flex-col gap-4 md:mb-9 md:flex-row md:items-end md:justify-between">
+    <motion.div
+      className="mb-7 flex flex-col gap-4 md:mb-9 md:flex-row md:items-end md:justify-between"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-60px' }}
+      variants={fadeUp}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+    >
       <div className="max-w-2xl">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2f6d4c]">{eyebrow}</p>
         <h2 className="mt-3 font-serif text-[clamp(1.55rem,2.4vw,2.65rem)] font-black leading-tight text-[#10210f]">{title}</h2>
         {text && <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">{text}</p>}
       </div>
       {action}
-    </div>
+    </motion.div>
+  );
+}
+
+function AnimatedCard({ children, className = '', delay = 0 }) {
+  return (
+    <motion.article
+      className={className}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-40px' }}
+      variants={fadeUp}
+      transition={{ duration: 0.46, delay, ease: 'easeOut' }}
+    >
+      {children}
+    </motion.article>
   );
 }
 
@@ -234,6 +275,7 @@ function ProductSection({ eyebrow, title, text, products, onCart, onWishlist, is
 }
 
 export default function HomePremium() {
+  const prefersReducedMotion = useReducedMotion();
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -323,20 +365,40 @@ export default function HomePremium() {
   return (
     <div className="bg-[#f4f7f2] text-[#172315]">
       <section className="relative min-h-[calc(100svh-8rem)] overflow-hidden bg-[#10210f]">
-        <img className="absolute inset-0 h-full w-full object-cover opacity-48" src={heroImage} alt="Bulk nursery plants arranged for business orders" fetchPriority="high" />
+        <motion.img
+          className="absolute inset-0 h-full w-full object-cover opacity-48"
+          src={heroImage}
+          alt="Bulk nursery plants arranged for business orders"
+          fetchPriority="high"
+          initial={prefersReducedMotion ? false : { scale: 1.06, x: -14 }}
+          animate={prefersReducedMotion ? undefined : { scale: 1.12, x: 10 }}
+          transition={{ duration: 18, ease: 'easeInOut', repeat: Infinity, repeatType: 'reverse' }}
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-[#07140b]/96 via-[#10210f]/84 to-[#10210f]/36" />
+        <motion.div
+          className="pointer-events-none absolute right-[8%] top-[18%] hidden h-28 w-28 rounded-full border border-white/15 bg-white/8 backdrop-blur-sm lg:block"
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: [0, -14, 0] }}
+          transition={{ opacity: { duration: 0.8, delay: 0.45 }, y: { duration: 7, repeat: Infinity, ease: 'easeInOut' } }}
+        />
+        <motion.div
+          className="pointer-events-none absolute bottom-[14%] left-[45%] hidden h-20 w-20 rounded-full border border-[#b8dfb2]/25 bg-[#b8dfb2]/10 backdrop-blur-sm xl:block"
+          initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: [0, 12, 0] }}
+          transition={{ opacity: { duration: 0.8, delay: 0.7 }, y: { duration: 6.5, repeat: Infinity, ease: 'easeInOut' } }}
+        />
         <div className="premium-container relative grid min-h-[calc(100svh-8rem)] content-center gap-8 py-12 lg:grid-cols-[minmax(0,1fr)_26rem]">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
-            <span className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white backdrop-blur">
+          <motion.div initial="hidden" animate="show" variants={staggerGroup}>
+            <motion.span variants={fadeUp} transition={{ duration: 0.48 }} className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white backdrop-blur">
               <Leaf size={16} /> Gaurav Nursery B2B Supply
-            </span>
-            <h1 className="mt-6 max-w-4xl font-serif text-[clamp(2.35rem,5.8vw,5.8rem)] font-black leading-[0.98] text-white">
+            </motion.span>
+            <motion.h1 variants={fadeUp} transition={{ duration: 0.52 }} className="mt-6 max-w-4xl font-serif text-[clamp(2.35rem,5.8vw,5.8rem)] font-black leading-[0.98] text-white">
               Bulk plants and nursery supplies for business buyers.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base font-semibold leading-8 text-white/82 sm:text-lg">
+            </motion.h1>
+            <motion.p variants={fadeUp} transition={{ duration: 0.52 }} className="mt-5 max-w-2xl text-base font-semibold leading-8 text-white/82 sm:text-lg">
               Source office plants, landscape stock, planters, seeds, and corporate gifting with quote support, clear pricing, and coordinated dispatch.
-            </p>
-            <form className="mt-7 grid max-w-2xl gap-3 rounded-lg border border-white/20 bg-white/14 p-2 backdrop-blur-xl sm:grid-cols-[1fr_auto]" onSubmit={handleHeroSearch}>
+            </motion.p>
+            <motion.form variants={fadeUp} transition={{ duration: 0.52 }} className="mt-7 grid max-w-2xl gap-3 rounded-lg border border-white/20 bg-white/14 p-2 backdrop-blur-xl sm:grid-cols-[1fr_auto]" onSubmit={handleHeroSearch}>
               <label className="relative">
                 <span className="sr-only">Search wholesale products</span>
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#3d7d36]" size={18} />
@@ -350,28 +412,28 @@ export default function HomePremium() {
               <Button className="h-full min-h-12 rounded-md bg-[#4f9b45] px-7 font-black text-white hover:bg-[#72ae68]" type="submit">
                 Search
               </Button>
-            </form>
-            <div className="mt-6 flex flex-wrap gap-3">
+            </motion.form>
+            <motion.div variants={fadeUp} transition={{ duration: 0.52 }} className="mt-6 flex flex-wrap gap-3">
               <Link className="inline-flex min-h-12 items-center justify-center rounded-md bg-white px-7 text-sm font-black text-[#0b3d1e] shadow-button transition hover:-translate-y-1 hover:bg-[#f1f8ef]" to="/shop?category=Plants">
                 Browse trade catalog <ArrowRight className="ml-2" size={18} />
               </Link>
               <Link className="inline-flex min-h-12 items-center justify-center rounded-md border border-white/30 bg-white/12 px-7 text-sm font-black text-white backdrop-blur transition hover:-translate-y-1 hover:bg-white/20" to="/contact">
                 Request bulk quote
               </Link>
-            </div>
+            </motion.div>
           </motion.div>
 
-          <motion.aside className="hidden self-end rounded-lg border border-white/20 bg-white/16 p-5 text-white shadow-card backdrop-blur-xl lg:block" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55, delay: 0.1 }}>
+          <motion.aside className="hidden self-end rounded-lg border border-white/20 bg-white/16 p-5 text-white shadow-card backdrop-blur-xl lg:block" initial="hidden" animate="show" variants={fadeLeft} transition={{ duration: 0.55, delay: 0.18 }}>
             <p className="text-xs font-black uppercase tracking-[0.22em] text-[#dff7d8]">Procurement desk</p>
             <div className="mt-5 grid gap-4">
-              {procurementSteps.slice(0, 3).map((badge) => (
-                <div key={badge.title} className="flex gap-3 rounded-md bg-white/12 p-3">
+              {procurementSteps.slice(0, 3).map((badge, index) => (
+                <motion.div key={badge.title} className="flex gap-3 rounded-md bg-white/12 p-3" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.42, delay: 0.36 + index * 0.12 }}>
                   <badge.icon className="mt-1 shrink-0 text-[#b8dfb2]" size={20} />
                   <div>
                     <p className="font-black">{badge.title}</p>
                     <p className="mt-1 text-sm leading-6 text-white/72">{badge.text}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.aside>
@@ -380,11 +442,11 @@ export default function HomePremium() {
 
       <section className="border-y border-[#dbe8d8] bg-white py-5">
         <div className="premium-container grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {tradeMetrics.map((metric) => (
-            <div key={metric.label} className="border-l-4 border-[#4f9b45] bg-[#f8fbf6] px-5 py-4">
+          {tradeMetrics.map((metric, index) => (
+            <motion.div key={metric.label} className="border-l-4 border-[#4f9b45] bg-[#f8fbf6] px-5 py-4" initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.42, delay: index * 0.08 }}>
               <p className="text-2xl font-black text-[#0b3d1e]">{metric.value}</p>
               <p className="mt-1 text-sm font-bold text-slate-600">{metric.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -401,12 +463,12 @@ export default function HomePremium() {
         <div className="premium-container">
           <SectionHeading eyebrow="Who We Supply" title="Built for repeat business buying" text="A cleaner B2B experience for buyers who need availability, quantity, dispatch planning, and support before placing orders." />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {buyerTypes.map((item) => (
-              <article key={item.title} className="rounded-lg border border-[#dbe8d8] bg-white p-5 shadow-soft">
+            {buyerTypes.map((item, index) => (
+              <AnimatedCard key={item.title} delay={index * 0.06} className="rounded-lg border border-[#dbe8d8] bg-white p-5 shadow-soft">
                 <item.icon className="text-[#2f6d4c]" size={24} />
                 <h3 className="mt-4 text-lg font-black text-[#10210f]">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>
-              </article>
+              </AnimatedCard>
             ))}
           </div>
         </div>
@@ -431,8 +493,9 @@ export default function HomePremium() {
             ))}
           </div>
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
-            {categoryTiles.map((category) => (
-              <Link key={category.title} className="group relative min-h-72 overflow-hidden rounded-lg bg-[#10210f] shadow-soft transition hover:-translate-y-1 hover:shadow-card" to={category.href}>
+            {categoryTiles.map((category, index) => (
+              <motion.div key={category.title} initial="hidden" whileInView="show" viewport={{ once: true, margin: '-30px' }} variants={fadeUp} transition={{ duration: 0.46, delay: index * 0.05 }}>
+              <Link className="group relative block min-h-72 overflow-hidden rounded-lg bg-[#10210f] shadow-soft transition hover:-translate-y-1 hover:shadow-card" to={category.href}>
                 <img className="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-105" src={category.image} alt={category.title} loading="lazy" decoding="async" onError={handleImageError} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07140b]/90 via-[#07140b]/20 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
@@ -440,6 +503,7 @@ export default function HomePremium() {
                   <p className="mt-2 text-sm font-semibold leading-6 text-white/80">{category.text}</p>
                 </div>
               </Link>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -449,14 +513,14 @@ export default function HomePremium() {
         <SectionHeading eyebrow="Procurement Flow" title="Simple ordering for larger requirements" text="Use the catalog for discovery and the quote desk for anything that needs quantity pricing, timelines, or custom packaging." />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {procurementSteps.map((item, index) => (
-            <article key={item.title} className="rounded-lg border border-[#dbe8d8] bg-white p-5 shadow-soft">
+            <AnimatedCard key={item.title} delay={index * 0.06} className="rounded-lg border border-[#dbe8d8] bg-white p-5 shadow-soft">
               <div className="flex items-center justify-between">
                 <item.icon className="text-[#2f6d4c]" size={24} />
                 <span className="text-sm font-black text-slate-300">{String(index + 1).padStart(2, '0')}</span>
               </div>
               <h3 className="mt-4 text-lg font-black text-[#10210f]">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>
-            </article>
+            </AnimatedCard>
           ))}
         </div>
       </section>
@@ -468,26 +532,26 @@ export default function HomePremium() {
 
       <section className="bg-[#10210f] py-14 text-white sm:py-16">
         <div className="premium-container grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div>
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: '-40px' }} variants={fadeUp} transition={{ duration: 0.48 }}>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-[#b8dfb2]">Corporate Gifting</p>
             <h2 className="mt-4 font-serif text-[clamp(2rem,3.5vw,3.8rem)] font-black leading-tight">Plant gifting programs with business-grade coordination.</h2>
             <p className="mt-4 max-w-xl leading-8 text-white/76">Curated plants, planter options, branded notes, recipient lists, and dispatch planning for HR teams, events, real estate handovers, and client gifting.</p>
             <Link className="mt-7 inline-flex min-h-12 items-center justify-center rounded-md bg-white px-7 text-sm font-black text-[#0b3d1e] transition hover:-translate-y-1 hover:bg-[#f1f8ef]" to="/contact">
               Request gifting quote <ArrowRight className="ml-2" size={18} />
             </Link>
-          </div>
+          </motion.div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
               { icon: Building2, title: 'Bulk planning', text: 'Quantity, city, budget, and packaging mapped clearly.' },
               { icon: BadgeCheck, title: 'Gift-ready finish', text: 'Premium plant and planter combinations for recipients.' },
               { icon: PackageCheck, title: 'Careful packing', text: 'Live plant packaging suitable for delivery handling.' },
               { icon: FileText, title: 'Quote documentation', text: 'Clear order notes for internal approvals and repeat buying.' }
-            ].map((item) => (
-              <div key={item.title} className="rounded-lg border border-white/15 bg-white/10 p-5 backdrop-blur">
+            ].map((item, index) => (
+              <AnimatedCard key={item.title} delay={index * 0.06} className="rounded-lg border border-white/15 bg-white/10 p-5 backdrop-blur">
                 <item.icon className="text-[#b8dfb2]" size={24} />
                 <h3 className="mt-4 text-lg font-black">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-white/70">{item.text}</p>
-              </div>
+              </AnimatedCard>
             ))}
           </div>
         </div>
@@ -496,8 +560,8 @@ export default function HomePremium() {
       <section className="premium-container py-12 sm:py-16">
         <SectionHeading eyebrow="Buyer Feedback" title="Trusted by teams that need coordination" text="Proof points focused on delivery quality, plant health, and responsive support." />
         <div className="grid gap-5 md:grid-cols-3">
-          {reviews.map((review) => (
-            <article key={review.name} className="rounded-lg border border-[#e2e9de] bg-white p-6 shadow-soft">
+          {reviews.map((review, index) => (
+            <AnimatedCard key={review.name} delay={index * 0.06} className="rounded-lg border border-[#e2e9de] bg-white p-6 shadow-soft">
               <div className="flex gap-1 text-[#c28920]">
                 {Array.from({ length: 5 }).map((_, index) => <Star key={index} size={16} fill="currentColor" />)}
               </div>
@@ -506,7 +570,7 @@ export default function HomePremium() {
                 <p className="font-black text-[#10210f]">{review.name}</p>
                 <p className="text-sm font-bold text-[#3d7d36]">{review.city}</p>
               </div>
-            </article>
+            </AnimatedCard>
           ))}
         </div>
       </section>
