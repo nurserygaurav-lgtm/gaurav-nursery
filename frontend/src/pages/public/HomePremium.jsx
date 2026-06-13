@@ -388,7 +388,11 @@ export default function HomePremium() {
           transition={{ opacity: { duration: 0.8, delay: 0.7 }, y: { duration: 6.5, repeat: Infinity, ease: 'easeInOut' } }}
         />
         <div className="premium-container relative grid min-h-[calc(100svh-8rem)] content-center gap-8 py-12 lg:grid-cols-[minmax(0,1fr)_26rem]">
-          <motion.div initial="hidden" animate="show" variants={staggerGroup}>
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={staggerGroup}
+          >
             <motion.span variants={fadeUp} transition={{ duration: 0.48 }} className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white backdrop-blur">
               <Leaf size={16} /> Gaurav Nursery B2B Supply
             </motion.span>
