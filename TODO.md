@@ -1,8 +1,6 @@
-- [x] Inspect current image fallback behavior (done)
-- [x] Implement safe placeholder fallback for broken seller images (no black page)
-- [x] Ensure thumbnails/main gallery share the same fallback behavior
-- [x] Run frontend build/lint/test to confirm no runtime errors
+## TODO
 
-
-
-
+- [ ] Add additional Home page animations
+  - [ ] Implement one of the requested options: hero stagger, floating leaf overlay, carousel, or enhance tile animation
+  - [ ] Ensure reduced-motion support
+  - [ ] Run frontend dev build/test
