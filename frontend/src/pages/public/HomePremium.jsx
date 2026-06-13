@@ -388,6 +388,13 @@ export default function HomePremium() {
           transition={{ opacity: { duration: 0.8, delay: 0.7 }, y: { duration: 6.5, repeat: Infinity, ease: 'easeInOut' } }}
         />
         <div className="premium-container relative grid min-h-[calc(100svh-8rem)] content-center gap-8 py-12 lg:grid-cols-[minmax(0,1fr)_26rem]">
+          {/* ambient flip/shine */}
+          <motion.div
+            className="pointer-events-none absolute right-6 top-6 z-10 hidden h-20 w-20 rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-sm lg:block"
+            initial={prefersReducedMotion ? false : { opacity: 0, rotateY: -65, scale: 0.9 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, rotateY: 25, scale: 1 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+          />
           <motion.div
             initial="hidden"
             animate="show"
