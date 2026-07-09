@@ -54,6 +54,7 @@ const iconMap = {
 
 const quickLinks = [
   { label: 'Offers', to: '/shop' },
+  { label: 'Flow', to: '/business-flow' },
   { label: 'Support', to: '/support' },
   { label: 'Contact', to: '/contact' }
 ];

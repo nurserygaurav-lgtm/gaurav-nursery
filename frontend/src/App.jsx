@@ -11,10 +11,11 @@ const MainLayout = lazy(() => import('./layouts/MainLayout.jsx'));
 const AdminLayout = lazy(() => import('./layouts/AdminLayout.jsx'));
 const SellerLayout = lazy(() => import('./layouts/SellerLayout.jsx'));
 
-const HomePremium = lazy(() => import('./pages/public/HomePremium.jsx'));
+const HomeTreeland = lazy(() => import('./pages/public/HomeTreeland.jsx'));
 const About = lazy(() => import('./pages/public/About.jsx'));
 const Blog = lazy(() => import('./pages/public/Blog.jsx'));
 const BlogPost = lazy(() => import('./pages/public/BlogPost.jsx'));
+const BusinessFlow = lazy(() => import('./pages/public/BusinessFlow.jsx'));
 const Categories = lazy(() => import('./pages/public/Categories.jsx'));
 const CategoryLanding = lazy(() => import('./pages/public/CategoryLanding.jsx'));
 const Contact = lazy(() => import('./pages/public/Contact.jsx'));
@@ -63,10 +64,11 @@ export default function App() {
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route element={<MainLayout />}>
-            <Route index element={<HomePremium />} />
+            <Route index element={<HomeTreeland />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/business-flow" element={<BusinessFlow />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:slug" element={<CategoryLanding />} />
             <Route path="/contact" element={<Contact />} />

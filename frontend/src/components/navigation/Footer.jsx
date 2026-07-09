@@ -13,6 +13,7 @@ const trustItems = [
 
 const footerLinks = [
   { label: 'About Us', to: '/about' },
+  { label: 'Website Flow', to: '/business-flow' },
   { label: 'Plant Care', to: '/blog' },
   { label: 'Shipping Policy', to: '/shipping-policy' },
   { label: 'Replacement Policy', to: '/replacement-policy' },
@@ -83,7 +84,7 @@ export default function Footer() {
         <div>
           <h3 className="font-black">Company</h3>
           <div className="mt-4 grid gap-3 text-sm text-[#eaf7e8]">
-            {footerLinks.slice(0, 6).map((item) => (
+            {footerLinks.slice(0, 7).map((item) => (
               <Link key={item.label} className="transition hover:text-white" to={item.to}>
                 {item.label}
               </Link>
@@ -94,7 +95,7 @@ export default function Footer() {
         <div>
           <h3 className="font-black">Quick Links</h3>
           <div className="mt-4 grid gap-3 text-sm text-[#eaf7e8]">
-            {footerLinks.slice(6, 9).map((item) =>
+            {footerLinks.slice(7, 10).map((item) =>
               item.to.startsWith('http') ? (
                 <a key={item.label} className="transition hover:text-white" href={item.to} rel="noreferrer" target="_blank">
                   {item.label}
@@ -132,7 +133,7 @@ export default function Footer() {
         <div className="premium-container flex flex-col gap-3 py-5 text-sm text-[#eaf7e8] lg:flex-row lg:items-center lg:justify-between">
           <p>Copyright 2026 Gaurav Nursery. All rights reserved.</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {footerLinks.slice(9).map((item) => (
+            {footerLinks.slice(10).map((item) => (
               <a key={item.label} className="transition hover:text-white" href={item.to} rel="noreferrer" target="_blank">
                 {item.label}
               </a>
