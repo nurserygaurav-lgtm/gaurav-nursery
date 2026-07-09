@@ -274,6 +274,7 @@ function ProductSection({ eyebrow, title, text, products, onCart, onWishlist, is
   );
 }
 
+// NOTE: animation accent color updated (was #4f9b45/#b8dfb2 family)
 export default function HomePremium() {
   const prefersReducedMotion = useReducedMotion();
   const { isAuthenticated } = useAuth();
