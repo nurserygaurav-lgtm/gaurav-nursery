@@ -1,5 +1,3 @@
-import { brand } from '@gaurav-nursery/ui/brand';
-
 const categories = [
   ['Indoor Plants', 'Easy-care greens for every room'],
   ['Outdoor Plants', 'For balconies, gardens and patios'],
@@ -13,7 +11,7 @@ export default function Home() {
   return <main>
     <div className="offerbar">Free delivery on orders above ₹499 <span>•</span> Secure payments <span>•</span> Healthy plant guarantee</div>
     <nav>
-      <a className="logo" href="/"><b>✦</b><span>{brand.name}<small>Trusted Plant Studio</small></span></a>
+      <a className="logo" href="/"><b>✦</b><span>Gaurav Nursery<small>Trusted Plant Studio</small></span></a>
       <div className="search">Search plants, pots, seeds and more <button>Search</button></div>
       <div className="quick"><a href="/wishlist">Wishlist</a><a href="/cart">Cart <i>0</i></a><a href="/login">Login / Register</a></div>
     </nav>
