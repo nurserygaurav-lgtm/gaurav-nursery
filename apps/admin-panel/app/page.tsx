@@ -1,0 +1,1 @@
+export default function AdminHome(){return <main><h1>Gaurav Nursery Operations</h1><p>Seller approval, catalog moderation, settlements, CMS and marketplace analytics will live here.</p><p>Status: v2 foundation created.</p></main>}

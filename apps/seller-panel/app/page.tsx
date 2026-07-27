@@ -1,0 +1,1 @@
+export default function SellerHome(){return <main><h1>Gaurav Nursery Seller Hub</h1><p>Seller onboarding, KYC, store setup, inventory and fulfillment will live here.</p><p>Status: v2 foundation created.</p></main>}

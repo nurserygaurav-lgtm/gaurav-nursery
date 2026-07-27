@@ -1,0 +1,6 @@
+import { brand } from '@gaurav-nursery/ui/brand';
+
+const categories = ['Indoor Plants', 'Outdoor Plants', 'Flowering Plants', 'Air Purifying Plants', 'Seeds', 'Pots & Planters'];
+export default function Home() {
+  return <main><nav><a className="logo" href="/">🌿 {brand.name}</a><div><a href="/shop">Shop</a><a href="/login">Login</a><a className="button" href="/cart">Cart</a></div></nav><section className="hero"><p className="eyebrow">NATURE, DELIVERED</p><h1>Bring home plants that thrive with you.</h1><p>Healthy plants, expert care guidance and dependable delivery—straight from trusted nurseries.</p><div className="actions"><a className="button" href="/shop">Shop plants</a><a className="outline" href="/categories">Explore categories</a></div></section><section><div className="section-title"><div><p className="eyebrow">SHOP BY NEED</p><h2>Find your next green companion</h2></div><a href="/categories">View all →</a></div><div className="grid">{categories.map((category) => <a className="card" href={`/categories/${category.toLowerCase().replaceAll(' ', '-')}`} key={category}><span>🌱</span><h3>{category}</h3><p>Carefully selected for Indian homes and gardens.</p></a>)}</div></section></main>;
+}
