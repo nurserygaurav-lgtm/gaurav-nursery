@@ -22,6 +22,20 @@ export default function DashboardShell({ title, navItems }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const isSeller = title === 'Seller Panel';
+  const accent = isSeller
+    ? {
+        active: 'bg-orange-500 text-white shadow-lg shadow-orange-950/30',
+        icon: 'text-orange-400',
+        badge: 'bg-orange-500',
+        ring: 'focus:ring-orange-400'
+      }
+    : {
+        active: 'bg-blue-600 text-white shadow-lg shadow-blue-950/30',
+        icon: 'text-blue-400',
+        badge: 'bg-blue-600',
+        ring: 'focus:ring-blue-400'
+      };
 
   function handleLogout() {
     logout();
@@ -30,13 +44,13 @@ export default function DashboardShell({ title, navItems }) {
   }
 
   const sidebar = (
-    <aside className="flex h-full flex-col bg-leaf-950 text-white">
+    <aside className="flex h-full flex-col bg-[#151c28] text-white">
       <div className="border-b border-white/10 p-5">
         <div className="flex items-center gap-3">
           <BrandLogo compact inverse />
           <div>
             <h1 className="text-lg font-black leading-none">{title}</h1>
-            <p className="mt-1 text-xs font-bold uppercase tracking-[0.22em] text-leaf-200">Nursery OS</p>
+            <p className={`mt-1 text-xs font-bold uppercase tracking-[0.22em] ${isSeller ? 'text-orange-300' : 'text-blue-300'}`}>Nursery OS</p>
           </div>
         </div>
       </div>
@@ -50,11 +64,11 @@ export default function DashboardShell({ title, navItems }) {
             className={({ isActive }) =>
               clsx(
                 'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition',
-                isActive ? 'bg-white text-leaf-950 shadow-soft' : 'text-leaf-100 hover:bg-white/10 hover:text-white'
+                isActive ? accent.active : 'text-slate-300 hover:bg-white/10 hover:text-white'
               )
             }
           >
-            {item.icon && <item.icon size={18} />}
+            {item.icon && <item.icon className={accent.icon} size={18} />}
             {item.label}
           </NavLink>
         ))}

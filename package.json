@@ -1,19 +1,16 @@
 {
   "name": "gaurav-nursery",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
+  "engines": { "node": ">=20.0.0", "npm": ">=10" },
   "description": "Multi-vendor nursery ecommerce platform.",
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "dev:backend": "npm run dev --prefix backend",
-    "dev:frontend": "npm run dev --prefix frontend",
-    "start": "npm run dev",
-    "build": "npm run build --prefix frontend",
-    "install:all": "npm install --prefix backend && npm install --prefix frontend",
-    "start:backend": "npm start --prefix backend",
-    "lint": "npm run lint --prefix frontend"
+    "dev": "concurrently -n customer,seller,admin,api \"npm run dev --workspace @gaurav-nursery/customer-web\" \"npm run dev --workspace @gaurav-nursery/seller-panel\" \"npm run dev --workspace @gaurav-nursery/admin-panel\" \"npm run dev --workspace @gaurav-nursery/backend-api\"",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "legacy:dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
   },
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  }
+  "devDependencies": { "concurrently": "^9.1.2" }
 }
