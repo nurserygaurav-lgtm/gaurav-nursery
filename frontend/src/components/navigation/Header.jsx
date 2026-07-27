@@ -118,7 +118,7 @@ function MobileAccordion({ menu, isOpen, onToggle, onNavigate }) {
 }
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
   const { showToast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -146,16 +146,35 @@ export default function Header() {
   }, [deliveryPincode]);
 
   useEffect(() => {
+    if (isAuthLoading) return undefined;
+
+    if (!isAuthenticated) {
+      safeLocalStorageSet('gaurav_nursery_cart_count', '0');
+      safeLocalStorageSet('gaurav_nursery_wishlist_count', '0');
+      setCartCount(0);
+      setWishlistCount(0);
+      return undefined;
+    }
+
+    let isMounted = true;
+
     async function syncCounts() {
       try {
-        await Promise.all([getCart(), getWishlist()]);
+        const [cartResult, wishlistResult] = await Promise.all([getCart(), getWishlist()]);
+        if (!isMounted) return;
+
+        setCartCount(Number(cartResult.summary?.itemCount || 0));
+        setWishlistCount(Number(wishlistResult.summary?.itemCount || wishlistResult.summary?.count || wishlistResult.wishlist?.products?.length || 0));
       } catch {
         // ignore sync errors
       }
     }
 
     syncCounts();
-  }, [isAuthenticated]);
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthLoading, isAuthenticated]);
 
   useEffect(() => {
     function handleCartCountUpdate(event) {
@@ -192,57 +211,9 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadCartCount() {
-      if (!isAuthenticated) {
-        safeLocalStorageSet('gaurav_nursery_cart_count', '0');
-        if (isMounted) setCartCount(0);
-        return;
-      }
-
-      try {
-        const data = await getCart();
-        if (isMounted) setCartCount(Number(data.summary?.itemCount || 0));
-      } catch {
-        if (isMounted) setCartCount(readStoredCartCount());
-      }
-    }
-
-    loadCartCount();
-    return () => {
-      isMounted = false;
-    };
-  }, [isAuthenticated]);
-
-  useEffect(() => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
   }, [location.pathname]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadWishlistCount() {
-      if (!isAuthenticated) {
-        safeLocalStorageSet('gaurav_nursery_wishlist_count', '0');
-        if (isMounted) setWishlistCount(0);
-        return;
-      }
-
-      try {
-        const data = await getWishlist();
-        if (isMounted) setWishlistCount(Number(data.summary?.itemCount || data.summary?.count || data.wishlist?.products?.length || 0));
-      } catch {
-        if (isMounted) setWishlistCount(readStoredWishlistCount());
-      }
-    }
-
-    loadWishlistCount();
-    return () => {
-      isMounted = false;
-    };
-  }, [isAuthenticated]);
 
   function closeMobileMenu() {
     setIsMenuOpen(false);
