@@ -1,5 +1,7 @@
 # Gaurav Nursery Marketplace v2 migration
 
+The approved UI target and all 129 planned screens are documented in [UI_REFERENCE.md](UI_REFERENCE.md).
+
 ## Domain mapping
 
 | Domain | v2 application | Deployment target |

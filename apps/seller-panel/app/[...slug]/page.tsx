@@ -1,0 +1,9 @@
+const labels: Record<string, string> = { products: 'My Products', orders: 'Orders', inventory: 'Inventory', earnings: 'Earnings', payouts: 'Payouts', coupons: 'Coupons & Offers', customers: 'Customers', settings: 'Store Settings', profile: 'Profile Settings', support: 'Help & Support', analytics: 'Sales Reports', wallet: 'Seller Wallet' };
+const menu = ['Dashboard', 'My Products', 'Orders', 'Earnings', 'Payouts', 'Coupons', 'Customers', 'Store Settings', 'Profile', 'Support'];
+
+export default async function SellerScreen({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
+  const section = slug[0] ?? 'dashboard';
+  const title = labels[section] ?? section.replaceAll('-', ' ');
+  return <main className="shell"><aside><div className="brand"><b>✦</b><span>Gaurav Nursery<small>Seller Panel</small></span></div><nav>{menu.map((item, index) => <a href="#" key={item}><i>{['⌂','▦','□','₹','◫','%','♙','⚙','◉','?'][index]}</i>{item}</a>)}<a className="logout" href="#">↪ Logout</a></nav></aside><section className="content"><header><div><p>Green Leaf Nursery</p><h1>{title}</h1></div><div className="header-tools">⌕　♧　<span>GN</span></div></header><div className="stats">{[['Active Products','56','+8%'],['New Orders','12','+20%'],['Store Rating','4.8','+2%'],['Balance','₹18,450','+15%']].map(([label,value,change]) => <article key={label}><p>{label}</p><h2>{value}</h2><b>{change}</b></article>)}</div><article className="recent"><div className="panel-title"><div><h3>{title} workspace</h3><p>Manage your store operations in one place.</p></div><button>Add new +</button></div>{['Areca Palm', 'Snake Plant', 'Peace Lily', 'Money Plant', 'Jade Plant'].map((item,index) => <div className="order" key={item}><span><b>{item}</b></span><b>{[32,18,25,41,9][index]} in stock</b><em className={index === 4 ? 'pending' : 'delivered'}>{index === 4 ? 'Low stock' : 'Active'}</em></div>)}</article></section></main>;
+}
