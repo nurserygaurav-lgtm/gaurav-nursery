@@ -42,7 +42,8 @@ export function authorize(...roles) {
       return next(new Error('Not authorized'));
     }
 
-    if (!roles.includes(req.user.role)) {
+    const superAdminOverride = req.user.role === 'super_admin' && roles.includes('admin');
+    if (!roles.includes(req.user.role) && !superAdminOverride) {
       res.status(403);
       return next(new Error('Forbidden'));
     }

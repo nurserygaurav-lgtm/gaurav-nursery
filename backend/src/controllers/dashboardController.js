@@ -4,6 +4,7 @@ import Order from '../models/Order.js';
 import Payout from '../models/Payout.js';
 import Product from '../models/Product.js';
 import Restock from '../models/Restock.js';
+import User from '../models/User.js';
 
 const LOW_STOCK_THRESHOLD = 5;
 const PLATFORM_COMMISSION_RATE = 0.12;
@@ -13,6 +14,40 @@ const completedOrderMatch = { status: 'delivered' };
 const paidOrderMatch = {
   $or: [{ 'payment.status': 'paid' }, { status: { $in: ['paid', 'delivered'] } }]
 };
+
+export const getAdminDashboard = asyncHandler(async (_req, res) => {
+  const now = new Date();
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const paidStatuses = ['paid', 'processing', 'shipped', 'delivered'];
+  const [totalUsers, totalCustomers, totalSellers, pendingSellers, totalProducts, lowStockProducts, totalOrders, revenueRows, recentOrders, latestSellers, categoryRows, statusRows, monthlyRows] = await Promise.all([
+    User.countDocuments(),
+    User.countDocuments({ role: 'customer' }),
+    User.countDocuments({ role: 'seller' }),
+    User.countDocuments({ role: 'seller', 'sellerProfile.isApproved': { $ne: true } }),
+    Product.countDocuments(),
+    Product.find({ stock: { $lt: LOW_STOCK_THRESHOLD } }).select('title name category stock images').sort({ stock: 1, updatedAt: -1 }).limit(6).lean(),
+    Order.countDocuments(),
+    Order.aggregate([{ $match: { status: { $in: paidStatuses } } }, { $group: { _id: null, total: { $sum: '$totalAmount' } } }]),
+    Order.find().populate('customer', 'name email').sort({ createdAt: -1 }).limit(8).lean(),
+    User.find({ role: 'seller' }).select('name email sellerProfile createdAt').sort({ createdAt: -1 }).limit(6).lean(),
+    Product.aggregate([{ $group: { _id: { $ifNull: ['$category', 'Other'] }, count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: 6 }]),
+    Order.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+    Order.aggregate([{ $match: { createdAt: { $gte: sixMonthsAgo }, status: { $in: paidStatuses } } }, { $group: { _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } }, revenue: { $sum: '$totalAmount' }, orders: { $sum: 1 } } }, { $sort: { _id: 1 } }])
+  ]);
+  const revenue = Number(revenueRows[0]?.total || 0);
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todaySales = await Order.aggregate([{ $match: { createdAt: { $gte: todayStart }, status: { $in: paidStatuses } } }, { $group: { _id: null, total: { $sum: '$totalAmount' } } }]);
+  res.json({
+    generatedAt: now.toISOString(),
+    metrics: { totalUsers, totalCustomers, totalSellers, pendingSellers, totalProducts, totalOrders, totalRevenue: revenue, todaySales: Number(todaySales[0]?.total || 0), pendingProducts: 0, refundRequests: 0 },
+    recentOrders: recentOrders.map((order) => ({ id: order._id, customer: order.customer?.name || order.customer?.email || 'Customer', amount: order.totalAmount || 0, status: order.status || 'pending', createdAt: order.createdAt })),
+    latestSellers: latestSellers.map((seller) => ({ id: seller._id, name: seller.sellerProfile?.shopName || seller.name, email: seller.email, approved: Boolean(seller.sellerProfile?.isApproved) })),
+    lowStockProducts: lowStockProducts.map((product) => ({ id: product._id, name: product.title || product.name, category: product.category, stock: product.stock || 0, image: product.images?.[0]?.url })),
+    categories: categoryRows.map((row) => ({ name: row._id, count: row.count })),
+    orderStatuses: statusRows.map((row) => ({ name: row._id || 'pending', count: row.count })),
+    monthlyRevenue: monthlyRows
+  });
+});
 
 function getMonthStart(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
