@@ -1,14 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
 type Product = { _id: string; title?: string; name?: string; description?: string; benefits?: string; category?: string; price?: number; offerPrice?: number; stock?: number; images?: Array<{ url?: string }>; care?: { height?: string; potSize?: string; watering?: string; sunlight?: string }; seller?: { name?: string; sellerProfile?: { shopName?: string } } };
 const apiUrl = `${(process.env.NEXT_PUBLIC_LEGACY_API_URL || 'https://gaurav-nursery.onrender.com').replace(/\/$/, '')}/api`;
 const getToken = () => window.localStorage.getItem('gaurav_nursery_token') || window.sessionStorage.getItem('gaurav_nursery_token');
 
-export default function ProductDetails({ params }: { params: { id: string } }) {
+export default function ProductDetails() {
+  const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null); const [message, setMessage] = useState(''); const [loading, setLoading] = useState(true);
-  useEffect(() => { fetch(`${apiUrl}/products/${params.id}`).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.message); setProduct(data.product); }).catch(() => setMessage('This product is unavailable or could not be loaded.')).finally(() => setLoading(false)); }, [params.id]);
+  useEffect(() => { fetch(`${apiUrl}/products/${id}`).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.message); setProduct(data.product); }).catch(() => setMessage('This product is unavailable or could not be loaded.')).finally(() => setLoading(false)); }, [id]);
   async function addToCart() { const token = getToken(); if (!token) { window.location.assign('/login'); return; } const response = await fetch(`${apiUrl}/cart`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ productId: product?._id, quantity: 1 }) }); setMessage(response.ok ? 'Added to your cart.' : 'Could not add this product to the cart.'); }
   if (loading) return <main className="loading-page">Loading product…</main>;
   if (!product) return <main className="loading-page"><h2>Product not found</h2><a className="button" href="/shop">Browse plants</a></main>;
