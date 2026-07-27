@@ -42,6 +42,10 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   }
 
   const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    res.status(500);
+    throw new Error('Payment configuration error: secret key not configured');
+  }
   const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(body).digest('hex');
 
   if (expectedSignature !== razorpay_signature) {

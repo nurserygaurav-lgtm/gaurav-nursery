@@ -19,7 +19,7 @@ import { shopFilters } from '../../data/brandContent.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { usePageMeta } from '../../hooks/usePageMeta.js';
 import { useToast } from '../../hooks/useToast.js';
-import { addToCart } from '../../services/cartService.js';
+import { addToCart, getCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
@@ -57,6 +57,8 @@ export default function Shop() {
   const [activeFilters, setActiveFilters] = useState(() => (searchParams.get('filters') || '').split(',').filter(Boolean));
   const [priceRange, setPriceRange] = useState([99, 9999]);
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'Popular');
+  const [cartPreview, setCartPreview] = useState({ items: [], summary: { subtotal: 0, itemCount: 0 } });
+  const [isCartLoading, setIsCartLoading] = useState(false);
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -78,7 +80,17 @@ export default function Shop() {
       try {
         setIsLoading(true);
         setError('');
-        const data = await getProducts({ page: currentPage, limit: 48, category, search, seller });
+        const data = await getProducts({
+          page: currentPage,
+          limit: 48,
+          category,
+          search,
+          seller,
+          filters: activeFilters.join(','),
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+          sort: sortBy
+        });
         if (isMounted) {
           setProducts(data.products || []);
           setPagination(data.pagination || { page: 1, pages: 1, total: 0 });
@@ -94,7 +106,35 @@ export default function Shop() {
     return () => {
       isMounted = false;
     };
-  }, [category, currentPage, search, seller]);
+  }, [activeFilters, category, currentPage, priceRange, search, seller, sortBy]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCartPreview() {
+      if (!isAuthenticated) {
+        setCartPreview({ items: [], summary: { subtotal: 0, itemCount: 0 } });
+        return;
+      }
+
+      try {
+        setIsCartLoading(true);
+        const data = await getCart();
+        if (isMounted) {
+          setCartPreview({ items: data.cart?.items || [], summary: data.summary || { subtotal: 0, itemCount: 0 } });
+        }
+      } catch {
+        if (isMounted) setCartPreview({ items: [], summary: { subtotal: 0, itemCount: 0 } });
+      } finally {
+        if (isMounted) setIsCartLoading(false);
+      }
+    }
+
+    loadCartPreview();
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated]);
 
   function updateParams(nextValues) {
     const nextParams = new URLSearchParams(searchParams);
@@ -118,7 +158,7 @@ export default function Shop() {
     });
   }
 
-  async function handleAddToCart(product) {
+  async function handleAddToCart(product, quantity = 1) {
     const productId = product?._id || product?.id;
     if (!productId) {
       showToast('Product is still loading, please try again.', 'error');
@@ -131,7 +171,8 @@ export default function Shop() {
     }
 
     try {
-      await addToCart(productId, 1);
+      const data = await addToCart(productId, quantity);
+      setCartPreview({ items: data.cart?.items || [], summary: data.summary || { subtotal: 0, itemCount: 0 } });
       showToast('Added to cart');
       return true;
     } catch (err) {
@@ -166,35 +207,8 @@ export default function Shop() {
     setSearchParams(nextParams);
   }
 
-  const filteredProducts = useMemo(() => {
-    const base = products.filter((product) => {
-      const price = Number(product.price || 0);
-      const sellerMatch = !seller || getSellerName(product).toLowerCase().includes(seller.toLowerCase());
-      return price >= priceRange[0] && price <= priceRange[1] && sellerMatch && matchFilter(product, activeFilters);
-    });
-
-    const sorted = [...base];
-    switch (sortBy) {
-      case 'Price Low to High':
-        sorted.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
-        break;
-      case 'Price High to Low':
-        sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
-        break;
-      case 'Best Selling':
-        sorted.sort((a, b) => Number(b.stock || 0) - Number(a.stock || 0));
-        break;
-      case 'New Arrivals':
-        sorted.reverse();
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  }, [activeFilters, priceRange, products, seller, sortBy]);
-
-  const previewProducts = filteredProducts.slice(0, 3);
-  const cartPreviewTotal = previewProducts.reduce((sum, product) => sum + Number(product.price || 0), 0);
+  const filteredProducts = useMemo(() => products.filter((product) => matchFilter(product, activeFilters)), [activeFilters, products]);
+  const previewItems = cartPreview.items.filter((item) => item?.product?._id || item?.product?.id).slice(0, 3);
 
   return (
     <section className="bg-[#e6ebe3] py-6 sm:py-10">
@@ -266,7 +280,14 @@ export default function Shop() {
                     </option>
                   ))}
                 </select>
-                <select className="h-12 rounded-2xl border border-[#e1e9dd] bg-[#f7faf5] px-4 text-sm font-black text-[#10210f] outline-none" onChange={(event) => setSortBy(event.target.value)} value={sortBy}>
+                <select
+                  className="h-12 rounded-2xl border border-[#e1e9dd] bg-[#f7faf5] px-4 text-sm font-black text-[#10210f] outline-none"
+                  onChange={(event) => {
+                    setSortBy(event.target.value);
+                    updateParams({ sort: event.target.value });
+                  }}
+                  value={sortBy}
+                >
                   {shopFilters.sortOptions.map((item) => (
                     <option key={item} value={item}>{item}</option>
                   ))}
@@ -357,7 +378,10 @@ export default function Shop() {
               </div>
 
               <div className="mt-5 grid gap-3">
-                {previewProducts.length ? previewProducts.map((product) => (
+                {isCartLoading && <p className="rounded-2xl bg-[#f7faf5] p-4 text-sm font-bold text-slate-500">Loading cart...</p>}
+                {!isCartLoading && previewItems.length ? previewItems.map((item) => {
+                  const product = item.product;
+                  return (
                   <div key={product._id || product.id} className="grid grid-cols-[3.75rem_1fr_auto] items-center gap-3 rounded-2xl bg-[#f7faf5] p-2">
                     <img
                       className="h-14 w-14 rounded-xl object-cover"
@@ -367,23 +391,24 @@ export default function Shop() {
                     />
                     <div className="min-w-0">
                       <p className="truncate text-sm font-black text-[#10210f]">{getProductTitle(product)}</p>
-                      <p className="text-xs font-bold text-[#72906e]">{product.category || 'Plant'}</p>
+                      <p className="text-xs font-bold text-[#72906e]">Qty {item.quantity} | {product.category || 'Plant'}</p>
                     </div>
-                    <p className="text-sm font-black text-[#10210f]">Rs. {Number(product.price || 0)}</p>
+                    <p className="text-sm font-black text-[#10210f]">Rs. {Number(product.price || 0) * Number(item.quantity || 1)}</p>
                   </div>
-                )) : (
-                  <p className="rounded-2xl bg-[#f7faf5] p-4 text-sm font-bold text-slate-500">Products will appear here after loading.</p>
+                  );
+                }) : !isCartLoading && (
+                  <p className="rounded-2xl bg-[#f7faf5] p-4 text-sm font-bold text-slate-500">{isAuthenticated ? 'Your cart is empty.' : 'Login to see your cart here.'}</p>
                 )}
               </div>
 
               <div className="mt-5 rounded-2xl bg-[#10210f] p-4 text-white">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-white/70">Subtotal preview</span>
-                  <span className="font-black">Rs. {cartPreviewTotal}</span>
+                  <span className="font-black">Rs. {cartPreview.summary.subtotal || 0}</span>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="text-white/70">Delivery</span>
-                  <span className="font-black">Free over Rs. 499</span>
+                  <span className="font-black">{Number(cartPreview.summary.subtotal || 0) >= 499 ? 'Free' : 'Calculated at checkout'}</span>
                 </div>
                 <Button className="mt-4 h-11 w-full rounded-xl bg-[#2fd080] font-black text-[#10210f] hover:bg-[#74e3a9]" onClick={() => navigate('/cart')}>
                   View Cart

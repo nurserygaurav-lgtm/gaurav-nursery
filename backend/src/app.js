@@ -64,9 +64,9 @@ app.get('/health', (_req, res) => {
 
 app.use('/api', routes);
 // Debug endpoints (non-production use)
-app.use('/api', indexDebug);
-
-
+if (!config.isProduction) {
+  app.use('/api', indexDebug);
+}
 
 app.use(notFound);
 app.use(errorHandler);

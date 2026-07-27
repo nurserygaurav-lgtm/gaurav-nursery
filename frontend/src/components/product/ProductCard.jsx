@@ -1,25 +1,28 @@
 import { motion } from 'framer-motion';
 import { Eye, Heart, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { getProductImage, getProductTitle, getSellerName, handleImageError } from '../../utils/product.js';
 
 function getOldPrice(product) {
   const price = Number(product?.price || 0);
-  return Number(product?.oldPrice || product?.originalPrice || product?.mrp || Math.round(price * 1.25));
+  const old = Number(product?.oldPrice || product?.originalPrice || product?.mrp || 0);
+  return old > price ? old : null;
 }
 
 function getDiscountLabel(product) {
   const price = Number(product?.price || 0);
   const oldPrice = getOldPrice(product);
-  if (!price || oldPrice <= price) return 'Fresh';
-  return `${Math.round(((oldPrice - price) / oldPrice) * 100)}% Stocks`;
+  if (!price || !oldPrice || oldPrice <= price) return null;
+  return `${Math.round(((oldPrice - price) / oldPrice) * 100)}% Off`;
 }
 
 function getStockCopy(product) {
-  const stock = Number(product?.stock ?? product?.quantity ?? 12);
-  if (stock <= 0) return { text: 'Out', tone: 'bg-red-50 text-red-700' };
-  if (stock < 5) return { text: `${stock} left`, tone: 'bg-amber-50 text-amber-700' };
+  const stock = product?.stock ?? product?.quantity;
+  if (stock === undefined || stock === null) return { text: 'Check availability', tone: 'bg-slate-50 text-slate-600' };
+  if (Number(stock) <= 0) return { text: 'Out', tone: 'bg-red-50 text-red-700' };
+  if (Number(stock) < 5) return { text: `${stock} left`, tone: 'bg-amber-50 text-amber-700' };
   return { text: 'In stock', tone: 'bg-[#eaf8ef] text-[#16864f]' };
 }
 
@@ -28,8 +31,10 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
   const { isAuthenticated } = useAuth();
   const productId = product?._id || product?.id;
   const stock = getStockCopy(product);
-  const isOutOfStock = Number(product?.stock ?? product?.quantity ?? 1) <= 0;
-  const rating = Number(product?.rating || 4.8);
+  const maxQuantity = Math.max(Number(product?.stock ?? product?.quantity ?? 0), 0);
+  const isOutOfStock = maxQuantity <= 0;
+  const rating = product?.rating ? Number(product.rating) : null;
+  const [quantity, setQuantity] = useState(1);
 
   if (!productId) return null;
 
@@ -39,9 +44,17 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
       return;
     }
 
-    const added = await onAddToCart?.(product);
+    const added = await onAddToCart?.(product, quantity);
     if (added === false) return;
     navigate('/checkout');
+  }
+
+  function decreaseQuantity() {
+    setQuantity((current) => Math.max(1, current - 1));
+  }
+
+  function increaseQuantity() {
+    setQuantity((current) => Math.min(maxQuantity || 1, current + 1));
   }
 
   return (
@@ -63,9 +76,11 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
           />
         </Link>
 
-        <div className="absolute left-5 top-5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-black text-[#16864f] shadow-soft">
-          <Star size={12} fill="currentColor" /> {rating.toFixed(1)}
-        </div>
+        {rating && (
+          <div className="absolute left-5 top-5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-black text-[#16864f] shadow-soft">
+            <Star size={12} fill="currentColor" /> {rating.toFixed(1)}
+          </div>
+        )}
 
         <button
           type="button"
@@ -99,14 +114,14 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
         <div className="mt-3 flex items-center justify-between gap-3">
           <div>
             <p className="text-lg font-black text-[#10210f]">Rs. {Number(product.price || 0)}</p>
-            <p className="text-xs font-black text-[#1cb86a]">{getDiscountLabel(product)}</p>
+            {getDiscountLabel(product) && <p className="text-xs font-black text-[#1cb86a]">{getDiscountLabel(product)}</p>}
           </div>
           <div className="flex items-center rounded-full bg-[#f1f6ee] p-1">
-            <button className="flex h-8 w-8 items-center justify-center rounded-full text-[#60745d]" type="button" aria-label="Decrease quantity">
+            <button className="flex h-8 w-8 items-center justify-center rounded-full text-[#60745d] disabled:cursor-not-allowed disabled:opacity-40" type="button" aria-label="Decrease quantity" onClick={decreaseQuantity} disabled={quantity <= 1}>
               <Minus size={14} />
             </button>
-            <span className="w-5 text-center text-sm font-black text-[#10210f]">1</span>
-            <button className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10210f] shadow-soft" type="button" aria-label="Increase quantity">
+            <span className="w-5 text-center text-sm font-black text-[#10210f]">{quantity}</span>
+            <button className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10210f] shadow-soft disabled:cursor-not-allowed disabled:opacity-40" type="button" aria-label="Increase quantity" onClick={increaseQuantity} disabled={isOutOfStock || quantity >= maxQuantity}>
               <Plus size={14} />
             </button>
           </div>
@@ -125,7 +140,7 @@ export default function ProductCard({ product, onAddToCart, onAddToWishlist }) {
             type="button"
             className="flex h-11 items-center justify-center rounded-2xl bg-[#10210f] text-white shadow-button transition hover:bg-[#2f8f5b] disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isOutOfStock}
-            onClick={() => onAddToCart?.(product)}
+            onClick={() => onAddToCart?.(product, quantity)}
             aria-label="Add to cart"
           >
             <ShoppingCart size={17} />

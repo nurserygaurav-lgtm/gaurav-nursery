@@ -1,13 +1,24 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { ToastContext } from './toastContext.js';
 
 export function ToastProvider({ children }) {
   const [toast, setToast] = useState(null);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const showToast = useCallback((message, type = 'success') => {
+    if (timerRef.current) window.clearTimeout(timerRef.current);
     setToast({ message, type });
-    window.setTimeout(() => setToast(null), 3500);
+    timerRef.current = window.setTimeout(() => {
+      setToast(null);
+      timerRef.current = null;
+    }, 3500);
   }, []);
 
   const value = useMemo(() => ({ showToast }), [showToast]);

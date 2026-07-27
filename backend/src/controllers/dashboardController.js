@@ -159,7 +159,7 @@ export const getSellerDashboard = asyncHandler(async (req, res) => {
           },
           previousMonthRevenue: {
             $sum: {
-              $cond: [{ $lt: ['$createdAt', currentMonthStart] }, sellerRevenueExpression, 0]
+              $cond: [{ $and: [{ $gte: ['$createdAt', previousMonthStart] }, { $lt: ['$createdAt', currentMonthStart] }] }, sellerRevenueExpression, 0]
             }
           }
         }

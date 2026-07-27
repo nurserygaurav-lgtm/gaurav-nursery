@@ -7,8 +7,8 @@ let server;
 connectDB()
   .then(() => {
     server = app.listen(config.port, () => {
-      server.timeout = 900000;
-      server.keepAliveTimeout = 900000;
+      server.timeout = 120000;
+      server.keepAliveTimeout = 120000;
       console.log(`Server running on port ${config.port}`);
     });
   })
@@ -16,6 +16,10 @@ connectDB()
     console.error(error);
     process.exit(1);
   });
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
+});
 
 function shutdown(signal) {
   console.log(`${signal} received, shutting down gracefully`);
@@ -31,3 +35,4 @@ function shutdown(signal) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+

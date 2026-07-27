@@ -3,7 +3,7 @@ import debugRoutes from './debugRoutes.js';
 
 const router = Router();
 
-router.use('/api/debug', debugRoutes);
+router.use('/debug', debugRoutes);
 
 export default router;
 

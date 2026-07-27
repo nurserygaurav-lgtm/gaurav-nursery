@@ -72,10 +72,13 @@ export default function ProductDetails() {
     async function loadProduct() {
       try {
         setIsLoading(true);
+        setError('');
         const data = await getProductById(id);
+        const nextProduct = data?.product;
         if (isMounted) {
-          setProduct(data.product);
-          setSelectedImage(getProductImage(data.product));
+          setProduct(nextProduct || null);
+          setSelectedImage(nextProduct ? getProductImage(nextProduct) : '');
+          if (!nextProduct) setError('Product is unavailable right now.');
         }
       } catch (err) {
         if (isMounted) setError(getApiError(err, 'Unable to load product'));
@@ -107,7 +110,7 @@ export default function ProductDetails() {
     return () => {
       isMounted = false;
     };
-  }, [product]);
+  }, [product?.category, product?._id]);
 
   useEffect(() => {
     if (!product?._id) return;

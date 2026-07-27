@@ -39,12 +39,12 @@ export function authorize(...roles) {
   return (req, res, next) => {
     if (!req.user) {
       res.status(401);
-      throw new Error('Not authorized');
+      return next(new Error('Not authorized'));
     }
 
     if (!roles.includes(req.user.role)) {
       res.status(403);
-      throw new Error('Forbidden');
+      return next(new Error('Forbidden'));
     }
     next();
   };

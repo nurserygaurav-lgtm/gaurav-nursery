@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
+import PublicOnlyRoute from './components/auth/PublicOnlyRoute.jsx';
 
 const RouteFallback = () => (
   <div className="flex min-h-screen items-center justify-center bg-[#f8fff5] text-sm font-black text-[#0b3d1e]">
@@ -63,6 +65,7 @@ export default function App() {
     <BrowserRouter>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
+          {/* Public routes */}
           <Route element={<MainLayout />}>
             <Route index element={<HomeTreeland />} />
             <Route path="/about" element={<About />} />
@@ -76,52 +79,67 @@ export default function App() {
             <Route path="/support" element={<SupportHome />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/products/:id" element={<ProductDetails />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/orders/:id" element={<OrderDetails />} />
-            <Route path="/order-success/:id" element={<OrderSuccess />} />
-            <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/shipping-policy" element={<ShippingPolicy />} />
             <Route path="/replacement-policy" element={<ReplacementPolicy />} />
           </Route>
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          <Route path="/seller" element={<SellerLayout />}>
-            <Route index element={<SellerDashboard />} />
-            <Route path="products" element={<ManageProducts />} />
-            <Route path="products/new" element={<AddProduct />} />
-            <Route path="products/bulk-upload" element={<BulkUpload />} />
-            <Route path="products/:id/edit" element={<EditProduct />} />
-            <Route path="orders" element={<SellerOrders />} />
-            <Route path="analytics" element={<SellerAnalytics />} />
-            <Route path="inventory" element={<Inventory />} />
-            <Route path="earnings" element={<Earnings />} />
-            <Route path="support" element={<SupportTickets />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="customers" element={<SellerPlaceholder title="Customers" text="Customer management tools will live here." />} />
-            <Route path="reviews" element={<SellerPlaceholder title="Reviews" text="Seller review moderation is coming soon." />} />
-            <Route path="messages" element={<SellerPlaceholder title="Messages" text="Seller messages and buyer chats will appear here." />} />
+          {/* Auth routes — redirect logged-in users away */}
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Route>
 
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="sellers" element={<AdminSellers />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="support" element={<AdminSupport />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="categories" element={<AdminTablePage title="Categories" text="Manage category labels, visibility, and merchandising rules." />} />
-            <Route path="transactions" element={<AdminTablePage title="Transactions" text="Review payment records, settlements, and refunds." />} />
-            <Route path="reports" element={<AdminTablePage title="Reports" text="Track marketplace performance, moderation, and operations." />} />
-            <Route path="coupons" element={<AdminPlaceholder title="Coupons" text="Coupon management is ready for future promotion workflows." />} />
-            <Route path="reviews" element={<AdminPlaceholder title="Reviews" text="Customer review moderation will be handled here." />} />
-            <Route path="settings" element={<AdminPlaceholder title="Settings" text="Admin settings and configuration tools live here." />} />
+          {/* Customer-only routes — require authentication */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:id" element={<OrderDetails />} />
+              <Route path="/order-success/:id" element={<OrderSuccess />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+            </Route>
+          </Route>
+
+          {/* Seller routes — require seller or admin role */}
+          <Route element={<ProtectedRoute allowedRoles={['seller', 'admin']} />}>
+            <Route path="/seller" element={<SellerLayout />}>
+              <Route index element={<SellerDashboard />} />
+              <Route path="products" element={<ManageProducts />} />
+              <Route path="products/new" element={<AddProduct />} />
+              <Route path="products/bulk-upload" element={<BulkUpload />} />
+              <Route path="products/:id/edit" element={<EditProduct />} />
+              <Route path="orders" element={<SellerOrders />} />
+              <Route path="analytics" element={<SellerAnalytics />} />
+              <Route path="inventory" element={<Inventory />} />
+              <Route path="earnings" element={<Earnings />} />
+              <Route path="support" element={<SupportTickets />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="customers" element={<SellerPlaceholder title="Customers" text="Customer management tools will live here." />} />
+              <Route path="reviews" element={<SellerPlaceholder title="Reviews" text="Seller review moderation is coming soon." />} />
+              <Route path="messages" element={<SellerPlaceholder title="Messages" text="Seller messages and buyer chats will appear here." />} />
+            </Route>
+          </Route>
+
+          {/* Admin routes — require admin role */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="sellers" element={<AdminSellers />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="support" element={<AdminSupport />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="categories" element={<AdminTablePage title="Categories" text="Manage category labels, visibility, and merchandising rules." />} />
+              <Route path="transactions" element={<AdminTablePage title="Transactions" text="Review payment records, settlements, and refunds." />} />
+              <Route path="reports" element={<AdminTablePage title="Reports" text="Track marketplace performance, moderation, and operations." />} />
+              <Route path="coupons" element={<AdminPlaceholder title="Coupons" text="Coupon management is ready for future promotion workflows." />} />
+              <Route path="reviews" element={<AdminPlaceholder title="Reviews" text="Customer review moderation will be handled here." />} />
+              <Route path="settings" element={<AdminPlaceholder title="Settings" text="Admin settings and configuration tools live here." />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<NotFound />} />

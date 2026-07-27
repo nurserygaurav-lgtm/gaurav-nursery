@@ -1,18 +1,41 @@
 import api from './api.js';
 
+const publicRequest = { skipAuth: true };
+
 export async function getProducts(params = {}) {
-  const { data } = await api.get('/products', { params });
-  return data;
+  try {
+    const { data } = await api.get('/products', { ...publicRequest, params });
+    return data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      return { products: [], pagination: { page: 1, pages: 1, total: 0 } };
+    }
+    throw error;
+  }
 }
 
 export async function searchProducts(params = {}) {
-  const { data } = await api.get('/products/search', { params });
-  return data;
+  try {
+    const { data } = await api.get('/products/search', { ...publicRequest, params });
+    return data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      return { products: [], total: 0 };
+    }
+    throw error;
+  }
 }
 
 export async function getProductById(id) {
-  const { data } = await api.get(`/products/${id}`);
-  return data;
+  try {
+    const { data } = await api.get(`/products/${id}`, publicRequest);
+    return data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function getSellerProducts() {

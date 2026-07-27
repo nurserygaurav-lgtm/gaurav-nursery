@@ -17,6 +17,10 @@ const requiredInProduction = [
 
 const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
+}
+
 if (process.env.NODE_ENV === 'production') {
   const missing = requiredInProduction.filter((key) => !process.env[key]);
   if (!mongoUri) missing.push('MONGO_URI or MONGODB_URI');

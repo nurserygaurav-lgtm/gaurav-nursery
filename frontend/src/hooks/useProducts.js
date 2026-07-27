@@ -6,6 +6,8 @@ export function useProducts(params) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const paramsKey = JSON.stringify(params);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -25,7 +27,7 @@ export function useProducts(params) {
     return () => {
       isMounted = false;
     };
-  }, [params]);
+  }, [paramsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { products, isLoading, error };
 }

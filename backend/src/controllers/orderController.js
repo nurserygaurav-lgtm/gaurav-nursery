@@ -41,8 +41,17 @@ export const createOrder = asyncHandler(async (req, res) => {
 });
 
 export const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ customer: req.user._id }).populate(orderPopulate).sort({ createdAt: -1 });
-  res.json({ orders });
+  const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit || '20', 10), 1), 50);
+  const skip = (page - 1) * limit;
+
+  const filter = { customer: req.user._id };
+  const [orders, total] = await Promise.all([
+    Order.find(filter).populate(orderPopulate).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Order.countDocuments(filter)
+  ]);
+
+  res.json({ orders, pagination: { page, limit, total, hasMore: skip + orders.length < total } });
 });
 
 export const getOrderById = asyncHandler(async (req, res) => {
@@ -62,65 +71,52 @@ export const getOrderById = asyncHandler(async (req, res) => {
 });
 
 export const getSellerOrders = asyncHandler(async (req, res) => {
-  const startedAt = Date.now();
-  console.time('sellerOrdersTotal');
-
-  // HARD LIMIT for debugging/permanent hard safety.
-  const limit = 5;
+  const limit = Math.min(Math.max(parseInt(req.query.limit || '20', 10), 1), 50);
   const page = Math.max(parseInt(req.query.page || '1', 10), 1);
   const skip = (page - 1) * limit;
 
   const sellerId = req.user._id;
+  const filter = { 'items.seller': sellerId };
 
-  const totalStart = Date.now();
-  const totalCountPromise = Order.countDocuments({ 'items.seller': sellerId });
+  const sellerPopulate = [
+    { path: 'customer', select: 'name email' },
+    { path: 'items.product', select: 'title images price' },
+    { path: 'items.seller', select: 'name' }
+  ];
 
-  const queryStart = Date.now();
-  const ordersQuery = Order.find({ 'items.seller': sellerId })
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    // Return only fields needed for seller orders UI summary.
-    .select('items status totalAmount createdAt customer shippingAddress payment paymentId')
-    // Temporarily remove populate to isolate timeout root-cause.
-    .lean();
+  const [orders, total] = await Promise.all([
+    Order.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('items status totalAmount createdAt customer shippingAddress payment paymentId')
+      .populate(sellerPopulate)
+      .lean(),
+    Order.countDocuments(filter)
+  ]);
 
-  try {
-    const [orders, total] = await Promise.all([
-      ordersQuery,
-      totalCountPromise
-    ]);
-
-    const queryMs = Date.now() - queryStart;
-    const totalMs = Date.now() - totalStart;
-    const totalAllMs = Date.now() - startedAt;
-
-    console.timeEnd('sellerOrdersTotal');
-    console.log('[sellerOrders] sellerId=%s page=%d limit=%d skip=%d queryMs=%d countMs=%d totalMs=%d total=%d orders=%d',
-      sellerId.toString(), page, limit, skip, queryMs, totalMs, totalAllMs, total, orders?.length ?? 0
-    );
-
-    res.json({
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        hasMore: skip + orders.length < total
-      }
-    });
-  } catch (err) {
-    const totalAllMs = Date.now() - startedAt;
-    console.error('[sellerOrders] ERROR sellerId=%s page=%d limit=%d totalMs=%d err=%o', sellerId?.toString?.() ?? sellerId, page, limit, totalAllMs, err);
-    throw err;
-  }
+  res.json({
+    orders,
+    pagination: {
+      page,
+      limit,
+      total,
+      hasMore: skip + orders.length < total
+    }
+  });
 });
 
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit || '20', 10), 1), 50);
+  const skip = (page - 1) * limit;
 
+  const [orders, total] = await Promise.all([
+    Order.find().populate(orderPopulate).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Order.countDocuments()
+  ]);
 
-export const getAllOrders = asyncHandler(async (_req, res) => {
-  const orders = await Order.find().populate(orderPopulate).sort({ createdAt: -1 });
-  res.json({ orders });
+  res.json({ orders, pagination: { page, limit, total, hasMore: skip + orders.length < total } });
 });
 
 export const updateOrderStatus = asyncHandler(async (req, res) => {

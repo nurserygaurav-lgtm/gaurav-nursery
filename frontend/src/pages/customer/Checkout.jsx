@@ -20,6 +20,7 @@ import { createPaymentOrder, verifyPayment } from '../../services/paymentService
 import { getApiError } from '../../utils/auth.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { loadRazorpayScript } from '../../utils/razorpay.js';
+import env from '../../config/env.js';
 
 const initialAddress = {
   name: '',
@@ -133,11 +134,11 @@ export default function Checkout() {
       setIsPaying(true);
       const loaded = await loadRazorpayScript();
       if (!loaded) throw new Error('Unable to load Razorpay checkout');
-      if (!import.meta.env.VITE_RAZORPAY_KEY_ID) throw new Error('Razorpay key is not configured');
+      if (!env.razorpayKeyId) throw new Error('Razorpay key is not configured');
 
       const data = await createPaymentOrder();
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: env.razorpayKeyId,
         amount: data.paymentOrder.amount,
         currency: data.paymentOrder.currency,
         name: 'Gaurav Nursery',
@@ -148,10 +149,17 @@ export default function Checkout() {
           contact: address.phone,
           email: user?.email
         },
-        handler: async (response) => {
-          const verification = await verifyPayment({ ...response, shippingAddress: address });
-          showToast('Payment successful');
-          navigate(`/order-success/${verification.order._id}`);
+          handler: async (response) => {
+          try {
+            const verification = await verifyPayment({ ...response, shippingAddress: address });
+            showToast('Payment successful');
+            navigate(`/order-success/${verification.order._id}`);
+          } finally {
+            setIsPaying(false);
+          }
+        },
+        modal: {
+          ondismiss: () => setIsPaying(false)
         },
         theme: { color: '#3d7d36' }
       };
@@ -160,7 +168,6 @@ export default function Checkout() {
       razorpay.open();
     } catch (err) {
       showToast(getApiError(err, err.message || 'Payment failed'), 'error');
-    } finally {
       setIsPaying(false);
     }
   }

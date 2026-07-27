@@ -254,27 +254,78 @@ function mapImportRow(row, headerIndex) {
 }
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const { category, seller, search, q, status = 'active', page = 1, limit = 12 } = req.query;
+  const { category, seller, search, q, status = 'active', page = 1, limit = 12, filters = '', minPrice, maxPrice, sort = 'Popular' } = req.query;
   const filter = { status };
   const searchTerm = search || q;
 
   if (category) filter.category = category;
   if (seller) filter.seller = seller;
   if (searchTerm) {
+    const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     filter.$or = [
-      { title: { $regex: searchTerm, $options: 'i' } },
-      { name: { $regex: searchTerm, $options: 'i' } },
-      { description: { $regex: searchTerm, $options: 'i' } },
-      { category: { $regex: searchTerm, $options: 'i' } }
+      { title: { $regex: escaped, $options: 'i' } },
+      { name: { $regex: escaped, $options: 'i' } },
+      { description: { $regex: escaped, $options: 'i' } },
+      { category: { $regex: escaped, $options: 'i' } },
+      { subcategory: { $regex: escaped, $options: 'i' } },
+      { tags: { $regex: escaped, $options: 'i' } }
     ];
+  }
+
+  const priceFilter = {};
+  if (minPrice !== undefined && minPrice !== '') priceFilter.$gte = Number(minPrice);
+  if (maxPrice !== undefined && maxPrice !== '') priceFilter.$lte = Number(maxPrice);
+  if (Object.keys(priceFilter).length) filter.price = priceFilter;
+
+  const activeFilters = String(filters || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (activeFilters.length) {
+    const filterClauses = activeFilters.map((activeFilter) => {
+      const escaped = activeFilter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const aliases = {
+        'air purifying': ['air purifying', 'air purifier', 'snake', 'money plant'],
+        'low maintenance': ['low maintenance', 'easy care'],
+        flowering: ['flower', 'bloom'],
+        'fruit plants': ['fruit'],
+        'office plants': ['office', 'desk'],
+        'lucky plants': ['lucky', 'money plant', 'bamboo']
+      };
+      const terms = aliases[activeFilter.toLowerCase()] || [escaped];
+      const pattern = terms.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      return {
+        $or: [
+          { title: { $regex: pattern, $options: 'i' } },
+          { name: { $regex: pattern, $options: 'i' } },
+          { description: { $regex: pattern, $options: 'i' } },
+          { category: { $regex: pattern, $options: 'i' } },
+          { subcategory: { $regex: pattern, $options: 'i' } },
+          { tags: { $regex: pattern, $options: 'i' } },
+          { 'care.airPurification': { $regex: pattern, $options: 'i' } },
+          { 'care.sunlight': { $regex: pattern, $options: 'i' } },
+          { 'care.difficulty': { $regex: pattern, $options: 'i' } }
+        ]
+      };
+    });
+    filter.$and = [...(filter.$and || []), ...filterClauses];
   }
 
   const currentPage = Math.max(Number(page), 1);
   const pageSize = Math.min(Math.max(Number(limit), 1), 48);
   const skip = (currentPage - 1) * pageSize;
 
+  const sortMap = {
+    'Price Low to High': { price: 1 },
+    'Price High to Low': { price: -1 },
+    'Best Selling': { stock: -1, createdAt: -1 },
+    'New Arrivals': { createdAt: -1 },
+    Popular: { createdAt: -1 }
+  };
+
   const [products, total] = await Promise.all([
-    Product.find(filter).populate('seller', 'name sellerProfile.shopName').sort({ createdAt: -1 }).skip(skip).limit(pageSize),
+    Product.find(filter).populate('seller', 'name sellerProfile.shopName').sort(sortMap[sort] || sortMap.Popular).skip(skip).limit(pageSize),
     Product.countDocuments(filter)
   ]);
 
@@ -292,12 +343,17 @@ export const getProducts = asyncHandler(async (req, res) => {
 export const searchProducts = getProducts;
 
 export const getSellerProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({
-    seller: req.user._id,
-    status: { $ne: 'archived' }
-  }).sort({ createdAt: -1 });
+  const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit || '20', 10), 1), 50);
+  const skip = (page - 1) * limit;
+  const filter = { seller: req.user._id, status: { $ne: 'archived' } };
 
-  res.json({ products });
+  const [products, total] = await Promise.all([
+    Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Product.countDocuments(filter)
+  ]);
+
+  res.json({ products, pagination: { page, limit, total, hasMore: skip + products.length < total } });
 });
 
 export const getProductById = asyncHandler(async (req, res) => {
@@ -534,14 +590,14 @@ export const bulkDeleteProducts = asyncHandler(async (req, res) => {
     throw new Error('productIds must be a non-empty array');
   }
 
-  const result = await Product.deleteMany({
-    _id: { $in: productIds },
-    seller: req.user._id
-  });
+  const result = await Product.updateMany(
+    { _id: { $in: productIds }, seller: req.user._id },
+    { status: 'archived' }
+  );
 
   res.json({
     success: true,
-    deletedCount: result.deletedCount || 0
+    archivedCount: result.modifiedCount || 0
   });
 });
 
@@ -641,10 +697,12 @@ export const deleteTodayProducts = asyncHandler(async (req, res) => {
       console.log('[admin] deleteTodayProducts zero matches. Sample doc date fields:', hasFields);
     }
 
-    // Safer tested version: only $gte startOfDay
-    const result = await Product.deleteMany({
-      createdAt: { $gte: startOfDay }
-    });
+    // Scope to seller unless admin
+    const deleteFilter = { createdAt: { $gte: startOfDay } };
+    if (req.user.role !== 'admin') {
+      deleteFilter.seller = req.user._id;
+    }
+    const result = await Product.deleteMany(deleteFilter);
 
     console.log('[admin] deleteTodayProducts deleteMany deletedCount:', result.deletedCount, {
       startOfDay: startOfDay.toISOString()
