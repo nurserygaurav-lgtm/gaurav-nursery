@@ -1,0 +1,16 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+type CartItem = { product: { _id: string; title?: string; name?: string; price?: number; images?: Array<{ url?: string }> }; quantity: number };
+const apiUrl = `${(process.env.NEXT_PUBLIC_LEGACY_API_URL || 'https://gaurav-nursery.onrender.com').replace(/\/$/, '')}/api`;
+const token = () => window.localStorage.getItem('gaurav_nursery_token') || window.sessionStorage.getItem('gaurav_nursery_token');
+
+export default function CartPage() {
+  const [items, setItems] = useState<CartItem[]>([]); const [loading, setLoading] = useState(true); const [message, setMessage] = useState('');
+  async function load() { const auth = token(); if (!auth) { window.location.assign('/login'); return; } try { const response = await fetch(`${apiUrl}/cart`, { headers: { Authorization: `Bearer ${auth}` } }); const data = await response.json(); if (!response.ok) throw new Error(data?.message); setItems(data?.cart?.items || []); } catch { setMessage('Unable to load your cart.'); } finally { setLoading(false); } }
+  useEffect(() => { load(); }, []);
+  async function update(id: string, quantity: number) { const auth = token(); if (!auth) return; await fetch(`${apiUrl}/cart/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth}` }, body: JSON.stringify({ quantity }) }); load(); }
+  async function remove(id: string) { const auth = token(); if (!auth) return; await fetch(`${apiUrl}/cart/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${auth}` } }); load(); }
+  const total = items.reduce((sum, item) => sum + Number(item.product?.price || 0) * item.quantity, 0);
+  return <main><div className="offerbar">Secure checkout <span>•</span> Healthy plant guarantee</div><nav><a className="logo" href="/"><b>✦</b><span>Gaurav Nursery<small>Trusted Plant Studio</small></span></a></nav><div className="section-title"><div><p className="eyebrow">YOUR CART</p><h2>My Cart</h2></div><a href="/shop">Continue shopping →</a></div>{message && <p className="store-message">{message}</p>}{loading ? <p>Loading your cart…</p> : items.length ? <div className="cart-layout"><section className="cart-items">{items.map((item) => <article className="cart-row" key={item.product._id}>{item.product.images?.[0]?.url && <img src={item.product.images[0].url} alt=""/>}<div><h3>{item.product.title || item.product.name}</h3><b>₹{Number(item.product.price || 0).toLocaleString('en-IN')}</b></div><div className="quantity"><button onClick={() => update(item.product._id, Math.max(1, item.quantity - 1))}>−</button><span>{item.quantity}</span><button onClick={() => update(item.product._id, item.quantity + 1)}>+</button></div><button className="remove" onClick={() => remove(item.product._id)}>Remove</button></article>)}</section><aside className="cart-summary"><h3>Order Summary</h3><p>Subtotal <b>₹{total.toLocaleString('en-IN')}</b></p><p>Delivery <b>Free</b></p><hr/><h3>Total <b>₹{total.toLocaleString('en-IN')}</b></h3><a className="button" href="/checkout">Proceed to checkout</a></aside></div> : <section className="empty-card"><h3>Your cart is empty</h3><p>Add healthy plants to begin your order.</p><a className="button" href="/shop">Shop plants</a></section>}</main>;
+}
