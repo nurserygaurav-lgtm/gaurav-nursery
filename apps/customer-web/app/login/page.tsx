@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { apiBaseUrl, saveSession } from '../../lib/api';
 
-const apiUrl = `${(process.env.NEXT_PUBLIC_LEGACY_API_URL || 'https://gaurav-nursery.onrender.com').replace(/\/$/, '')}/api`;
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,11 +14,10 @@ export default function LoginPage() {
     event.preventDefault();
     setLoading(true); setMessage('');
     try {
-      const response = await fetch(`${apiUrl}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+      const response = await fetch(`${apiBaseUrl}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
       const data = await response.json();
       if (!response.ok || !data?.token) throw new Error(data?.message || 'Unable to log in');
-      window.localStorage.setItem('gaurav_nursery_token', data.token);
-      window.localStorage.setItem('gaurav_nursery_user', JSON.stringify(data.user));
+      saveSession(data.token, data.user);
       window.location.assign(data.user?.role === 'admin' ? '/admin' : data.user?.role === 'seller' ? '/seller' : '/');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to log in');
