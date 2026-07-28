@@ -10,6 +10,7 @@ import adminTicketRoutes from './adminTicketRoutes.js';
 import userRoutes from './userRoutes.js';
 import wishlistRoutes from './wishlistRoutes.js';
 import publicRoutes from './publicRoutes.js';
+import sellerRoutes from './sellerRoutes.js';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/tickets', ticketRoutes);
 router.use('/admin/tickets', adminTicketRoutes);
 router.use('/users', userRoutes);
 router.use('/wishlist', wishlistRoutes);
+router.use('/seller', sellerRoutes);
 
 export default router;

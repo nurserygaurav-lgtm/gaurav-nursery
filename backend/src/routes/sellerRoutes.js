@@ -1,0 +1,20 @@
+import { Router } from 'express';
+import { createProduct, deleteProduct, getSellerProducts, updateProduct } from '../controllers/productController.js';
+import { getSellerOrders } from '../controllers/orderController.js';
+import { getSellerDashboard } from '../controllers/dashboardController.js';
+import { getSellerInventory, getSellerProfile, updateSellerProfile } from '../controllers/sellerController.js';
+import { authorize, protect } from '../middleware/authMiddleware.js';
+import { upload } from '../middleware/uploadMiddleware.js';
+
+const router = Router();
+router.use(protect, authorize('seller', 'admin'));
+router.get('/dashboard', getSellerDashboard);
+router.get('/products', getSellerProducts);
+router.post('/products', upload.array('images', 6), createProduct);
+router.put('/products/:id', upload.array('images', 6), updateProduct);
+router.delete('/products/:id', deleteProduct);
+router.get('/orders', getSellerOrders);
+router.get('/profile', getSellerProfile);
+router.patch('/profile', updateSellerProfile);
+router.get('/inventory', getSellerInventory);
+export default router;
