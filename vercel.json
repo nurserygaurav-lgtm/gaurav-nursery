@@ -1,6 +1,7 @@
 {
-  "version": 3,
-  "installCommand": "npm run install:all",
-  "buildCommand": "npm run build",
-  "outputDirectory": "frontend/dist"
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build --workspace @gaurav-nursery/customer-web",
+  "outputDirectory": "apps/customer-web/.next",
+  "rootDirectory": "apps/customer-web"
 }

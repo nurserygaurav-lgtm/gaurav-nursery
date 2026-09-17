@@ -11,6 +11,8 @@ const faqs = [
 ];
 
 export default function FaqPage() {
+  const firstFaqQuestion = faqs[0]?.q;
+
   return (
     <StorefrontLayout>
       <section className="page-shell">
@@ -23,7 +25,7 @@ export default function FaqPage() {
 
         <div className="faq-list">
           {faqs.map((faq) => (
-            <details key={faq.q} className="faq-item" open={faq.q === faqs[0].q}>
+            <details key={faq.q} className="faq-item" open={faq.q === firstFaqQuestion}>
               <summary>{faq.q}</summary>
               <p>{faq.a}</p>
             </details>
