@@ -1,3 +1,7 @@
+const heroImages = [
+  'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1200&q=80',
+];
+
 export default function Hero() {
   return (
     <section className="hero-modern" aria-label="Gaurav Nursery hero section">
@@ -39,7 +43,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="hero-visual" aria-hidden="true">
+      <div className="hero-visual" aria-label="Plant collection showcase">
         <div className="floating-badge top-left">
           <div className="mini-icon">🪴</div>
           <div>
@@ -48,12 +52,15 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="plant-showcase">
-          <div className="leaf leaf-one" />
-          <div className="leaf leaf-two" />
-          <div className="leaf leaf-three" />
-          <div className="stem" />
-          <div className="pot" />
+        <div className="hero-photo-grid">
+          {heroImages.map((image, index) => (
+            <img
+              key={image}
+              src={image}
+              alt={index === 0 ? 'Beautiful green indoor plant' : 'Plant collection showcase'}
+              className="photo-card photo-1"
+            />
+          ))}
         </div>
 
         <div className="floating-badge bottom-right">

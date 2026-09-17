@@ -1,8 +1,32 @@
 ﻿import Hero from './components/Hero';
 import StorefrontProducts from './components/StorefrontProducts';
 
-const categories = [['Indoor Plants', 'Easy-care greens for every room'], ['Outdoor Plants', 'For balconies, gardens and patios'], ['Flowering Plants', 'Colourful blooms for every season'], ['Air Purifying', 'Fresh, healthier indoor spaces'], ['Seeds & Bulbs', 'Grow your garden from the start'], ['Pots & Planters', 'The right home for every plant']] as const;
-const icons = ['🌿', '☀️', '🌺', '💨', '🌱', '🪴'];
+const categories = [
+  { name: 'Indoor Plants', text: 'Easy-care greens for every room', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80', icon: '🌿' },
+  { name: 'Outdoor Plants', text: 'For balconies, gardens and patios', image: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80', icon: '☀️' },
+  { name: 'Flowering Plants', text: 'Colourful blooms for every season', image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80', icon: '🌺' },
+  { name: 'Air Purifying', text: 'Fresh, healthier indoor spaces', image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=900&q=80', icon: '💨' },
+  { name: 'Herbal Plants', text: 'Fresh kitchen garden favorites', image: 'https://images.unsplash.com/photo-1461354464878-ad92f492a5a0?auto=format&fit=crop&w=900&q=80', icon: '🌱' },
+  { name: 'Pots & Planters', text: 'The right home for every plant', image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=900&q=80', icon: '🪴' },
+] as const;
+
+const careHighlights = [
+  {
+    title: 'Healthy plant delivery',
+    description: 'Every order is packed with nursery care and safe transport to keep your plants thriving.',
+    image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    title: 'Plant care guidance',
+    description: 'Get watering schedules, sunlight tips, and expert help for a greener, happier garden.',
+    image: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    title: 'Gift-ready greenery',
+    description: 'Choose meaningful plant gifts for birthdays, housewarmings, and mindful living moments.',
+    image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80',
+  },
+] as const;
 
 export default function Home() {
   return (
@@ -58,13 +82,34 @@ export default function Home() {
           <a href="/categories">View all categories →</a>
         </div>
         <div className="grid">
-          {categories.map(([name, text], index) => (
-            <a className="card" href={`/categories/${name.toLowerCase().replaceAll(' ', '-')}`} key={name}>
-              <span>{icons[index]}</span>
-              <h3>{name}</h3>
-              <p>{text}</p>
+          {categories.map((category) => (
+            <a className="card" href={`/categories/${category.name.toLowerCase().replaceAll(' ', '-')}`} key={category.name} style={{ backgroundImage: `linear-gradient(180deg, rgba(19,36,24,0.08), rgba(19,36,24,0.4)), url(${category.image})` }}>
+              <span>{category.icon}</span>
+              <h3>{category.name}</h3>
+              <p>{category.text}</p>
               <b>Explore</b>
             </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="nursery-story" aria-label="Why choose Gaurav Nursery">
+        <div className="section-title">
+          <div>
+            <p className="eyebrow">WHY GARDENERS LOVE US</p>
+            <h2>Thoughtful plants, planted with care</h2>
+          </div>
+        </div>
+
+        <div className="story-grid">
+          {careHighlights.map((item) => (
+            <article className="story-card" key={item.title}>
+              <img src={item.image} alt={item.title} />
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </article>
           ))}
         </div>
       </section>
