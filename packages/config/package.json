@@ -1,8 +1,0 @@
-{
-  "name": "@gaurav-nursery/config",
-  "version": "2.0.0",
-  "private": true,
-  "type": "module",
-  "exports": { "./tailwind": "./tailwind.ts" },
-  "devDependencies": { "tailwindcss": "^3.4.17" }
-}

@@ -1,7 +1,0 @@
-{
-  "framework": "nextjs",
-  "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace @gaurav-nursery/customer-web",
-  "outputDirectory": "apps/customer-web/.next",
-  "rootDirectory": "apps/customer-web"
-}

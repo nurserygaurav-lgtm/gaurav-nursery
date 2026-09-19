@@ -1,16 +1,38 @@
 {
   "name": "gaurav-nursery",
-  "version": "2.0.0",
-  "private": true,
-  "engines": { "node": ">=20.0.0", "npm": ">=10" },
-  "description": "Multi-vendor nursery ecommerce platform.",
-  "workspaces": ["apps/*", "packages/*"],
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "concurrently -n customer,seller,admin,api \"npm run dev --workspace @gaurav-nursery/customer-web\" \"npm run dev --workspace @gaurav-nursery/seller-panel\" \"npm run dev --workspace @gaurav-nursery/admin-panel\" \"npm run dev --workspace @gaurav-nursery/backend-api\"",
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "legacy:dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "seed": "tsx prisma/seed.ts",
+    "test:workflows": "tsx src/scripts/test_workflows.ts"
   },
-  "devDependencies": { "concurrently": "^9.1.2" }
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "autoprefixer": "^10.6.1",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.47.0",
+    "next": "^14.2.15",
+    "postcss": "^8.5.28",
+    "prisma": "^5.22.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.6.3"
+  }
 }
