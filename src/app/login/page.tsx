@@ -7,10 +7,14 @@ import {
   Sprout, 
   Lock, 
   Mail, 
+  User,
+  Phone,
   AlertCircle, 
+  CheckCircle2,
   ArrowRight, 
   Eye, 
-  EyeOff 
+  EyeOff,
+  ShoppingBag
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -21,12 +25,23 @@ function LoginForm() {
   const redirectPath = searchParams.get('redirect') || '/'
   const errorParam = searchParams.get('error')
   const requiredRoleParam = searchParams.get('requiredRole')
+  const initialMode = searchParams.get('mode') === 'signup' ? 'signup' : 'signin'
 
+  const [mode, setMode] = useState<'signin' | 'signup'>(initialMode)
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get('mode') === 'signup') {
+      setMode('signup')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (errorParam === 'forbidden') {
@@ -38,50 +53,83 @@ function LoginForm() {
     }
   }, [errorParam, requiredRoleParam])
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setErrorMessage(null)
+    setSuccessMessage(null)
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+      if (mode === 'signup') {
+        // Customer Registration
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim() || undefined,
+            password,
+            role: 'CUSTOMER',
+          }),
+        })
 
-      const data = await res.json()
+        const data = await res.json()
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Invalid email or password')
-      }
-
-      // Notify Navbar and other components of auth state change
-      window.dispatchEvent(new Event('auth-change'))
-
-      // Determine redirect path
-      if (redirectPath && redirectPath !== '/') {
-        router.push(redirectPath)
-      } else {
-        // Default redirect based on user role
-        switch (data.user.role) {
-          case 'SUPER_ADMIN':
-            router.push('/admin')
-            break
-          case 'SELLER':
-            router.push('/seller/dashboard')
-            break
-          case 'DELIVERY_PARTNER':
-            router.push('/delivery')
-            break
-          default:
-            router.push('/shop')
-            break
+        if (!res.ok) {
+          throw new Error(data.error || 'Registration failed')
         }
+
+        setSuccessMessage('Account created successfully! Redirecting...')
+        window.dispatchEvent(new Event('auth-change'))
+
+        setTimeout(() => {
+          if (redirectPath && redirectPath !== '/') {
+            router.push(redirectPath)
+          } else {
+            router.push('/shop')
+          }
+          router.refresh()
+        }, 800)
+
+      } else {
+        // Sign In
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), password }),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Invalid email or password')
+        }
+
+        window.dispatchEvent(new Event('auth-change'))
+
+        if (redirectPath && redirectPath !== '/') {
+          router.push(redirectPath)
+        } else {
+          switch (data.user?.role) {
+            case 'SUPER_ADMIN':
+              router.push('/admin')
+              break
+            case 'SELLER':
+              router.push('/seller/dashboard')
+              break
+            case 'DELIVERY_PARTNER':
+              router.push('/delivery')
+              break
+            default:
+              router.push('/shop')
+              break
+          }
+        }
+        router.refresh()
       }
-      router.refresh()
     } catch (err: any) {
-      setErrorMessage(err.message || 'Login failed. Please check your credentials.')
+      setErrorMessage(err.message || 'Authentication failed. Please check your details.')
     } finally {
       setLoading(false)
     }
@@ -89,18 +137,55 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200 shadow-xl p-8 space-y-6">
-      {/* Header */}
+      
+      {/* Brand Header */}
       <div className="text-center space-y-2">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-700 to-green-500 text-white flex items-center justify-center mx-auto shadow-md shadow-emerald-700/20">
           <Sprout className="w-7 h-7" />
         </div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-          Sign In to Gaurav Nursery
+          {mode === 'signup' ? 'Create Customer Account' : 'Sign In to Gaurav Nursery'}
         </h1>
         <p className="text-xs text-slate-500">
-          Enter your credentials to access your marketplace account or portal
+          {mode === 'signup' 
+            ? 'Sign up to order fresh nursery plants with doorstep delivery' 
+            : 'Enter your credentials to access your marketplace account or portal'}
         </p>
       </div>
+
+      {/* Mode Switcher Tabs */}
+      <div className="flex bg-slate-100 p-1 rounded-2xl">
+        <button
+          type="button"
+          onClick={() => { setMode('signin'); setErrorMessage(null); setSuccessMessage(null); }}
+          className={`flex-1 py-2 text-xs font-bold rounded-xl transition ${
+            mode === 'signin'
+              ? 'bg-white text-emerald-950 shadow-sm'
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          Sign In
+        </button>
+        <button
+          type="button"
+          onClick={() => { setMode('signup'); setErrorMessage(null); setSuccessMessage(null); }}
+          className={`flex-1 py-2 text-xs font-bold rounded-xl transition ${
+            mode === 'signup'
+              ? 'bg-white text-emerald-950 shadow-sm'
+              : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          New Customer? Sign Up
+        </button>
+      </div>
+
+      {/* Redirect Notice (e.g. checkout prompt) */}
+      {redirectPath && redirectPath.includes('checkout') && (
+        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+          <ShoppingBag className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+          <span>Sign in or create an account to complete your plant order.</span>
+        </div>
+      )}
 
       {/* Error Alert */}
       {errorMessage && (
@@ -110,11 +195,41 @@ function LoginForm() {
         </div>
       )}
 
-      {/* Login Form */}
-      <form onSubmit={handleLogin} className="space-y-4">
+      {/* Success Alert */}
+      {successMessage && (
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5">
+          <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
+          <div className="flex-1 font-semibold">{successMessage}</div>
+        </div>
+      )}
+
+      {/* Auth Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        
+        {/* Name input (only for Sign Up) */}
+        {mode === 'signup' && (
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Full Name *
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Gaurav Sharma"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-xs focus:ring-2 focus:ring-emerald-500 outline-none transition"
+              />
+              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            </div>
+          </div>
+        )}
+
+        {/* Email */}
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-            Email Address
+            Email Address *
           </label>
           <div className="relative">
             <input
@@ -129,16 +244,38 @@ function LoginForm() {
           </div>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Password
-            </label>
+        {/* Phone (only for Sign Up) */}
+        {mode === 'signup' && (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Mobile Number
+              </label>
+              <span className="text-[10px] text-slate-400">For transit delivery updates</span>
+            </div>
+            <div className="relative">
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+91 98765 43210"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-3 text-xs focus:ring-2 focus:ring-emerald-500 outline-none transition"
+              />
+              <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            </div>
           </div>
+        )}
+
+        {/* Password */}
+        <div>
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            {mode === 'signup' ? 'Create Password *' : 'Password *'}
+          </label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
               required
+              minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -155,24 +292,52 @@ function LoginForm() {
           </div>
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
           className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md shadow-emerald-700/10"
         >
           {loading ? (
-            <span>Verifying credentials...</span>
+            <span>{mode === 'signup' ? 'Creating account...' : 'Verifying credentials...'}</span>
           ) : (
             <>
-              <span>Sign In</span>
+              <span>{mode === 'signup' ? 'Create Customer Account' : 'Sign In'}</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
       </form>
 
-      {/* Links */}
-      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+      {/* Mode toggle helper text */}
+      <div className="text-center text-xs text-slate-500">
+        {mode === 'signin' ? (
+          <p>
+            Don't have an account?{' '}
+            <button
+              type="button"
+              onClick={() => { setMode('signup'); setErrorMessage(null); setSuccessMessage(null); }}
+              className="text-emerald-700 font-bold hover:underline ml-1"
+            >
+              Sign Up as Customer
+            </button>
+          </p>
+        ) : (
+          <p>
+            Already have an account?{' '}
+            <button
+              type="button"
+              onClick={() => { setMode('signin'); setErrorMessage(null); setSuccessMessage(null); }}
+              className="text-emerald-700 font-bold hover:underline ml-1"
+            >
+              Sign In
+            </button>
+          </p>
+        )}
+      </div>
+
+      {/* Nursery Owner link */}
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
         <span>Are you a nursery owner?</span>
         <Link
           href="/seller/register"
@@ -181,6 +346,7 @@ function LoginForm() {
           Become a Seller
         </Link>
       </div>
+
     </div>
   )
 }

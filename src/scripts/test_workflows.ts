@@ -43,7 +43,7 @@ async function runEndToEndVerification() {
         title: item1.title,
         price: item1.price,
         quantity: 1,
-        image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800',
+        image: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=800',
         sellerId: item1.sellerId,
         sellerBusinessName: item1.seller.businessName,
       },

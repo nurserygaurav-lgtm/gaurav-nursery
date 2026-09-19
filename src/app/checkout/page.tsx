@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { 
   ShieldCheck, 
@@ -11,11 +12,13 @@ import {
   Lock, 
   Store, 
   CheckCircle2, 
-  AlertCircle 
+  AlertCircle,
+  UserCheck
 } from 'lucide-react'
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const [currentUser, setCurrentUser] = useState<any>(null)
   const [cartItems, setCartItems] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -40,6 +43,21 @@ export default function CheckoutPage() {
     } catch (e) {
       console.error(e)
     }
+
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setCurrentUser(data.user)
+          setFormData((prev) => ({
+            ...prev,
+            customerName: data.user.name || prev.customerName,
+            customerEmail: data.user.email || prev.customerEmail,
+            customerPhone: data.user.phone || prev.customerPhone,
+          }))
+        }
+      })
+      .catch(() => {})
   }, [])
 
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -121,6 +139,42 @@ export default function CheckoutPage() {
             {/* Left: Shipping & Payment Form */}
             <div className="md:col-span-7 space-y-6">
               
+              {/* Account State / Login Prompt for New Users */}
+              {!currentUser ? (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                  <div>
+                    <p className="font-bold text-emerald-950 text-sm">New to Gaurav Nursery?</p>
+                    <p className="text-emerald-700 text-xs mt-0.5">
+                      Create an account or sign in for real-time delivery tracking & saved nursery orders.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Link
+                      href="/login?redirect=/checkout"
+                      className="bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-100 font-bold px-3 py-1.5 rounded-xl transition text-xs"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/login?mode=signup&redirect=/checkout"
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3 py-1.5 rounded-xl transition text-xs shadow-sm"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white border border-emerald-200 rounded-2xl p-3.5 flex items-center justify-between text-xs text-slate-700 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Signed in as <strong className="text-slate-900">{currentUser.name}</strong> ({currentUser.email})</span>
+                  </div>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                    Verified Customer
+                  </span>
+                </div>
+              )}
+
               {/* Shipping Address */}
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
                 <h3 className="font-bold text-sm text-slate-900 pb-2 border-b border-slate-100 flex items-center gap-2">

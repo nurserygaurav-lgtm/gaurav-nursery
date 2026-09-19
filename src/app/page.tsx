@@ -25,7 +25,7 @@ export const dynamic = 'force-dynamic'
 const CATEGORIES = [
   { name: 'Indoor Plants', slug: 'indoor-plants', count: '120+ varieties', image: 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=600&q=80' },
   { name: 'Outdoor Plants', slug: 'outdoor-plants', count: '85+ varieties', image: 'https://images.unsplash.com/photo-1509423350716-97f9360b4e09?w=600&q=80' },
-  { name: 'Flowering Plants', slug: 'flowering-plants', count: '64+ varieties', image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80' },
+  { name: 'Flowering Plants', slug: 'flowering-plants', count: '64+ varieties', image: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=600&q=80' },
   { name: 'Bonsai & Succulents', slug: 'bonsai-succulents', count: '45+ varieties', image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?w=600&q=80' },
   { name: 'Pots & Planters', slug: 'pots-planters', count: '90+ designs', image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&q=80' },
   { name: 'Organic Fertilizers', slug: 'soil-fertilizers', count: '30+ items', image: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?w=600&q=80' },

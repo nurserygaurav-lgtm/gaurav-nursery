@@ -200,7 +200,7 @@ async function main() {
       name: 'Flowering Plants',
       slug: 'flowering-plants',
       description: 'Vibrant blooms, exotic adeniums, fragrant roses, and orchids',
-      imageUrl: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=600&q=80',
     },
   })
 
@@ -246,7 +246,7 @@ async function main() {
       status: 'LIVE',
       featured: true,
       images: JSON.stringify([
-        'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&q=80',
+        'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=800&q=80',
         'https://images.unsplash.com/photo-1592150621744-aca64f48394a?w=800&q=80'
       ]),
       sunlight: 'Full Sun (Outdoor)',

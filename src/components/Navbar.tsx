@@ -355,13 +355,21 @@ export default function Navbar() {
                 <SignOutButton text="" className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg transition" />
               </div>
             ) : (
-              <Link
-                href="/login"
-                className="hidden sm:flex items-center gap-1 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-xl transition shadow-sm"
-              >
-                <User className="w-3.5 h-3.5" />
-                <span>Sign In</span>
-              </Link>
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="text-xs font-semibold text-slate-700 hover:text-emerald-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/login?mode=signup"
+                  className="flex items-center gap-1 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-xl transition shadow-sm"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>Sign Up</span>
+                </Link>
+              </div>
             )}
 
             <Link

@@ -32,7 +32,7 @@ export default function CartPage() {
             title: 'Adenium Desert Rose (Grafted Thai Hybrid)',
             price: 499,
             quantity: 1,
-            image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&q=80',
+            image: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=800&q=80',
             sellerId: 'demo-seller-1',
             sellerBusinessName: 'Gaurav Greenery Hub (Surat)',
           },
