@@ -11,27 +11,8 @@ import { addToCart } from '../../services/cartService.js';
 import { getProducts } from '../../services/productService.js';
 import { addToWishlist } from '../../services/wishlistService.js';
 import { getApiError } from '../../utils/auth.js';
-import { featuredProducts } from '../../utils/mockData.js';
 
 const heroImage = 'https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=1800&q=85';
-
-const fallbackCatalog = featuredProducts.map((product, index) => ({
-  ...product,
-  _id: product._id || product.id || `featured-${index}`,
-  originalPrice: product.originalPrice || Math.round(Number(product.price || 0) * 1.3),
-  rating: product.rating || 4.8,
-  stock: product.stock ?? 10,
-  images: product.images || [{ url: product.image }]
-})).concat([
-  {
-    _id: 'snake-plant', name: 'Snake Plant', category: 'Indoor Plants', sellerName: 'Gaurav Nursery', price: 399, originalPrice: 499, rating: 4.9, stock: 12,
-    images: [{ url: 'https://images.unsplash.com/photo-1593482892290-f54927ae2b8b?auto=format&fit=crop&w=700&q=80' }]
-  },
-  {
-    _id: 'peace-lily', name: 'Peace Lily', category: 'Air Purifying', sellerName: 'Gaurav Nursery', price: 449, originalPrice: 599, rating: 4.8, stock: 8,
-    images: [{ url: 'https://images.unsplash.com/photo-1592150621744-aca64f48394a?auto=format&fit=crop&w=700&q=80' }]
-  }
-]);
 
 const trustPoints = [
   { icon: Truck, title: 'Safe Express Delivery', text: 'Damage-free guarantee' },
@@ -60,16 +41,13 @@ export default function HomeTreeland() {
     description: 'Shop healthy indoor plants, flowering plants, planters, and garden essentials from Gaurav Nursery.'
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['treeland-home-products'],
     queryFn: () => getProducts({ page: 1, limit: 12 }),
     select: (response) => response.products || []
   });
 
-  const products = useMemo(() => {
-    const source = Array.isArray(data) && data.length ? data : fallbackCatalog;
-    return source.slice(0, 6);
-  }, [data]);
+  const products = useMemo(() => (Array.isArray(data) ? data.slice(0, 6) : []), [data]);
 
   async function handleAddToCart(product, quantity = 1) {
     const productId = product?._id || product?.id;
@@ -178,9 +156,17 @@ export default function HomeTreeland() {
         </div>
         {isLoading ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-[26rem] rounded-lg" />)}</div>
-        ) : (
+        ) : error ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+            Live products could not be loaded from the backend. Please check the API and database connection.
+          </div>
+        ) : products.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {products.map((product) => <ProductCard key={product._id || product.id} product={product} onAddToCart={handleAddToCart} onAddToWishlist={handleWishlist} />)}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-[#dce7da] bg-white px-4 py-3 text-sm font-semibold text-[#10210f]">
+            No live products are currently available from the backend.
           </div>
         )}
         <div className="mt-10 grid gap-4 border-y border-[#dce7da] py-5 sm:grid-cols-3">

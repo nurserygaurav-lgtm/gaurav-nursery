@@ -5,22 +5,113 @@
    ▲ Next.js 15.5.22
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 11.1s
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\DELL\Documents\gaurav-nursery-main\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\DELL\Documents\gaurav-nursery-main\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\DELL\Documents\gaurav-nursery-main\apps\admin-panel\app\styles.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 3 items } -> webpack/lib/ModuleWarning -> Warning
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|C:\Users\DELL\Documents\gaurav-nursery-main\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!C:\Users\DELL\Documents\gaurav-nursery-main\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!C:\Users\DELL\Documents\gaurav-nursery-main\apps\seller-panel\app\styles.css': No serializer registered for Warning
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> Array { 2 items } -> webpack/lib/ModuleWarning -> Warning
+ ⚠ Compiled with warnings in 6.7s
+
+../admin-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../admin-panel/app/styles.css
+Warning
+
+(1:2993) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+../admin-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../admin-panel/app/styles.css
+../admin-panel/app/styles.css
+
+../admin-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../admin-panel/app/styles.css
+Warning
+
+(1:4390) autoprefixer: start value has mixed support, consider using flex-start instead
+
+Import trace for requested module:
+../admin-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../admin-panel/app/styles.css
+../admin-panel/app/styles.css
+
+../admin-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../admin-panel/app/styles.css
+Warning
+
+(1:4799) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+../admin-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../admin-panel/app/styles.css
+../admin-panel/app/styles.css
+
+../seller-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../seller-panel/app/styles.css
+Warning
+
+(1:2104) autoprefixer: start value has mixed support, consider using flex-start instead
+
+Import trace for requested module:
+../seller-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../seller-panel/app/styles.css
+../seller-panel/app/styles.css
+
+../seller-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../seller-panel/app/styles.css
+Warning
+
+(1:2488) autoprefixer: end value has mixed support, consider using flex-end instead
+
+Import trace for requested module:
+../seller-panel/app/styles.css.webpack[javascript/auto]!=!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!../seller-panel/app/styles.css
+../seller-panel/app/styles.css
+
+ ✓ Compiled successfully in 20.0s
    Linting and checking validity of types ...
    Collecting page data ...
-[Error [PageNotFoundError]: Cannot find module for page: /_not-found] {
-  code: 'ENOENT'
-}
-[Error [PageNotFoundError]: Cannot find module for page: /404] {
-  code: 'ENOENT'
-}
+   Generating static pages (0/35) ...
+   Generating static pages (8/35) 
+   Generating static pages (17/35) 
+   Generating static pages (26/35) 
+ ✓ Generating static pages (35/35)
+   Finalizing page optimization ...
+   Collecting build traces ...
 
-> Build error occurred
-[Error: Failed to collect page data for /_not-found] { type: 'Error' }
-npm error Lifecycle script `build` failed with error:
-npm error code 1
-npm error path C:\Users\DELL\Documents\gaurav-nursery-main\apps\customer-web
-npm error workspace @gaurav-nursery/customer-web@2.0.0
-npm error location C:\Users\DELL\Documents\gaurav-nursery-main\apps\customer-web
-npm error command failed
-npm error command C:\Windows\system32\cmd.exe /d /s /c next build
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      137 B         103 kB
+├ ○ /_not-found                            137 B         103 kB
+├ ƒ /[...slug]                             137 B         103 kB
+├ ○ /404                                   205 B         106 kB
+├ ○ /about                                 197 B         106 kB
+├ ○ /account                               205 B         106 kB
+├ ○ /admin                               3.29 kB         106 kB
+├ ○ /blog                                  205 B         106 kB
+├ ƒ /blog/[slug]                           205 B         106 kB
+├ ○ /cart                                 1.5 kB         104 kB
+├ ○ /categories                            205 B         106 kB
+├ ○ /checkout                              197 B         106 kB
+├ ○ /contact                               197 B         106 kB
+├ ○ /faq                                   197 B         106 kB
+├ ○ /home                                  137 B         103 kB
+├ ○ /login                               1.29 kB         104 kB
+├ ○ /offers                                197 B         106 kB
+├ ○ /order-success                         205 B         106 kB
+├ ○ /orders                              1.34 kB         104 kB
+├ ○ /planters                              205 B         106 kB
+├ ○ /plants                                160 B         107 kB
+├ ○ /plants/air-purifying                  205 B         106 kB
+├ ○ /plants/flowering                      205 B         106 kB
+├ ○ /plants/herbal                         205 B         106 kB
+├ ○ /plants/indoor                         205 B         106 kB
+├ ○ /plants/outdoor                        205 B         106 kB
+├ ○ /privacy                               197 B         106 kB
+├ ○ /privacy-policy                        197 B         106 kB
+├ ƒ /products/[id]                       1.74 kB         104 kB
+├ ○ /register                              197 B         106 kB
+├ ○ /seeds                                 205 B         106 kB
+├ ○ /seller                              2.07 kB         105 kB
+├ ƒ /seller/[...slug]                    2.67 kB         105 kB
+├ ○ /shipping                              197 B         106 kB
+├ ○ /shipping-returns                      197 B         106 kB
+├ ○ /shop                                  160 B         107 kB
+├ ○ /terms                                 197 B         106 kB
+└ ○ /wishlist                            1.42 kB         104 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/18-6904d02802e458a1.js        46.3 kB
+  ├ chunks/87c73c54-24122e7b92478d00.js  54.2 kB
+  └ other shared chunks (total)          2.02 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
