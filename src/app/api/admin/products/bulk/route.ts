@@ -16,6 +16,13 @@ export async function POST(request: Request) {
     }
 
     const currentUser = await getCurrentUser()
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (currentUser.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const newStatus = action === 'APPROVE_ALL' ? 'LIVE' : 'REJECTED'
 
     const result = await prisma.product.updateMany({

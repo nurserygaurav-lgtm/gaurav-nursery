@@ -4,6 +4,14 @@ import { getCurrentUser } from '@/lib/auth'
 
 export async function GET(request: Request) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
 
@@ -48,6 +56,13 @@ export async function PATCH(request: Request) {
     }
 
     const currentUser = await getCurrentUser()
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (currentUser.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const newStatus = action === 'APPROVE' ? 'LIVE' : 'REJECTED'
 
     const updated = await prisma.product.update({

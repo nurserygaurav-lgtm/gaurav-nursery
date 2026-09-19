@@ -4,6 +4,14 @@ import { getCurrentUser } from '@/lib/auth'
 
 export async function GET() {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const coupons = await prisma.coupon.findMany({
       orderBy: { createdAt: 'desc' },
     })
@@ -15,6 +23,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (currentUser.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const body = await request.json()
     const {
       code,
@@ -47,10 +63,9 @@ export async function POST(request: Request) {
       },
     })
 
-    const currentUser = await getCurrentUser()
     await prisma.auditLog.create({
       data: {
-        actorId: currentUser?.userId || null,
+        actorId: currentUser.userId,
         action: 'COUPON_CREATED',
         entityType: 'COUPON',
         entityId: coupon.id,
@@ -66,6 +81,14 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (currentUser.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { id, isActive } = body
 

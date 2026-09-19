@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -12,8 +14,27 @@ import {
   ShieldCheck
 } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function OrdersPage() {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect('/login?redirect=/orders')
+  }
+
+  // Customer ownership isolation: only return orders belonging to this user
+  // (unless SUPER_ADMIN is auditing the platform)
+  const whereClause: any = {}
+  if (user.role !== 'SUPER_ADMIN') {
+    whereClause.OR = [
+      { customerId: user.userId },
+      { customerEmail: user.email },
+    ]
+  }
+
   const orders = await prisma.order.findMany({
+    where: whereClause,
     include: {
       subOrders: {
         include: {

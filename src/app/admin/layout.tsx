@@ -1,4 +1,7 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getCurrentUser } from '@/lib/auth'
+import SignOutButton from '@/components/SignOutButton'
 import { 
   ShieldCheck, 
   LayoutDashboard, 
@@ -14,11 +17,19 @@ import {
   Image as ImageIcon
 } from 'lucide-react'
 
-export default function AdminLayout({
+export const dynamic = 'force-dynamic'
+
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const user = await getCurrentUser()
+
+  if (!user || user.role !== 'SUPER_ADMIN') {
+    redirect('/login?redirect=/admin')
+  }
+
   return (
     <div className="min-h-screen flex bg-slate-100 text-slate-800">
       
@@ -122,9 +133,12 @@ export default function AdminLayout({
 
         {/* Footer info & Exit to Storefront */}
         <div className="p-4 border-t border-slate-800 space-y-2">
-          <div className="bg-slate-800/60 rounded-xl p-2.5 text-[11px] text-slate-400 space-y-0.5">
-            <span className="text-slate-200 font-semibold block">Logged in as Admin</span>
-            <span>admin@gauravnursery.com</span>
+          <div className="bg-slate-800/60 rounded-xl p-2.5 text-[11px] text-slate-400 space-y-1">
+            <span className="text-slate-200 font-semibold block">{user.name || 'Admin User'}</span>
+            <span className="block truncate">{user.email}</span>
+            <div className="pt-1">
+              <SignOutButton />
+            </div>
           </div>
 
           <Link

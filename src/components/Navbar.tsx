@@ -19,8 +19,10 @@ import {
   ExternalLink,
   Loader2
 } from 'lucide-react'
+import SignOutButton from '@/components/SignOutButton'
 
 export default function Navbar() {
+  const [user, setUser] = useState<any>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
@@ -58,6 +60,27 @@ export default function Navbar() {
     }
     window.addEventListener('storage', handleStorage)
     return () => window.removeEventListener('storage', handleStorage)
+  }, [])
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const res = await fetch('/api/auth/me')
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+        } else {
+          setUser(null)
+        }
+      } catch {
+        setUser(null)
+      }
+    }
+
+    checkUser()
+    const handleAuth = () => checkUser()
+    window.addEventListener('auth-change', handleAuth)
+    return () => window.removeEventListener('auth-change', handleAuth)
   }, [])
 
   // Debounced search autocomplete
@@ -308,13 +331,38 @@ export default function Navbar() {
               )}
             </Link>
 
-            <Link
-              href="/orders"
-              className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-emerald-700 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-emerald-200 transition"
-            >
-              <User className="w-4 h-4 text-emerald-700" />
-              <span>My Orders</span>
-            </Link>
+            {user ? (
+              <div className="hidden sm:flex items-center gap-1.5">
+                <Link
+                  href={
+                    user.role === 'SUPER_ADMIN'
+                      ? '/admin'
+                      : user.role === 'SELLER'
+                      ? '/seller/dashboard'
+                      : user.role === 'DELIVERY_PARTNER'
+                      ? '/delivery'
+                      : '/orders'
+                  }
+                  className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-emerald-700 px-2.5 py-1.5 rounded-xl border border-slate-200 hover:border-emerald-300 transition bg-slate-50/50"
+                  title={`Signed in as ${user.email}`}
+                >
+                  <User className="w-3.5 h-3.5 text-emerald-700" />
+                  <span className="max-w-[90px] truncate">{user.name?.split(' ')[0] || 'Account'}</span>
+                  <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold uppercase">
+                    {user.role === 'SUPER_ADMIN' ? 'Admin' : user.role === 'SELLER' ? 'Seller' : user.role === 'DELIVERY_PARTNER' ? 'Delivery' : 'Customer'}
+                  </span>
+                </Link>
+                <SignOutButton text="" className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg transition" />
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden sm:flex items-center gap-1 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-xl transition shadow-sm"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </Link>
+            )}
 
             <Link
               href="/cart"
@@ -359,7 +407,32 @@ export default function Navbar() {
             <Link href="/shop?category=indoor-plants" className="p-2 rounded-lg hover:bg-slate-50 text-slate-800">Indoor Plants</Link>
             <Link href="/shop?category=flowering-plants" className="p-2 rounded-lg hover:bg-slate-50 text-slate-800">Flowering</Link>
             <Link href="/seller/register" className="p-2 rounded-lg bg-emerald-50 text-emerald-800 font-semibold">Seller Register</Link>
-            <Link href="/orders" className="p-2 rounded-lg hover:bg-slate-50 text-slate-800">My Orders</Link>
+            {user ? (
+              <>
+                <Link
+                  href={
+                    user.role === 'SUPER_ADMIN'
+                      ? '/admin'
+                      : user.role === 'SELLER'
+                      ? '/seller/dashboard'
+                      : user.role === 'DELIVERY_PARTNER'
+                      ? '/delivery'
+                      : '/orders'
+                  }
+                  className="p-2 rounded-lg hover:bg-slate-50 text-emerald-800 font-bold"
+                >
+                  Portal ({user.role === 'SUPER_ADMIN' ? 'Admin' : user.role === 'SELLER' ? 'Seller' : user.role === 'DELIVERY_PARTNER' ? 'Delivery' : 'Orders'})
+                </Link>
+                <div className="col-span-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 truncate">{user.email}</span>
+                  <SignOutButton text="Sign Out" />
+                </div>
+              </>
+            ) : (
+              <Link href="/login" className="p-2 rounded-lg bg-emerald-700 text-white font-bold text-center col-span-2">
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       )}

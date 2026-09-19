@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 
 export async function GET() {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
     const ledgers = await prisma.commissionLedger.findMany({
       include: {
         seller: {

@@ -1,4 +1,8 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { getCurrentUser } from '@/lib/auth'
+import SignOutButton from '@/components/SignOutButton'
 import { 
   Store, 
   LayoutDashboard, 
@@ -6,16 +10,32 @@ import {
   PlusCircle, 
   PackageCheck, 
   DollarSign, 
-  ArrowLeft,
+  ArrowLeft, 
   ShieldCheck,
   UserCheck
 } from 'lucide-react'
 
-export default function SellerLayout({
+export const dynamic = 'force-dynamic'
+
+export default async function SellerLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const headersList = headers()
+  const pathname = headersList.get('x-pathname') || ''
+
+  // Allow public seller registration without requiring pre-existing seller session
+  if (pathname === '/seller/register') {
+    return <>{children}</>
+  }
+
+  const user = await getCurrentUser()
+
+  if (!user || (user.role !== 'SELLER' && user.role !== 'SUPER_ADMIN')) {
+    redirect('/login?redirect=/seller/dashboard')
+  }
+
   return (
     <div className="min-h-screen flex bg-slate-100 text-slate-800">
       
@@ -98,9 +118,12 @@ export default function SellerLayout({
 
         {/* Footer & Switcher */}
         <div className="p-4 border-t border-emerald-900 space-y-2">
-          <div className="bg-emerald-900/60 rounded-xl p-2.5 text-[11px] text-emerald-300 space-y-0.5">
-            <span className="text-white font-semibold block">Gaurav Greenery Hub</span>
-            <span>Surat, Gujarat • KYC Active</span>
+          <div className="bg-emerald-900/60 rounded-xl p-2.5 text-[11px] text-emerald-300 space-y-1">
+            <span className="text-white font-semibold block truncate">{user.name}</span>
+            <span className="block truncate text-emerald-400/80">{user.email}</span>
+            <div className="pt-1">
+              <SignOutButton />
+            </div>
           </div>
 
           <Link

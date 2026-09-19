@@ -5,19 +5,30 @@ import { getCurrentUser } from '@/lib/auth'
 export async function GET(request: Request) {
   try {
     const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SELLER' && user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Seller access required' }, { status: 403 })
+    }
+
     const { searchParams } = new URL(request.url)
     const sellerIdParam = searchParams.get('sellerId')
 
-    let sellerId = user?.sellerId || sellerIdParam
+    let sellerId: string | undefined = user.sellerId
 
-    if (!sellerId) {
-      // Demo fallback
-      const defaultSeller = await prisma.sellerProfile.findFirst()
-      sellerId = defaultSeller?.id
+    // If user is SELLER and tries to query a different seller's ID, forbid it
+    if (user.role === 'SELLER') {
+      if (sellerIdParam && sellerIdParam !== user.sellerId) {
+        return NextResponse.json({ error: "Forbidden: Cannot access another seller's data" }, { status: 403 })
+      }
+      sellerId = user.sellerId
+    } else if (user.role === 'SUPER_ADMIN') {
+      sellerId = sellerIdParam || user.sellerId
     }
 
     if (!sellerId) {
-      return NextResponse.json({ error: 'Seller not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Seller profile not found or unlinked' }, { status: 404 })
     }
 
     // Isolated query: Only fetch subOrders where sellerId = sellerId
@@ -50,11 +61,32 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SELLER' && user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Seller access required' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { subOrderId, fulfillmentStatus, trackingNumber, deliveryNotes } = body
 
     if (!subOrderId || !fulfillmentStatus) {
       return NextResponse.json({ error: 'subOrderId and fulfillmentStatus are required' }, { status: 400 })
+    }
+
+    const existingSubOrder = await prisma.subOrder.findUnique({
+      where: { id: subOrderId },
+    })
+
+    if (!existingSubOrder) {
+      return NextResponse.json({ error: 'SubOrder not found' }, { status: 404 })
+    }
+
+    // Resource ownership check: ensure the subOrder belongs to this seller
+    if (user.role === 'SELLER' && existingSubOrder.sellerId !== user.sellerId) {
+      return NextResponse.json({ error: "Forbidden: Cannot modify another seller's order" }, { status: 403 })
     }
 
     const updated = await prisma.subOrder.update({

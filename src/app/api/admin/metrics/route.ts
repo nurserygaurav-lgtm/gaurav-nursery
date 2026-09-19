@@ -5,10 +5,11 @@ import { getCurrentUser } from '@/lib/auth'
 export async function GET() {
   try {
     const user = await getCurrentUser()
-    // Role protection (SUPER_ADMIN check)
-    // For local ease if not logged in we can return data or check user
-    if (user && user.role !== 'SUPER_ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 403 })
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
     }
 
     const [

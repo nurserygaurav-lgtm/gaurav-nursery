@@ -5,16 +5,29 @@ import { getCurrentUser } from '@/lib/auth'
 export async function GET(request: Request) {
   try {
     const user = await getCurrentUser()
-    const { searchParams } = new URL(request.url)
-    let sellerId = user?.sellerId || searchParams.get('sellerId')
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SELLER' && user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Seller access required' }, { status: 403 })
+    }
 
-    if (!sellerId) {
-      const first = await prisma.sellerProfile.findFirst()
-      sellerId = first?.id
+    const { searchParams } = new URL(request.url)
+    const sellerIdParam = searchParams.get('sellerId')
+
+    let sellerId: string | undefined = user.sellerId
+
+    if (user.role === 'SELLER') {
+      if (sellerIdParam && sellerIdParam !== user.sellerId) {
+        return NextResponse.json({ error: "Forbidden: Cannot access another seller's financial data" }, { status: 403 })
+      }
+      sellerId = user.sellerId
+    } else if (user.role === 'SUPER_ADMIN') {
+      sellerId = sellerIdParam || user.sellerId
     }
 
     if (!sellerId) {
-      return NextResponse.json({ error: 'Seller not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Seller profile not found or unlinked' }, { status: 404 })
     }
 
     const [seller, ledgers, payouts] = await Promise.all([
@@ -57,19 +70,30 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SELLER' && user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Seller access required' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { sellerId: inputSellerId, amount } = body
 
-    const user = await getCurrentUser()
-    let sellerId = user?.sellerId || inputSellerId
+    let sellerId: string | undefined = user.sellerId
 
-    if (!sellerId) {
-      const first = await prisma.sellerProfile.findFirst()
-      sellerId = first?.id
+    if (user.role === 'SELLER') {
+      if (inputSellerId && inputSellerId !== user.sellerId) {
+        return NextResponse.json({ error: "Forbidden: Cannot request payout for another seller" }, { status: 403 })
+      }
+      sellerId = user.sellerId
+    } else if (user.role === 'SUPER_ADMIN') {
+      sellerId = inputSellerId || user.sellerId
     }
 
     if (!sellerId) {
-      return NextResponse.json({ error: 'Seller profile required' }, { status: 400 })
+      return NextResponse.json({ error: 'Seller profile not found or unlinked' }, { status: 404 })
     }
 
     const seller = await prisma.sellerProfile.findUnique({ where: { id: sellerId } })

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,6 +19,14 @@ function buildCSV(headers: string[], rows: (string | number)[][]): string {
 
 export async function GET(request: Request) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 })
+    }
+    if (user.role !== 'SUPER_ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
+    }
+
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'orders'
     const timestamp = new Date().toISOString().split('T')[0]
