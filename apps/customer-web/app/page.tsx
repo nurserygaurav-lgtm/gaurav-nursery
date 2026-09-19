@@ -1,120 +1,84 @@
-﻿import Hero from './components/Hero';
-import StorefrontProducts from './components/StorefrontProducts';
-
-const categories = [
-  { name: 'Indoor Plants', text: 'Easy-care greens for every room', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80', icon: '🌿' },
-  { name: 'Outdoor Plants', text: 'For balconies, gardens and patios', image: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80', icon: '☀️' },
-  { name: 'Flowering Plants', text: 'Colourful blooms for every season', image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80', icon: '🌺' },
-  { name: 'Air Purifying', text: 'Fresh, healthier indoor spaces', image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=900&q=80', icon: '💨' },
-  { name: 'Herbal Plants', text: 'Fresh kitchen garden favorites', image: 'https://images.unsplash.com/photo-1461354464878-ad92f492a5a0?auto=format&fit=crop&w=900&q=80', icon: '🌱' },
-  { name: 'Pots & Planters', text: 'The right home for every plant', image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=900&q=80', icon: '🪴' },
-] as const;
-
-const careHighlights = [
-  {
-    title: 'Healthy plant delivery',
-    description: 'Every order is packed with nursery care and safe transport to keep your plants thriving.',
-    image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    title: 'Plant care guidance',
-    description: 'Get watering schedules, sunlight tips, and expert help for a greener, happier garden.',
-    image: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    title: 'Gift-ready greenery',
-    description: 'Choose meaningful plant gifts for birthdays, housewarmings, and mindful living moments.',
-    image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80',
-  },
-] as const;
+﻿const navItems = ['Home', 'All Plants', 'Indoor Plants', 'Outdoor Plants', 'Pots & Planters', 'Seeds & Fertilizers', 'Gardening Tools', 'Blog', 'Contact'];
 
 export default function Home() {
   return (
-    <main className="storefront-shell">
-      <div className="offerbar">
-        Free delivery on orders above ₹499 <span>•</span> Secure payments <span>•</span> Healthy plant guarantee
-      </div>
-
-      <nav className="top-nav">
-        <a className="logo" href="/">
-          <b>✦</b>
-          <span>
-            Gaurav Nursery
-            <small>Trusted Plant Studio</small>
-          </span>
-        </a>
-
-        <div className="search-box">
-          <input aria-label="Search products" placeholder="Search plants, pots, seeds and more" />
-          <button type="button">Search</button>
-        </div>
-
-        <div className="quick-links">
-          <a href="/wishlist">Wishlist</a>
-          <a href="/cart">Cart <i>0</i></a>
-          <a href="/login">Login / Register</a>
-        </div>
-      </nav>
-
-      <div className="menu">
-        <a className="menuall" href="/categories">All Categories</a>
-        {['Home', 'Plants', 'Planters', 'Seeds', 'Offers', 'Blog', 'Contact'].map((item) => (
-          <a href={`/${item.toLowerCase()}`} key={item}>{item}</a>
-        ))}
-        <a className="whatsapp" href="/contact">WhatsApp us</a>
-      </div>
-
-      <Hero />
-
-      <div className="promises">
-        <span>🚚 <b>Free Delivery<small>On orders over ₹499</small></b></span>
-        <span>🔒 <b>Secure Payment<small>100% secure checkout</small></b></span>
-        <span>♻ <b>Easy Returns<small>Hassle-free support</small></b></span>
-        <span>🌱 <b>Fresh & Healthy<small>Best quality plants</small></b></span>
-      </div>
-
-      <section id="categories">
-        <div className="section-title">
-          <div>
-            <p className="eyebrow">SHOP BY NEED</p>
-            <h2>Find your next green companion</h2>
+    <main className="nursery-page">
+      <div className="notice-strip">
+        <div className="notice-inner">
+          <span>🌿 Bring Nature Home – Healthier Life, Happier You!</span>
+          <div className="notice-links">
+            <a href="/track-order">Track Order</a>
+            <span>|</span>
+            <a href="/help">Help</a>
+            <span>|</span>
+            <a href="tel:+919876543210">+91 98765 43210</a>
           </div>
-          <a href="/categories">View all categories →</a>
         </div>
-        <div className="grid">
-          {categories.map((category) => (
-            <a className="card" href={`/categories/${category.name.toLowerCase().replaceAll(' ', '-')}`} key={category.name} style={{ backgroundImage: `linear-gradient(180deg, rgba(19,36,24,0.08), rgba(19,36,24,0.4)), url(${category.image})` }}>
-              <span>{category.icon}</span>
-              <h3>{category.name}</h3>
-              <p>{category.text}</p>
-              <b>Explore</b>
-            </a>
-          ))}
-        </div>
-      </section>
+      </div>
 
-      <section className="nursery-story" aria-label="Why choose Gaurav Nursery">
-        <div className="section-title">
-          <div>
-            <p className="eyebrow">WHY GARDENERS LOVE US</p>
-            <h2>Thoughtful plants, planted with care</h2>
+      <header className="nursery-header">
+        <div className="header-top">
+          <div className="brand-wrap">
+            <div className="brand-mark">🌿</div>
+            <div className="brand-copy">
+              <strong>Gaurav Nursery</strong>
+              <small>Plants for a Better Tomorrow</small>
+            </div>
+          </div>
+
+          <div className="search-shell">
+            <input aria-label="Search products" placeholder="Search for plants, pots, seeds..." />
+            <button type="button" aria-label="Search">⌕</button>
+          </div>
+
+          <div className="header-actions">
+            <a href="/account">👤 Account</a>
+            <a href="/cart">🛒 Cart</a>
           </div>
         </div>
 
-        <div className="story-grid">
-          {careHighlights.map((item) => (
-            <article className="story-card" key={item.title}>
-              <img src={item.image} alt={item.title} />
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-            </article>
+        <nav className="main-nav" aria-label="Main navigation">
+          {navItems.map((item) => (
+            <a href="/" key={item}>{item}</a>
           ))}
+        </nav>
+      </header>
+
+      <section className="hero-section">
+        <div className="hero-copy">
+          <p className="hero-kicker">GREEN TODAY • BRIGHTER TOMORROW</p>
+          <h1>
+            <span className="line-one">Bring</span>
+            <span className="line-two">Nature</span>
+            <span className="line-three">Home</span>
+          </h1>
+          <p className="hero-text">
+            Wide range of indoor &amp; outdoor plants,<br />
+            planters, seeds and gardening accessories<br />
+            at best prices.
+          </p>
+        </div>
+
+        <div className="hero-visual" aria-label="Showcase of plants">
+          <div className="scene-wrap">
+            <div className="floating-quote">Plants<br />Make People<br />Happier</div>
+            <img
+              src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1200&q=80&sat=-30"
+              alt="Healthy plant seedlings"
+            />
+          </div>
+
+          <div className="floating-badge badge-left">Good<br />Grow Here</div>
+          <div className="floating-badge badge-right">A Greener<br />Tomorrow<br />Together</div>
         </div>
       </section>
 
-      <StorefrontProducts />
+      <aside className="floating-rail" aria-label="Quick actions">
+        <button type="button" aria-label="Bookmark">☆</button>
+        <button type="button" aria-label="Favorites">♡</button>
+        <button type="button" aria-label="Cart">🛒</button>
+        <button type="button" aria-label="Profile">👤</button>
+      </aside>
     </main>
   );
 }

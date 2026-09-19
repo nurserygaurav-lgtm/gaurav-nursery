@@ -1,5 +1,7 @@
 const heroImages = [
-  'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1000&q=80',
+  'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1000&q=80',
 ];
 
 export default function Hero() {
@@ -57,8 +59,8 @@ export default function Hero() {
             <img
               key={image}
               src={image}
-              alt={index === 0 ? 'Beautiful green indoor plant' : 'Plant collection showcase'}
-              className="photo-card photo-1"
+              alt={index === 0 ? 'Premium indoor plant lifestyle' : 'Plant collection showcase'}
+              className={`photo-card photo-${index + 1}`}
             />
           ))}
         </div>
