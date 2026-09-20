@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { seed1000Plants } from '../src/scripts/generate_1000_plants'
 
 const prisma = new PrismaClient()
 
@@ -599,6 +600,9 @@ async function main() {
       isVerifiedPurchase: true,
     },
   })
+
+  // 14. Ingest 1,000 Catalog Plants for Gaurav Greenery Hub with +₹149 pricing
+  await seed1000Plants(prisma)
 
   console.log('✅ Gaurav Nursery Database Seeding Completed successfully!')
 }
