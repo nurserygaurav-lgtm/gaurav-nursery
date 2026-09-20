@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { PlusCircle, Sprout, Sun, Droplet, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
+import { PlusCircle, Sprout, Sun, Droplet, Clock, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
 
 export default async function SellerProductsPage() {
   const seller = await prisma.sellerProfile.findFirst({
@@ -28,13 +28,23 @@ export default async function SellerProductsPage() {
           </p>
         </div>
 
-        <Link
-          href="/seller/products/new"
-          className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Add New Plant</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/seller/products/import"
+            className="bg-white hover:bg-slate-50 text-emerald-800 border border-emerald-300 font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-600" />
+            <span>Bulk / Ugaoo Import</span>
+          </Link>
+
+          <Link
+            href="/seller/products/new"
+            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Add New Plant</span>
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
