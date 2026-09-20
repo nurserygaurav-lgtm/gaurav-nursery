@@ -110,7 +110,7 @@ export default function SellerRegisterPage() {
             Register Your Nursery on Gaurav Nursery
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">
-            Join India’s premier plant marketplace. Enjoy fair 10% platform fee, direct customer orders, and transparent payouts.
+            Join India’s premier online plant delivery network. Reach plant lovers nationwide with direct orders and fast bank settlements.
           </p>
         </div>
 
@@ -325,7 +325,7 @@ export default function SellerRegisterPage() {
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-xs text-emerald-950 flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-emerald-700 flex-shrink-0" />
             <p>
-              <strong>10% Commission Agreement:</strong> By submitting, you agree to the standard Gaurav Nursery marketplace terms (10% platform fee on completed plant deliveries).
+              <strong>Partner Guidelines & Agreement:</strong> By submitting, you agree to the standard Gaurav Nursery seller partnership terms and safe live plant transit guidelines.
             </p>
           </div>
 
