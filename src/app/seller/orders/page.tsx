@@ -96,9 +96,11 @@ export default function SellerOrdersPage() {
               <div className="bg-slate-50 px-6 py-3.5 border-b border-slate-200/80 flex flex-wrap justify-between items-center gap-3 text-xs">
                 <div>
                   <span className="font-mono font-bold text-slate-900">Sub-Order #{sub.subOrderNumber}</span>
-                  <span className="text-slate-400 ml-2">
-                    (Master #{sub.order.orderNumber} • Placed {new Date(sub.order.createdAt).toLocaleDateString()})
-                  </span>
+                  {sub.order && (
+                    <span className="text-slate-400 ml-2">
+                      (Master #{sub.order.orderNumber} • Placed {new Date(sub.order.createdAt).toLocaleDateString()})
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3">

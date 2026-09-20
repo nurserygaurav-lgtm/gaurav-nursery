@@ -234,6 +234,12 @@ export const getAdminSellers = asyncHandler(async (_req, res) => {
       businessName: prof.businessName || prof.shopName || s.name,
       email: s.email,
       phone: s.phone,
+      user: {
+        id: s._id.toString(),
+        name: s.name || prof.businessName || 'Verified Partner',
+        email: s.email,
+        phone: s.phone || ''
+      },
       nurseryAddress: prof.nurseryAddress || prof.businessAddress || s.address?.street || '',
       city: prof.city || s.address?.city || 'Surat',
       state: prof.state || s.address?.state || 'Gujarat',

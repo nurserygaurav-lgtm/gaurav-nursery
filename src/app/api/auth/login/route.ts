@@ -28,13 +28,33 @@ export async function POST(request: Request) {
         const rawRole = (u.role || 'CUSTOMER').toUpperCase()
         const normalizedRole = (rawRole === 'ADMIN' || rawRole === 'SUPER_ADMIN') ? 'SUPER_ADMIN' : rawRole
 
+        // Lookup matching local sellerProfile from Prisma so SELLER portal routes work seamlessly
+        let localSellerId = u.sellerProfile?.id || u.sellerProfile?._id
+        if (normalizedRole === 'SELLER' || normalizedRole === 'SUPER_ADMIN') {
+          const localProfile = await prisma.sellerProfile.findFirst({
+            where: {
+              OR: [
+                { user: { email: cleanEmail } },
+                { userId: u.id || u.userId || u._id },
+                { slug: u.sellerProfile?.slug || 'gaurav-greenery-hub' }
+              ]
+            }
+          }).catch(() => null)
+
+          if (localProfile) {
+            localSellerId = localProfile.id
+          } else if (!localSellerId) {
+            localSellerId = u.id || u.userId || u._id
+          }
+        }
+
         // Frontend token: Always signed by Next.js secret so Edge Middleware and Server Components can verify role
         const frontendToken = signToken({
           userId: u.id || u.userId || u._id,
           email: u.email,
           name: u.name,
           role: normalizedRole as any,
-          sellerId: u.sellerProfile?.id || u.sellerProfile?._id,
+          sellerId: localSellerId,
         })
 
         const response = NextResponse.json({

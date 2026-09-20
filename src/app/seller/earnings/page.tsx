@@ -67,7 +67,16 @@ export default function SellerEarningsPage() {
     )
   }
 
-  const { stats, seller, ledgers = [], payouts = [] } = data
+  const stats = data?.stats || {
+    totalGross: 0,
+    totalCommission: 0,
+    totalNetPayable: 0,
+    availableForPayout: 0,
+    alreadySettled: 0,
+  }
+  const seller = data?.seller || {}
+  const ledgers = data?.ledgers || []
+  const payouts = data?.payouts || []
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">

@@ -30,6 +30,19 @@ export async function POST(request: Request) {
     }
 
     let sellerId = user.sellerId
+    if (!sellerId) {
+      const foundSeller = await prisma.sellerProfile.findFirst({
+        where: {
+          OR: [
+            { user: { email: user.email } },
+            { userId: user.userId },
+            { slug: 'gaurav-greenery-hub' }
+          ]
+        }
+      }).catch(() => null)
+      sellerId = foundSeller?.id
+    }
+
     if (!sellerId && user.role === 'SUPER_ADMIN') {
       const firstSeller = await prisma.sellerProfile.findFirst()
       sellerId = firstSeller?.id

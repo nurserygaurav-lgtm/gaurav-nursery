@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 import Link from 'next/link'
 import { 
   Store, 
@@ -19,8 +20,33 @@ import {
 } from 'lucide-react'
 
 export default async function SellerDashboardPage() {
-  // Demo: Find flagship seller (Gaurav Greenery Hub)
-  const seller = await prisma.sellerProfile.findFirst({
+  const currentUser = await getCurrentUser()
+
+  const seller = (currentUser?.sellerId 
+    ? await prisma.sellerProfile.findUnique({
+        where: { id: currentUser.sellerId },
+        include: {
+          products: true,
+          subOrders: {
+            include: { items: true, order: true },
+            orderBy: { createdAt: 'desc' },
+          },
+          commissionLedgers: true,
+        }
+      })
+    : null) || (currentUser?.email
+    ? await prisma.sellerProfile.findFirst({
+        where: { user: { email: currentUser.email } },
+        include: {
+          products: true,
+          subOrders: {
+            include: { items: true, order: true },
+            orderBy: { createdAt: 'desc' },
+          },
+          commissionLedgers: true,
+        }
+      })
+    : null) || await prisma.sellerProfile.findFirst({
     where: { status: 'ACTIVE' },
     include: {
       products: true,

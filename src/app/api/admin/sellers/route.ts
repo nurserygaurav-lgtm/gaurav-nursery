@@ -19,7 +19,15 @@ export async function GET() {
     // 1. Fetch from Render Backend (MongoDB)
     const backendRes = await callBackendApi('/admin/sellers')
     if (backendRes.ok && backendRes.data?.sellers && backendRes.data.sellers.length > 0) {
-      return NextResponse.json(backendRes.data)
+      const normalizedSellers = backendRes.data.sellers.map((s: any) => ({
+        ...s,
+        user: s.user || {
+          name: s.name || s.businessName || 'Verified Partner',
+          email: s.email || '',
+          phone: s.phone || '',
+        }
+      }))
+      return NextResponse.json({ sellers: normalizedSellers })
     }
 
     // 2. Fallback

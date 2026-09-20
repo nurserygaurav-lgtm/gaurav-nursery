@@ -1,9 +1,32 @@
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 import Link from 'next/link'
 import { PlusCircle, Sprout, Sun, Droplet, Clock, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
 
 export default async function SellerProductsPage() {
-  const seller = await prisma.sellerProfile.findFirst({
+  const currentUser = await getCurrentUser()
+
+  const seller = (currentUser?.sellerId 
+    ? await prisma.sellerProfile.findUnique({
+        where: { id: currentUser.sellerId },
+        include: {
+          products: {
+            include: { category: true },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      })
+    : null) || (currentUser?.email
+    ? await prisma.sellerProfile.findFirst({
+        where: { user: { email: currentUser.email } },
+        include: {
+          products: {
+            include: { category: true },
+            orderBy: { createdAt: 'desc' },
+          },
+        },
+      })
+    : null) || await prisma.sellerProfile.findFirst({
     where: { status: 'ACTIVE' },
     include: {
       products: {
@@ -55,7 +78,16 @@ export default async function SellerProductsPage() {
 
         <div className="divide-y divide-slate-100">
           {products.map((p) => {
-            const images = JSON.parse(p.images || '[]')
+            let images: string[] = []
+            if (Array.isArray(p.images)) {
+              images = p.images
+            } else if (typeof p.images === 'string') {
+              try {
+                images = JSON.parse(p.images)
+              } catch {
+                images = [p.images].filter(Boolean)
+              }
+            }
             return (
               <div key={p.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50">
                 <div className="flex items-center gap-4 min-w-0">

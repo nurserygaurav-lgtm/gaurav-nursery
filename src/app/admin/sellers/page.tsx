@@ -106,7 +106,20 @@ export default function AdminSellersPage() {
         <div className="space-y-4">
           {sellers.map((seller) => {
             const isPending = seller.status === 'KYC_PENDING'
-            const photos = JSON.parse(seller.nurseryPhotos || '[]')
+            let photos: string[] = []
+            if (Array.isArray(seller.nurseryPhotos)) {
+              photos = seller.nurseryPhotos
+            } else if (typeof seller.nurseryPhotos === 'string') {
+              try {
+                photos = JSON.parse(seller.nurseryPhotos)
+              } catch {
+                photos = [seller.nurseryPhotos].filter(Boolean)
+              }
+            }
+
+            const sellerName = seller.user?.name || seller.name || seller.businessName || 'Verified Partner'
+            const sellerEmail = seller.user?.email || seller.email || 'Verified Seller'
+            const sellerPhone = seller.user?.phone || seller.phone || 'Contact on file'
 
             return (
               <div
@@ -124,7 +137,7 @@ export default function AdminSellersPage() {
                     <div>
                       <h3 className="font-bold text-sm text-slate-900">{seller.businessName}</h3>
                       <span className="text-[11px] text-slate-400">
-                        Proprietor: {seller.user.name} ({seller.user.email} • {seller.user.phone})
+                        Proprietor: {sellerName} ({sellerEmail} • {sellerPhone})
                       </span>
                     </div>
                   </div>
