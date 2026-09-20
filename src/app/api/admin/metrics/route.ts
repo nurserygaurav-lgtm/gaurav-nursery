@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { callBackendApi } from '@/lib/backendClient'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
@@ -12,6 +15,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
     }
 
+    // 1. Fetch from Render Backend (MongoDB)
+    const backendRes = await callBackendApi('/admin/metrics')
+    if (backendRes.ok && backendRes.data?.metrics) {
+      return NextResponse.json(backendRes.data)
+    }
+
+    // 2. Fallback
     const [
       ordersCount,
       activeSellersCount,

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { comparePassword, signToken, AUTH_COOKIE_NAME } from '@/lib/auth'
+import { callBackendApi } from '@/lib/backendClient'
 
 export async function POST(request: Request) {
   try {
@@ -13,8 +14,48 @@ export async function POST(request: Request) {
       )
     }
 
+    const cleanEmail = email.toLowerCase().trim()
+
+    // 1. Try Render Backend (MongoDB) first
+    try {
+      const backendRes = await callBackendApi('/auth/login', {
+        method: 'POST',
+        body: { email: cleanEmail, password },
+      })
+
+      if (backendRes.ok && backendRes.data?.user) {
+        const u = backendRes.data.user
+        const token = backendRes.data.token || signToken({
+          userId: u.id || u.userId,
+          email: u.email,
+          name: u.name,
+          role: u.role as any,
+          sellerId: u.sellerProfile?.id || u.sellerProfile?._id,
+        })
+
+        const response = NextResponse.json({
+          success: true,
+          user: u,
+          token,
+        })
+
+        response.cookies.set(AUTH_COOKIE_NAME, token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7,
+        })
+
+        return response
+      }
+    } catch (backendErr) {
+      console.warn('Backend login warning:', backendErr)
+    }
+
+    // 2. Fallback to local DB
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+      where: { email: cleanEmail },
       include: {
         sellerProfile: true,
       },
@@ -59,7 +100,7 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     })
 
     return response

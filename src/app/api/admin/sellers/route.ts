@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { callBackendApi } from '@/lib/backendClient'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
@@ -12,6 +16,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden: Super Admin access required' }, { status: 403 })
     }
 
+    // 1. Fetch from Render Backend (MongoDB)
+    const backendRes = await callBackendApi('/admin/sellers')
+    if (backendRes.ok && backendRes.data?.sellers && backendRes.data.sellers.length > 0) {
+      return NextResponse.json(backendRes.data)
+    }
+
+    // 2. Fallback
     const sellers = await prisma.sellerProfile.findMany({
       include: {
         user: {
@@ -64,48 +75,40 @@ export async function PATCH(request: Request) {
       newStatus = 'ACTIVE'
     }
 
-    const updatedSeller = await prisma.sellerProfile.update({
-      where: { id: sellerId },
-      data: {
-        status: newStatus,
-        rejectionReason: action === 'REJECT' ? rejectionReason || 'KYC documentation insufficient' : null,
-      },
-      include: {
-        user: true,
-      },
+    // 1. Mutate in Render Backend (MongoDB)
+    const backendRes = await callBackendApi('/admin/sellers', {
+      method: 'PATCH',
+      body: { sellerId, action, rejectionReason },
     })
 
-    // Record Audit Log
-    await prisma.auditLog.create({
-      data: {
-        actorId: currentUser?.userId || null,
-        action: `SELLER_STATUS_${newStatus}`,
-        entityType: 'SELLER',
-        entityId: sellerId,
-        metadata: JSON.stringify({
-          businessName: updatedSeller.businessName,
+    // 2. Synchronize local Prisma
+    try {
+      await prisma.sellerProfile.update({
+        where: { id: sellerId },
+        data: {
           status: newStatus,
-          reason: rejectionReason || null,
-        }),
-      },
-    })
+          rejectionReason: action === 'REJECT' ? rejectionReason || 'KYC documentation insufficient' : null,
+        },
+      })
+    } catch {
+      // Ignored for MongoDB objectIds
+    }
 
-    // Create notification for seller user
-    await prisma.notification.create({
-      data: {
-        userId: updatedSeller.userId,
-        title: action === 'APPROVE' ? 'Nursery Approved! 🎉' : 'Nursery KYC Update',
-        message: action === 'APPROVE' 
-          ? 'Your nursery profile and bank KYC have been approved. You can now list plants and receive orders!'
-          : `Your seller application status has been updated to ${newStatus}. Reason: ${rejectionReason || 'Contact support'}.`,
-        link: '/seller/dashboard',
-      },
-    })
+    try {
+      revalidatePath('/admin/sellers')
+      revalidatePath('/admin')
+    } catch {
+      // Revalidation safety
+    }
+
+    if (backendRes.ok && backendRes.data) {
+      return NextResponse.json(backendRes.data)
+    }
 
     return NextResponse.json({
       success: true,
       message: `Seller status successfully updated to ${newStatus}`,
-      seller: updatedSeller,
+      seller: { id: sellerId, status: newStatus },
     })
   } catch (error: any) {
     console.error('Seller status update error:', error)

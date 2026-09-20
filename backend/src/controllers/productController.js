@@ -103,7 +103,21 @@ function parseStringList(value) {
 }
 
 function collectImageUrls(body) {
-  return [...parseStringList(body.imageUrls), ...parseStringList(body.generatedImageUrls)];
+  const list = [];
+  if (body.images) {
+    if (Array.isArray(body.images)) {
+      body.images.forEach((img) => {
+        if (typeof img === 'string') list.push(img.trim());
+        else if (img?.url) list.push(img.url.trim());
+      });
+    } else {
+      list.push(...parseStringList(body.images));
+    }
+  }
+  if (body.imageUrl && typeof body.imageUrl === 'string') list.push(body.imageUrl.trim());
+  if (body.imageUrls) list.push(...parseStringList(body.imageUrls));
+  if (body.generatedImageUrls) list.push(...parseStringList(body.generatedImageUrls));
+  return list.filter(Boolean);
 }
 
 function inferCategory(name, category) {
@@ -511,7 +525,9 @@ export const createProduct = asyncHandler(async (req, res) => {
       metaDescription: req.body.metaDescription || req.body.description.trim().slice(0, 155),
       altText: req.body.altText || `${title.trim()} at Gaurav Nursery`
     },
-    images: [...uploadedImages, ...uploadedRemoteImages],
+    images: [...uploadedImages, ...uploadedRemoteImages].length 
+      ? [...uploadedImages, ...uploadedRemoteImages] 
+      : remoteImageUrls.map(u => ({ url: u, publicId: '' })),
     slug: `${slugify(title)}-${Date.now()}`,
     seller: req.user._id,
     status: req.body.status || 'active'

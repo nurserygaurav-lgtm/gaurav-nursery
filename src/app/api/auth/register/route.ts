@@ -43,6 +43,25 @@ export async function POST(request: Request) {
       )
     }
 
+    // 1. Mirror registration to Render Backend (MongoDB)
+    try {
+      const { callBackendApi } = await import('@/lib/backendClient')
+      await callBackendApi('/auth/register', {
+        method: 'POST',
+        body: {
+          name,
+          email: email.toLowerCase().trim(),
+          password,
+          role: role.toLowerCase(),
+          phone,
+          shopName: businessName,
+          businessAddress: nurseryAddress,
+        },
+      })
+    } catch (backendErr) {
+      console.warn('Backend registration mirror warning:', backendErr)
+    }
+
     const passwordHash = await hashPassword(password)
 
     if (role === 'SELLER') {

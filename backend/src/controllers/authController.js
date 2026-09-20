@@ -3,16 +3,38 @@ import User from '../models/User.js';
 import { generateToken } from '../utils/generateToken.js';
 import { validateLoginInput, validateRegisterInput } from '../utils/validators.js';
 
-function authResponse(user) {
+function normalizeRole(role) {
+  const r = (role || 'customer').toUpperCase();
+  if (r === 'ADMIN' || r === 'SUPER_ADMIN') return 'SUPER_ADMIN';
+  if (r === 'SELLER') return 'SELLER';
+  if (r === 'DELIVERY_PARTNER') return 'DELIVERY_PARTNER';
+  return 'CUSTOMER';
+}
+
+function authResponse(user, res) {
+  const role = normalizeRole(user.role);
+  const token = generateToken(user._id);
+
+  if (res && res.cookie) {
+    res.cookie('gn_auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+  }
+
   return {
-    token: generateToken(user._id),
+    success: true,
+    token,
     user: {
-      id: user._id,
+      id: user._id.toString(),
+      userId: user._id.toString(),
       name: user.name,
       email: user.email,
       avatar: user.avatar,
       loginProvider: user.loginProvider,
-      role: user.role,
+      role,
       phone: user.phone,
       address: user.address,
       sellerProfile: user.sellerProfile
@@ -68,7 +90,7 @@ export const register = asyncHandler(async (req, res) => {
         : undefined
   });
 
-  res.status(201).json(authResponse(user));
+  res.status(201).json(authResponse(user, res));
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -92,7 +114,7 @@ export const login = asyncHandler(async (req, res) => {
     throw new Error('This account is disabled');
   }
 
-  res.json(authResponse(user));
+  res.json(authResponse(user, res));
 });
 
 export const googleLogin = asyncHandler(async (req, res) => {
@@ -137,9 +159,25 @@ export const googleLogin = asyncHandler(async (req, res) => {
     });
   }
 
-  res.json(authResponse(user));
+  res.json(authResponse(user, res));
 });
 
 export const getMe = asyncHandler(async (req, res) => {
-  res.json({ user: req.user });
+  res.json({
+    success: true,
+    user: {
+      id: req.user._id.toString(),
+      userId: req.user._id.toString(),
+      name: req.user.name,
+      email: req.user.email,
+      role: normalizeRole(req.user.role),
+      sellerProfile: req.user.sellerProfile
+    }
+  });
 });
+
+export const logout = asyncHandler(async (_req, res) => {
+  res.clearCookie('gn_auth_token');
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+

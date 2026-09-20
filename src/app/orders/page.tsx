@@ -23,28 +23,67 @@ export default async function OrdersPage() {
     redirect('/login?redirect=/orders')
   }
 
-  // Customer ownership isolation: only return orders belonging to this user
-  // (unless SUPER_ADMIN is auditing the platform)
-  const whereClause: any = {}
-  if (user.role !== 'SUPER_ADMIN') {
-    whereClause.OR = [
-      { customerId: user.userId },
-      { customerEmail: user.email },
-    ]
+  let orders: any[] = []
+
+  // 1. Fetch from Render Backend (MongoDB)
+  try {
+    const backendRes = await callBackendApi('/orders/my')
+    if (backendRes.ok && backendRes.data?.orders && backendRes.data.orders.length > 0) {
+      orders = backendRes.data.orders.map((o: any) => ({
+        ...o,
+        id: o._id?.toString() || o.id,
+        orderNumber: o.orderNumber || `GN-${(o._id || o.id).slice(-4)}`,
+        totalGrossAmount: o.totalGrossAmount || o.totalAmount || 0,
+        paymentMethod: o.paymentMethod || o.payment?.method || 'ONLINE',
+        paymentStatus: o.paymentStatus || o.payment?.status || 'PAID',
+        createdAt: o.createdAt,
+        subOrders: (o.subOrders || []).map((sub: any) => ({
+          id: sub._id?.toString() || sub.id,
+          subOrderNumber: sub.subOrderNumber || '1',
+          fulfillmentStatus: sub.fulfillmentStatus || 'PLACED',
+          trackingNumber: sub.trackingNumber || 'TRK-LIVE',
+          grossAmount: sub.grossAmount || 0,
+          seller: {
+            businessName: sub.sellerBusinessName || sub.seller?.sellerProfile?.businessName || 'Partner Nursery',
+          },
+          items: (sub.items || []).map((it: any) => ({
+            id: it._id?.toString() || it.id,
+            productTitle: it.productTitle || it.title || 'Plant',
+            productImage: it.productImage || it.image,
+            unitPrice: it.unitPrice || it.price || 0,
+            quantity: it.quantity || 1,
+            lineTotal: it.lineTotal || (it.unitPrice || 0) * (it.quantity || 1),
+          })),
+        })),
+      }))
+    }
+  } catch (err) {
+    console.warn('Backend orders fetch warning:', err)
   }
 
-  const orders = await prisma.order.findMany({
-    where: whereClause,
-    include: {
-      subOrders: {
-        include: {
-          seller: true,
-          items: true,
+  // 2. Fallback
+  if (orders.length === 0) {
+    const whereClause: any = {}
+    if (user.role !== 'SUPER_ADMIN') {
+      whereClause.OR = [
+        { customerId: user.userId },
+        { customerEmail: user.email },
+      ]
+    }
+
+    orders = await prisma.order.findMany({
+      where: whereClause,
+      include: {
+        subOrders: {
+          include: {
+            seller: true,
+            items: true,
+          },
         },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-  })
+      orderBy: { createdAt: 'desc' },
+    })
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">

@@ -19,6 +19,15 @@ const nextConfig = {
       '/**': ['./prisma/dev.db'],
     },
   },
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_API_URL || 'https://gaurav-nursery.onrender.com'
+    return [
+      {
+        source: '/backend-api/:path*',
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

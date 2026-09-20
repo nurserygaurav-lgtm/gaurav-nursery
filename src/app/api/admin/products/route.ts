@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { callBackendApi } from '@/lib/backendClient'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   try {
@@ -13,12 +17,17 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status')
+    const status = searchParams.get('status') || undefined
 
-    const where: any = {}
-    if (status) {
-      where.status = status
+    // 1. Fetch from Render Backend (MongoDB)
+    const backendRes = await callBackendApi('/admin/products', { params: { status } })
+    if (backendRes.ok && backendRes.data?.products && backendRes.data.products.length > 0) {
+      return NextResponse.json(backendRes.data)
     }
+
+    // 2. Fallback to local DB if backend temporarily cold/unreachable
+    const where: any = {}
+    if (status) where.status = status
 
     const products = await prisma.product.findMany({
       where,
@@ -65,32 +74,41 @@ export async function PATCH(request: Request) {
 
     const newStatus = action === 'APPROVE' ? 'LIVE' : 'REJECTED'
 
-    const updated = await prisma.product.update({
-      where: { id: productId },
-      data: {
-        status: newStatus,
-        rejectionReason: action === 'REJECT' ? rejectionReason || 'Product specs do not meet quality guidelines' : null,
-      },
-      include: {
-        seller: true,
-      },
+    // 1. Mutate in Render Backend (MongoDB)
+    const backendRes = await callBackendApi('/admin/products', {
+      method: 'PATCH',
+      body: { productId, action, rejectionReason },
     })
 
-    // Log Audit event
-    await prisma.auditLog.create({
-      data: {
-        actorId: currentUser?.userId || null,
-        action: `PRODUCT_STATUS_${newStatus}`,
-        entityType: 'PRODUCT',
-        entityId: productId,
-        metadata: JSON.stringify({ title: updated.title, newStatus }),
-      },
-    })
+    // 2. Synchronize local Prisma record if present
+    try {
+      await prisma.product.update({
+        where: { id: productId },
+        data: {
+          status: newStatus,
+          rejectionReason: action === 'REJECT' ? rejectionReason || 'Product specs do not meet quality guidelines' : null,
+        },
+      })
+    } catch {
+      // Handled if MongoDB ObjectId
+    }
+
+    try {
+      revalidatePath('/admin/products')
+      revalidatePath('/shop')
+      revalidatePath('/seller/products')
+    } catch {
+      // Revalidation context safety
+    }
+
+    if (backendRes.ok && backendRes.data) {
+      return NextResponse.json(backendRes.data)
+    }
 
     return NextResponse.json({
       success: true,
       message: `Product is now ${newStatus}`,
-      product: updated,
+      product: { id: productId, status: newStatus },
     })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

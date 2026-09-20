@@ -21,7 +21,10 @@ const userSchema = new mongoose.Schema(
     googleId: String,
     role: {
       type: String,
-      enum: ['customer', 'seller', 'admin', 'super_admin'],
+      enum: [
+        'customer', 'seller', 'admin', 'super_admin', 'delivery_partner',
+        'CUSTOMER', 'SELLER', 'SUPER_ADMIN', 'DELIVERY_PARTNER'
+      ],
       default: 'customer'
     },
     phone: String,
@@ -34,7 +37,34 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     sellerProfile: {
       shopName: String,
+      businessName: String,
+      slug: String,
+      bio: String,
       businessAddress: String,
+      nurseryAddress: String,
+      city: String,
+      state: String,
+      pincode: String,
+      panNumber: String,
+      gstNumber: String,
+      idProofUrl: String,
+      nurseryPhotos: [String],
+      bankName: String,
+      accountNumber: String,
+      ifscCode: String,
+      accountHolderName: String,
+      upiId: String,
+      status: {
+        type: String,
+        enum: ['REGISTERED', 'KYC_PENDING', 'APPROVED', 'REJECTED', 'ACTIVE', 'SUSPENDED'],
+        default: 'REGISTERED'
+      },
+      rejectionReason: String,
+      commissionRate: { type: Number, default: 0.10 },
+      rating: { type: Number, default: 4.8 },
+      totalSalesCount: { type: Number, default: 0 },
+      availableBalance: { type: Number, default: 0.0 },
+      totalEarned: { type: Number, default: 0.0 },
       isApproved: { type: Boolean, default: false }
     }
   },

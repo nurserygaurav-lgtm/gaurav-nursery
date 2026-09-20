@@ -12,14 +12,58 @@ const orderItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const subOrderItemSchema = new mongoose.Schema(
+  {
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+    productId: String,
+    productTitle: String,
+    productImage: String,
+    unitPrice: { type: Number, default: 0 },
+    quantity: { type: Number, default: 1 },
+    lineTotal: { type: Number, default: 0 },
+    commissionRate: { type: Number, default: 0.10 },
+    commissionAmount: { type: Number, default: 0 },
+    sellerEarning: { type: Number, default: 0 }
+  },
+  { _id: true }
+);
+
+const subOrderSchema = new mongoose.Schema(
+  {
+    subOrderNumber: { type: String, required: true },
+    seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    sellerBusinessName: String,
+    deliveryPartner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    grossAmount: { type: Number, required: true },
+    platformFee: { type: Number, required: true },
+    sellerNet: { type: Number, required: true },
+    fulfillmentStatus: {
+      type: String,
+      enum: ['PLACED', 'CONFIRMED', 'PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'],
+      default: 'PLACED'
+    },
+    trackingNumber: String,
+    deliveryNotes: String,
+    items: [subOrderItemSchema]
+  },
+  { timestamps: true }
+);
+
 const orderSchema = new mongoose.Schema(
   {
-    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    orderNumber: { type: String, unique: true, sparse: true },
+    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    customerId: String,
+    customerName: String,
+    customerEmail: String,
+    customerPhone: String,
     items: [orderItemSchema],
+    subOrders: [subOrderSchema],
     shippingAddress: {
       name: String,
       phone: String,
       street: String,
+      address: String,
       city: String,
       state: String,
       pincode: String
@@ -27,7 +71,6 @@ const orderSchema = new mongoose.Schema(
     payment: {
       method: {
         type: String,
-        enum: ['razorpay', 'cod'],
         default: 'cod'
       },
       orderId: String,
@@ -35,14 +78,18 @@ const orderSchema = new mongoose.Schema(
       signature: String,
       status: {
         type: String,
-        enum: ['pending', 'paid', 'failed', 'refunded'],
         default: 'pending'
       }
     },
-    totalAmount: { type: Number, required: true },
+    paymentMethod: { type: String, default: 'TEST_PAYMENT' },
+    paymentStatus: { type: String, default: 'PAID' },
+    masterStatus: { type: String, default: 'PLACED' },
+    totalAmount: { type: Number, default: 0 },
+    totalGrossAmount: { type: Number, default: 0 },
+    totalPlatformFee: { type: Number, default: 0 },
+    totalSellerNet: { type: Number, default: 0 },
     status: {
       type: String,
-      enum: ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled'],
       default: 'pending'
     }
   },

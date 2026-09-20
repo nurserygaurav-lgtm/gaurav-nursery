@@ -21,6 +21,7 @@ const productSchema = new mongoose.Schema(
         stock: Number
       }
     ],
+    mrp: { type: Number },
     care: {
       height: String,
       potSize: String,
@@ -30,6 +31,16 @@ const productSchema = new mongoose.Schema(
       difficulty: { type: String, default: 'Easy' },
       airPurification: { type: String, default: 'Helps improve indoor freshness' }
     },
+    sunlight: { type: String, default: 'Moderate' },
+    waterRequirement: { type: String, default: 'Moderate' },
+    plantHeight: String,
+    potSize: String,
+    soilType: String,
+    difficulty: { type: String, default: 'Beginner Friendly' },
+    plantType: String,
+    careTips: String,
+    rejectionReason: String,
+    featured: { type: Boolean, default: false },
     seo: {
       title: String,
       metaDescription: String,
@@ -46,7 +57,10 @@ const productSchema = new mongoose.Schema(
     seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: {
       type: String,
-      enum: ['draft', 'active', 'rejected', 'archived'],
+      enum: [
+        'draft', 'pending_review', 'approved', 'rejected', 'live', 'active', 'archived', 'out_of_stock',
+        'DRAFT', 'PENDING_REVIEW', 'APPROVED', 'REJECTED', 'LIVE', 'OUT_OF_STOCK', 'ACTIVE', 'ARCHIVED'
+      ],
       default: 'draft'
     },
     ratingAverage: { type: Number, default: 0 },

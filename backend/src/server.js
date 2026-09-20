@@ -2,10 +2,13 @@ import app from './app.js';
 import config from './config/env.js';
 import connectDB from './config/db.js';
 
+import { ensureMarketplaceBaseline } from './scripts/seedMarketplace.js';
+
 let server;
 
 connectDB()
-  .then(() => {
+  .then(async () => {
+    await ensureMarketplaceBaseline();
     server = app.listen(config.port, () => {
       server.timeout = 120000;
       server.keepAliveTimeout = 120000;

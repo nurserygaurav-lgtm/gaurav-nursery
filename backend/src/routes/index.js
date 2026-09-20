@@ -11,6 +11,9 @@ import userRoutes from './userRoutes.js';
 import wishlistRoutes from './wishlistRoutes.js';
 import publicRoutes from './publicRoutes.js';
 import sellerRoutes from './sellerRoutes.js';
+import adminRoutes from './adminRoutes.js';
+import checkoutRoutes from './checkoutRoutes.js';
+import deliveryRoutes from './deliveryRoutes.js';
 
 const router = Router();
 
@@ -26,5 +29,8 @@ router.use('/admin/tickets', adminTicketRoutes);
 router.use('/users', userRoutes);
 router.use('/wishlist', wishlistRoutes);
 router.use('/seller', sellerRoutes);
+router.use('/admin', adminRoutes);
+router.use('/checkout', checkoutRoutes);
+router.use('/delivery', deliveryRoutes);
 
 export default router;

@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { callBackendApi } from '@/lib/backendClient'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
@@ -25,34 +29,41 @@ export async function POST(request: Request) {
 
     const newStatus = action === 'APPROVE_ALL' ? 'LIVE' : 'REJECTED'
 
-    const result = await prisma.product.updateMany({
-      where: {
-        id: { in: productIds },
-      },
-      data: {
-        status: newStatus,
-        rejectionReason: action === 'REJECT_ALL' ? rejectionReason || 'Bulk rejected by Admin moderation' : null,
-      },
+    // 1. Mutate in Render Backend (MongoDB)
+    const backendRes = await callBackendApi('/admin/products/bulk', {
+      method: 'POST',
+      body: { productIds, action, rejectionReason },
     })
 
-    // Log Audit event
-    await prisma.auditLog.create({
-      data: {
-        actorId: currentUser?.userId || null,
-        action: `BULK_PRODUCTS_${newStatus}`,
-        entityType: 'PRODUCT',
-        metadata: JSON.stringify({
-          count: result.count,
-          productIds,
-          action,
-        }),
-      },
-    })
+    // 2. Synchronize local Prisma
+    try {
+      await prisma.product.updateMany({
+        where: { id: { in: productIds } },
+        data: {
+          status: newStatus,
+          rejectionReason: action === 'REJECT_ALL' ? rejectionReason || 'Bulk rejected by Admin moderation' : null,
+        },
+      })
+    } catch {
+      // Ignored for MongoDB objectIds
+    }
+
+    try {
+      revalidatePath('/admin/products')
+      revalidatePath('/shop')
+      revalidatePath('/seller/products')
+    } catch {
+      // Revalidation safety
+    }
+
+    if (backendRes.ok && backendRes.data) {
+      return NextResponse.json(backendRes.data)
+    }
 
     return NextResponse.json({
       success: true,
-      message: `Successfully updated ${result.count} plants to ${newStatus}`,
-      count: result.count,
+      message: `Successfully updated ${productIds.length} plants to ${newStatus}`,
+      count: productIds.length,
       status: newStatus,
     })
   } catch (error: any) {
