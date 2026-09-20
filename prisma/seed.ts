@@ -56,7 +56,7 @@ async function main() {
       userId: sellerUser1.id,
       businessName: 'Gaurav Greenery Hub',
       slug: 'gaurav-greenery-hub',
-      bio: 'Flagship botanical nursery in Surat specializing in Thai grafted Adeniums, indoor air-purifiers, and organic soil blends with live plant transit guarantee.',
+      bio: 'Premier online botanical greenhouse specializing in Thai grafted Adeniums, indoor air-purifiers, and organic soil blends delivered with 100% live plant transit guarantee across India.',
       rating: 4.9,
       totalSalesCount: 142,
       nurseryAddress: 'Plot 45, Green Avenue, Dumas Road',
@@ -97,7 +97,7 @@ async function main() {
       userId: sellerUser2.id,
       businessName: 'Shree Ram Plant Nursery',
       slug: 'shree-ram-plant-nursery',
-      bio: 'Renowned Bonsai masters and rare flowering plant growers in Ahmedabad with over 25 years of horticultural expertise.',
+      bio: 'Renowned Bonsai masters and rare flowering plant growers with over 25 years of horticultural expertise, shipping live plants safely across India.',
       rating: 4.8,
       totalSalesCount: 95,
       nurseryAddress: 'Near Sarkhej Cross Road, SG Highway',
@@ -536,11 +536,11 @@ async function main() {
   // 11. Banners (CMS)
   await prisma.banner.create({
     data: {
-      title: 'Monsoon Adenium Hybrid Special',
-      subtitle: 'Direct from Surat nursery growers • 10% platform guarantee • Live root safe transit',
+      title: 'Exotic Adenium Hybrid Collection',
+      subtitle: 'Nurtured in botanical greenhouses • 100% Live plant guarantee • Safe doorstep transit',
       imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1600&q=80',
       linkUrl: '/shop?category=flowering-plants',
-      badgeText: 'DIRECT NURSERY HARVEST',
+      badgeText: 'ONLINE GREENHOUSE SPECIAL',
       displayOrder: 1,
       isActive: true,
     },
@@ -549,7 +549,7 @@ async function main() {
   await prisma.banner.create({
     data: {
       title: 'NASA Certified Air Purifiers for Low Light',
-      subtitle: 'Sansevieria & Peace Lily varieties starting at ₹299 directly from Ahmedabad gardens',
+      subtitle: 'Sansevieria & Peace Lily varieties starting at ₹299 delivered across India',
       imageUrl: 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=1600&q=80',
       linkUrl: '/shop?category=indoor-plants',
       badgeText: 'LOW LIGHT SPECIAL',
