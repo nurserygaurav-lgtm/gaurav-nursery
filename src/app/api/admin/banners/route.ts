@@ -85,7 +85,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json()
-    const { id, isActive, displayOrder } = body
+    const { id, title, subtitle, imageUrl, linkUrl, badgeText, isActive, displayOrder } = body
 
     if (!id) {
       return NextResponse.json({ error: 'Banner ID is required' }, { status: 400 })
@@ -94,6 +94,11 @@ export async function PATCH(request: Request) {
     const updated = await prisma.banner.update({
       where: { id },
       data: {
+        title: title !== undefined ? title : undefined,
+        subtitle: subtitle !== undefined ? subtitle : undefined,
+        imageUrl: imageUrl !== undefined ? imageUrl : undefined,
+        linkUrl: linkUrl !== undefined ? linkUrl : undefined,
+        badgeText: badgeText !== undefined ? badgeText : undefined,
         isActive: isActive !== undefined ? isActive : undefined,
         displayOrder: displayOrder !== undefined ? parseInt(displayOrder, 10) : undefined,
       },
