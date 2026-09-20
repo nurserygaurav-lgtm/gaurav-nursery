@@ -128,9 +128,9 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
           <div className="flex items-center gap-2">
             <span className="bg-emerald-800 text-emerald-300 px-2 py-0.5 rounded font-medium text-[11px]">
-              Marketplace Model
+              Pan-India Delivery
             </span>
-            <span>🌱 Direct from verified nurseries with 10% platform commission & fast doorstep transit</span>
+            <span>🌱 100% Healthy Plant Guarantee • Safe Transit Packaging • Doorstep Delivery</span>
           </div>
 
           <div className="flex items-center gap-4">

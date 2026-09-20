@@ -33,8 +33,8 @@ export default function Footer() {
               <HeartHandshake className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-semibold text-white">10% Fair Marketplace Fee</h4>
-              <p className="text-xs text-slate-400">Transparent seller commission & fast payouts</p>
+              <h4 className="font-semibold text-white">100% Safe Transit Guarantee</h4>
+              <p className="text-xs text-slate-400">Custom multi-layer protective packaging for live plants</p>
             </div>
           </div>
 
@@ -61,11 +61,11 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-slate-400 leading-relaxed pr-6">
-              India’s dedicated marketplace connecting top local nurseries, plant collectors, and home gardeners with an automated 10% commission model.
+              India’s dedicated online botanical platform connecting plant lovers with fresh, healthy nursery plants delivered directly to your doorstep.
             </p>
             <div className="pt-2">
               <span className="inline-block bg-slate-800 border border-slate-700 text-slate-300 text-[11px] px-3 py-1 rounded-full">
-                Headquarters: Surat & Ahmedabad, Gujarat
+                Pan-India Online Plant Delivery • Orders Delivered Across All States
               </span>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/seller/register" className="hover:text-emerald-400 transition">Become a Seller</Link></li>
               <li><Link href="/seller/dashboard" className="hover:text-emerald-400 transition">Seller Dashboard</Link></li>
-              <li><Link href="/seller/earnings" className="hover:text-emerald-400 transition">10% Commission Model</Link></li>
+              <li><Link href="/seller/register" className="hover:text-emerald-400 transition">Sell Plants With Us</Link></li>
               <li><Link href="/seller/products/new" className="hover:text-emerald-400 transition">List Your Plants</Link></li>
             </ul>
           </div>
@@ -109,7 +109,7 @@ export default function Footer() {
           </div>
           <div className="flex gap-4">
             <span className="hover:text-slate-400 cursor-pointer">Terms & Conditions</span>
-            <span className="hover:text-slate-400 cursor-pointer">Seller Agreement (10% Fee)</span>
+            <span className="hover:text-slate-400 cursor-pointer">Seller Guidelines & Terms</span>
             <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
           </div>
         </div>

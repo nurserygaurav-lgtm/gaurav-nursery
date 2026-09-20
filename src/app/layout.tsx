@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Gaurav Nursery — India’s Specialized Multi-Vendor Plant Marketplace',
-  description: 'Order healthy plants, adeniums, bonsai, and gardening supplies directly from verified local nurseries with transparent 10% platform commission.',
+  description: 'Order healthy plants, adeniums, bonsai, and gardening supplies online with specialized live plant packaging and Pan-India doorstep delivery.',
 }
 
 export default function RootLayout({

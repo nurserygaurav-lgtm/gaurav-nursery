@@ -34,7 +34,7 @@ export default function CartPage() {
             quantity: 1,
             image: 'https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=800&q=80',
             sellerId: 'demo-seller-1',
-            sellerBusinessName: 'Gaurav Greenery Hub (Surat)',
+            sellerBusinessName: 'Gaurav Greenery Hub',
           },
           {
             productId: 'demo-p3',
@@ -78,8 +78,6 @@ export default function CartPage() {
   }, {})
 
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const estimatedPlatformCommission = Math.round(totalAmount * 0.10)
-  const sellerPayoutTotal = totalAmount - estimatedPlatformCommission
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -92,7 +90,7 @@ export default function CartPage() {
           </div>
           <div>
             <h1 className="text-2xl font-black text-slate-900">Your Plant Basket</h1>
-            <p className="text-xs text-slate-500">Multi-Vendor nursery checkout with transparent 10% commission engine</p>
+            <p className="text-xs text-slate-500">Secure online plant checkout with live transit guarantee</p>
           </div>
         </div>
 
@@ -190,7 +188,7 @@ export default function CartPage() {
               })}
             </div>
 
-            {/* Right: Order Summary & 10% Commission Ledger Transparency */}
+            {/* Right: Order Summary */}
             <div className="lg:col-span-4 space-y-5">
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
                 <h3 className="font-bold text-base text-slate-900 pb-3 border-b border-slate-100">
@@ -219,29 +217,15 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* 10% Commission Architecture Explainer Box */}
-                <div className="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950 space-y-2">
+                {/* Live Plant Transit Guarantee */}
+                <div className="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950 space-y-1.5">
                   <div className="flex items-center gap-1.5 font-bold text-emerald-900">
-                    <Info className="w-4 h-4 text-emerald-700" />
-                    <span>Marketplace Split Breakdown</span>
+                    <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                    <span>100% Live Plant Transit Guarantee</span>
                   </div>
                   <p className="text-[11px] text-emerald-800 leading-relaxed">
-                    Behind the scenes, the backend will split this single order into <strong>{Object.keys(groupedBySeller).length} sub-orders</strong>:
+                    Freshly dispatched from verified greenhouses, packed in specialized protective cartons, and delivered directly to your doorstep across India.
                   </p>
-                  <div className="text-[11px] bg-white/70 rounded-lg p-2 font-mono space-y-1">
-                    <div className="flex justify-between">
-                      <span>• Gross Order Amount:</span>
-                      <strong>₹{totalAmount}</strong>
-                    </div>
-                    <div className="flex justify-between text-emerald-700">
-                      <span>• 10% Platform Fee:</span>
-                      <strong>₹{estimatedPlatformCommission}</strong>
-                    </div>
-                    <div className="flex justify-between text-blue-800">
-                      <span>• Net to Nurseries:</span>
-                      <strong>₹{sellerPayoutTotal}</strong>
-                    </div>
-                  </div>
                 </div>
 
                 <Link

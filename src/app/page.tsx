@@ -118,8 +118,8 @@ export default async function HomePage() {
                   <span>Live Plant Guarantee</span>
                 </div>
                 <div>
-                  <strong className="block text-xl font-black text-white">10%</strong>
-                  <span>Transparent Fee</span>
+                  <strong className="block text-xl font-black text-white">1,000+</strong>
+                  <span>Fresh Plant Varieties</span>
                 </div>
                 <div>
                   <strong className="block text-xl font-black text-white">Verified</strong>
@@ -367,14 +367,14 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* The 10% Commission Marketplace Workflow Explainer */}
+      {/* How Online Plant Ordering Works */}
       <section className="py-16 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">Platform Blueprint</span>
-            <h2 className="text-3xl font-black text-slate-900 mt-1">How Gaurav Nursery Marketplace Works</h2>
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">How It Works</span>
+            <h2 className="text-3xl font-black text-slate-900 mt-1">Ordering Live Plants Online Made Simple</h2>
             <p className="text-slate-600 text-sm mt-2">
-              A transparent, fair 10% commission engine designed so local nurseries grow their sales while customers get healthy live plants directly.
+              From verified botanical greenhouses straight to your home with 100% safe transit guarantee.
             </p>
           </div>
 
@@ -383,9 +383,9 @@ export default async function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm mx-auto mb-3">
                 1
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Seller Onboarding</h4>
+              <h4 className="font-bold text-sm text-slate-900">Choose Plants</h4>
               <p className="text-xs text-slate-500 mt-1.5">
-                Nurseries submit business address, PAN/GST, bank account & nursery photos for approval.
+                Explore 1,000+ curated indoor, flowering, bonsai, and rare exotic varieties.
               </p>
             </div>
 
@@ -393,9 +393,9 @@ export default async function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm mx-auto mb-3">
                 2
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Admin Quality Audit</h4>
+              <h4 className="font-bold text-sm text-slate-900">Greenhouse Selection</h4>
               <p className="text-xs text-slate-500 mt-1.5">
-                Super Admin reviews KYC docs and approves plant listings with sunlight & water attributes.
+                Nursery experts select healthy specimens with vigorous roots and prime foliage.
               </p>
             </div>
 
@@ -403,9 +403,9 @@ export default async function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-sm mx-auto mb-3">
                 3
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Customer Multi-Cart</h4>
+              <h4 className="font-bold text-sm text-slate-900">Safe Eco Packaging</h4>
               <p className="text-xs text-slate-500 mt-1.5">
-                Customer places order with plants from multiple nurseries in one single checkout.
+                Secure root-ball wrapping and upright ventilated corrugated boxes prevent damage.
               </p>
             </div>
 
@@ -413,9 +413,9 @@ export default async function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold text-sm mx-auto mb-3">
                 4
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Automated Split & 10%</h4>
+              <h4 className="font-bold text-sm text-slate-900">Express Transit</h4>
               <p className="text-xs text-slate-500 mt-1.5">
-                Backend splits into Sub-Orders: 10% immutable platform fee deducted, 90% credited to seller ledger.
+                Fast, climate-aware shipping across all Indian pin codes right to your doorstep.
               </p>
             </div>
 
@@ -423,9 +423,9 @@ export default async function HomePage() {
               <div className="w-10 h-10 rounded-xl bg-green-100 text-green-800 flex items-center justify-center font-bold text-sm mx-auto mb-3">
                 5
               </div>
-              <h4 className="font-bold text-sm text-slate-900">Delivery & Payout</h4>
+              <h4 className="font-bold text-sm text-slate-900">Unpack & Thrive</h4>
               <p className="text-xs text-slate-500 mt-1.5">
-                Live plant transit delivery dispatched; seller requests bank payout upon successful delivery.
+                Receive care cards and enjoy our 7-day plant health and replacement guarantee.
               </p>
             </div>
           </div>

@@ -165,7 +165,7 @@ export default function NurseryStorefrontClient({
 
                 <p className="text-xs sm:text-sm text-slate-300 flex items-center gap-1.5 drop-shadow-sm">
                   <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>{seller.nurseryAddress}, {seller.city}, {seller.state} — {seller.pincode}</span>
+                  <span>Verified Botanical Greenhouse • Pan-India Doorstep Delivery</span>
                 </p>
               </div>
             </div>
@@ -452,10 +452,10 @@ export default function NurseryStorefrontClient({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider text-slate-400">Location & Facility</h4>
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider text-slate-400">Fulfillment Facility</h4>
               <p className="text-xs text-slate-700 font-medium">
-                {seller.nurseryAddress}<br />
-                {seller.city}, {seller.state} — {seller.pincode}
+                Climate-Controlled Botanical Greenhouse<br />
+                Doorstep Delivery Available Across All India Pin Codes
               </p>
             </div>
 

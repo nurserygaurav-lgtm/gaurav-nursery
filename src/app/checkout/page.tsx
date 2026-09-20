@@ -61,8 +61,6 @@ export default function CheckoutPage() {
   }, [])
 
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const platformFee = Math.round(totalAmount * 0.10)
-  const sellerNet = totalAmount - platformFee
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -290,7 +288,7 @@ export default function CheckoutPage() {
                         <span>Instant Test Payment (UPI / Card / NetBanking Mock)</span>
                       </div>
                       <p className="text-[11px] text-slate-500 mt-1">
-                        Instant simulated success for testing Phase 1 MVP order lifecycle and 10% commission calculations.
+                        Instant simulated payment for fast, safe online ordering.
                       </p>
                     </div>
                   </label>
@@ -361,16 +359,13 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* 10% Platform Commission Preview */}
+                {/* Safe Transit Packaging Badge */}
                 <div className="bg-slate-50 rounded-xl p-3 text-[11px] text-slate-600 space-y-1">
-                  <div className="flex justify-between">
-                    <span>• 10% Platform Commission:</span>
-                    <strong className="text-emerald-800">₹{platformFee}</strong>
+                  <div className="flex items-center gap-1.5 text-emerald-800 font-semibold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Safe & Secured Doorstep Delivery</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>• Seller Net Earnings:</span>
-                    <strong className="text-blue-800">₹{sellerNet}</strong>
-                  </div>
+                  <p className="text-[10px] text-slate-500">All live plants shipped in specialized damage-proof botanical packaging.</p>
                 </div>
 
                 <button
@@ -379,7 +374,7 @@ export default function CheckoutPage() {
                   className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 text-white font-bold py-3.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <span>Splitting Order & Creating Ledger...</span>
+                    <span>Processing Order...</span>
                   ) : (
                     <span>Place Order (₹{totalAmount})</span>
                   )}
