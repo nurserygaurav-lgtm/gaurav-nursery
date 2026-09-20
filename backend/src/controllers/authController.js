@@ -13,7 +13,7 @@ function normalizeRole(role) {
 
 function authResponse(user, res) {
   const role = normalizeRole(user.role);
-  const token = generateToken(user._id);
+  const token = generateToken(user);
 
   if (res && res.cookie) {
     res.cookie('gn_auth_token', token, {

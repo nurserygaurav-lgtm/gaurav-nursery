@@ -22,11 +22,13 @@ export async function callBackendApi(
     })
   }
 
-  // Extract cookies from Next.js server context if available
+  // Extract cookies and backend token from Next.js server context if available
   let cookieHeader = ''
+  let backendToken = ''
   try {
     const cookieStore = cookies()
     cookieHeader = cookieStore.toString()
+    backendToken = cookieStore.get('gn_backend_token')?.value || ''
   } catch {
     // Client-side or outside request context
   }
@@ -34,6 +36,7 @@ export async function callBackendApi(
   const reqHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+    ...(backendToken ? { Authorization: `Bearer ${backendToken}` } : {}),
     ...(options.headers || {}),
   }
 

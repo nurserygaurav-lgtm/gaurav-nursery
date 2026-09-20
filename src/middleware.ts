@@ -13,6 +13,14 @@ interface TokenPayload {
   exp?: number
 }
 
+const CANDIDATE_SECRETS = Array.from(
+  new Set([
+    process.env.NEXTAUTH_SECRET,
+    process.env.JWT_SECRET,
+    'gaurav-nursery-secret-key-super-secure-2026',
+  ].filter(Boolean))
+) as string[]
+
 async function verifyEdgeToken(token: string): Promise<TokenPayload | null> {
   try {
     const parts = token.split('.')
@@ -20,13 +28,6 @@ async function verifyEdgeToken(token: string): Promise<TokenPayload | null> {
 
     const [headerB64, payloadB64, signatureB64] = parts
     const enc = new TextEncoder()
-    const key = await crypto.subtle.importKey(
-      'raw',
-      enc.encode(JWT_SECRET),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['verify']
-    )
 
     // Normalize base64url to base64
     const b64 = signatureB64.replace(/-/g, '+').replace(/_/g, '/')
@@ -34,7 +35,21 @@ async function verifyEdgeToken(token: string): Promise<TokenPayload | null> {
     const binarySig = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0))
     const data = enc.encode(`${headerB64}.${payloadB64}`)
 
-    const isValid = await crypto.subtle.verify('HMAC', key, binarySig, data)
+    let isValid = false
+    for (const secret of CANDIDATE_SECRETS) {
+      try {
+        const key = await crypto.subtle.importKey(
+          'raw',
+          enc.encode(secret),
+          { name: 'HMAC', hash: 'SHA-256' },
+          false,
+          ['verify']
+        )
+        isValid = await crypto.subtle.verify('HMAC', key, binarySig, data)
+        if (isValid) break
+      } catch {}
+    }
+
     if (!isValid) return null
 
     const payloadPadded = payloadB64.replace(/-/g, '+').replace(/_/g, '/')
@@ -43,6 +58,17 @@ async function verifyEdgeToken(token: string): Promise<TokenPayload | null> {
 
     if (payload.exp && Date.now() >= payload.exp * 1000) {
       return null
+    }
+
+    const rawRole = (payload.role || '').toUpperCase()
+    if (rawRole === 'ADMIN' || rawRole === 'SUPER_ADMIN') {
+      payload.role = 'SUPER_ADMIN'
+    } else if (rawRole === 'SELLER') {
+      payload.role = 'SELLER'
+    } else if (rawRole === 'DELIVERY_PARTNER') {
+      payload.role = 'DELIVERY_PARTNER'
+    } else {
+      payload.role = 'CUSTOMER'
     }
 
     return payload

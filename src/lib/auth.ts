@@ -18,12 +18,34 @@ export function signToken(payload: TokenPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
 }
 
+const CANDIDATE_SECRETS = Array.from(
+  new Set([
+    process.env.NEXTAUTH_SECRET,
+    process.env.JWT_SECRET,
+    'gaurav-nursery-secret-key-super-secure-2026',
+  ].filter(Boolean))
+) as string[]
+
 export function verifyToken(token: string): TokenPayload | null {
-  try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload
-  } catch {
-    return null
+  for (const secret of CANDIDATE_SECRETS) {
+    try {
+      const decoded = jwt.verify(token, secret) as any
+      if (decoded) {
+        const rawRole = (decoded.role || '').toUpperCase()
+        if (rawRole === 'ADMIN' || rawRole === 'SUPER_ADMIN') {
+          decoded.role = 'SUPER_ADMIN'
+        } else if (rawRole === 'SELLER') {
+          decoded.role = 'SELLER'
+        } else if (rawRole === 'DELIVERY_PARTNER') {
+          decoded.role = 'DELIVERY_PARTNER'
+        } else {
+          decoded.role = 'CUSTOMER'
+        }
+        return decoded as TokenPayload
+      }
+    } catch {}
   }
+  return null
 }
 
 export async function hashPassword(password: string): Promise<string> {

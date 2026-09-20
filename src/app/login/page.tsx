@@ -108,25 +108,18 @@ function LoginForm() {
 
         window.dispatchEvent(new Event('auth-change'))
 
-        if (redirectPath && redirectPath !== '/') {
-          router.push(redirectPath)
-        } else {
-          switch (data.user?.role) {
-            case 'SUPER_ADMIN':
-              router.push('/admin')
-              break
-            case 'SELLER':
-              router.push('/seller/dashboard')
-              break
-            case 'DELIVERY_PARTNER':
-              router.push('/delivery')
-              break
-            default:
-              router.push('/shop')
-              break
-          }
+        const rawRole = (data.user?.role || '').toUpperCase()
+        let targetPortal = '/shop'
+        if (rawRole === 'SUPER_ADMIN' || rawRole === 'ADMIN') {
+          targetPortal = '/admin'
+        } else if (rawRole === 'SELLER') {
+          targetPortal = '/seller/dashboard'
+        } else if (rawRole === 'DELIVERY_PARTNER') {
+          targetPortal = '/delivery'
         }
-        router.refresh()
+
+        const destination = (redirectPath && redirectPath !== '/') ? redirectPath : targetPortal
+        window.location.href = destination
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Authentication failed. Please check your details.')
