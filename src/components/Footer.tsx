@@ -92,12 +92,11 @@ export default function Footer() {
           </div>
 
           <div>
-            <h5 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px]">Platform Control</h5>
+            <h5 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px]">Partner Portals</h5>
             <ul className="space-y-2">
-              <li><Link href="/admin" className="text-amber-400 hover:underline transition">Super Admin Panel</Link></li>
-              <li><Link href="/admin/sellers" className="hover:text-emerald-400 transition">Seller KYC Queue</Link></li>
-              <li><Link href="/admin/commission" className="hover:text-emerald-400 transition">Commission Ledger</Link></li>
+              <li><Link href="/seller/dashboard" className="hover:text-emerald-400 transition">Partner Nursery Hub</Link></li>
               <li><Link href="/delivery" className="hover:text-emerald-400 transition">Delivery Partner</Link></li>
+              <li><Link href="/admin" className="text-amber-400 hover:underline transition">Administrator Access</Link></li>
             </ul>
           </div>
         </div>

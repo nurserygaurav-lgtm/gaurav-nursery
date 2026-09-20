@@ -93,7 +93,6 @@ export default async function NurseryStorefrontPage({ params }: Props) {
     businessName: seller.businessName,
     slug: seller.slug || slug,
     bio: seller.bio || undefined,
-    nurseryAddress: seller.nurseryAddress,
     city: seller.city,
     state: seller.state,
     pincode: seller.pincode,

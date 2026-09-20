@@ -54,7 +54,7 @@ interface SellerData {
   businessName: string
   slug: string
   bio?: string
-  nurseryAddress: string
+  nurseryAddress?: string
   city: string
   state: string
   pincode: string
