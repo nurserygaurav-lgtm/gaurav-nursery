@@ -68,26 +68,27 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
-      // First ensure sellerIds exist; if demo seller ids are present, map them to real seeded seller IDs
-      const mappedItems = cartItems.map((it) => ({
-        ...it,
-        sellerId: it.sellerId.includes('demo') ? undefined : it.sellerId,
-      }))
+      // Safely sanitize items, checking for string types before calling string methods
+      const mappedItems = cartItems.map((it) => {
+        const pId = typeof it.productId === 'string' ? it.productId : (typeof it.id === 'string' ? it.id : 'demo')
+        const sId = typeof it.sellerId === 'string' ? it.sellerId : undefined
+        return {
+          productId: pId.startsWith('demo') ? 'demo' : pId,
+          title: it.title || 'Live Nursery Plant',
+          price: parseFloat(it.price) || 0,
+          quantity: Math.max(1, parseInt(it.quantity, 10) || 1),
+          image: it.image || '',
+          sellerId: sId && sId.includes('demo') ? undefined : sId,
+          sellerBusinessName: it.sellerBusinessName || undefined,
+        }
+      })
 
-      // If needed, fetch valid products/sellers from backend
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          items: cartItems.map((it) => ({
-            productId: it.productId.startsWith('demo') ? 'demo' : it.productId,
-            title: it.title,
-            price: it.price,
-            quantity: it.quantity,
-            image: it.image,
-            sellerId: it.sellerId,
-          })),
+          items: mappedItems,
         }),
       })
 
