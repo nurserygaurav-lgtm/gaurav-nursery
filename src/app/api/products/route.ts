@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { callBackendApi } from '@/lib/backendClient'
+import { matchesSearch, expandSearchTerms } from '@/lib/searchUtils'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,12 +41,7 @@ export async function GET(request: Request) {
       }
 
       if (search) {
-        const q = search.toLowerCase()
-        filtered = filtered.filter((p: any) =>
-          p.title?.toLowerCase().includes(q) ||
-          p.description?.toLowerCase().includes(q) ||
-          p.plantType?.toLowerCase().includes(q)
-        )
+        filtered = filtered.filter((p: any) => matchesSearch(p, search))
       }
 
       return NextResponse.json({ products: filtered })
@@ -82,11 +78,12 @@ export async function GET(request: Request) {
     }
 
     if (search) {
-      whereClause.OR = [
-        { title: { contains: search } },
-        { description: { contains: search } },
-        { plantType: { contains: search } },
-      ]
+      const terms = expandSearchTerms(search)
+      whereClause.OR = terms.flatMap((term) => [
+        { title: { contains: term } },
+        { description: { contains: term } },
+        { plantType: { contains: term } },
+      ])
     }
 
     const products = await prisma.product.findMany({

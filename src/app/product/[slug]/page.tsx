@@ -16,12 +16,54 @@ import {
   Sparkles,
   HeartHandshake
 } from 'lucide-react'
+import type { Metadata } from 'next'
 import AddToCartButton from './AddToCartButton'
 import ProductReviewsSection from './ProductReviewsSection'
 
 interface ProductPageProps {
   params: {
     slug: string
+  }
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const product = await prisma.product.findUnique({
+    where: { slug: params.slug },
+    include: { category: true, seller: true },
+  })
+
+  if (!product) {
+    return {
+      title: 'Plant Not Found | Gaurav Nursery',
+      description: 'The requested live plant or gardening item could not be found.',
+    }
+  }
+
+  const images = JSON.parse(product.images || '[]')
+  const mainImage = images[0] || 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=1200&q=80'
+
+  return {
+    title: `${product.title} — Buy Online | Gaurav Nursery`,
+    description: product.description 
+      ? product.description.slice(0, 160)
+      : `Order fresh ${product.title} online with 100% Live Plant Transit Guarantee. Pan-India doorstep delivery directly from verified nurseries.`,
+    alternates: {
+      canonical: `https://gauravnursery.online/product/${params.slug}`,
+    },
+    openGraph: {
+      title: `${product.title} — Gaurav Nursery`,
+      description: product.description?.slice(0, 160),
+      url: `https://gauravnursery.online/product/${params.slug}`,
+      images: [
+        {
+          url: mainImage,
+          width: 800,
+          height: 800,
+          alt: product.title,
+        },
+      ],
+      type: 'website',
+    },
   }
 }
 
@@ -60,8 +102,47 @@ export default async function ProductPage({ params }: ProductPageProps) {
     customer: { name: r.customer?.name || 'Plant Enthusiast' },
   }))
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    image: images.length > 0 ? images : ['https://images.unsplash.com/photo-1545241047-6083a3684587?w=800&q=80'],
+    description: product.description || `Order fresh ${product.title} online with live plant transit guarantee.`,
+    sku: product.id,
+    brand: {
+      '@type': 'Brand',
+      name: product.seller?.businessName || 'Gaurav Nursery',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://gauravnursery.online/product/${params.slug}`,
+      priceCurrency: 'INR',
+      price: product.price,
+      priceValidUntil: '2027-12-31',
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: product.seller?.businessName || 'Gaurav Nursery',
+      },
+    },
+    ...(product.reviews.length > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: (
+          product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length
+        ).toFixed(1),
+        reviewCount: product.reviews.length,
+      },
+    }),
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
 
       {/* Breadcrumbs */}

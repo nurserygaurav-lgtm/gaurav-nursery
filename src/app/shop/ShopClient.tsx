@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import { matchesSearch } from '@/lib/searchUtils'
 import { 
   Sun, 
   Droplet, 
@@ -52,12 +53,8 @@ export default function ShopClient({ initialProducts, initialParams }: ShopClien
 
   // Filter products client-side for ultra-fast instant UI responsiveness
   const filteredProducts = products.filter((p) => {
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      const matchTitle = p.title?.toLowerCase().includes(q)
-      const matchDesc = p.description?.toLowerCase().includes(q)
-      const matchSeller = p.seller?.businessName?.toLowerCase().includes(q)
-      if (!matchTitle && !matchDesc && !matchSeller) return false
+    if (searchQuery && !matchesSearch(p, searchQuery)) {
+      return false
     }
     if (selectedCategory && p.category?.slug !== selectedCategory) return false
     if (selectedSunlight && !p.sunlight?.toLowerCase().includes(selectedSunlight.toLowerCase())) return false

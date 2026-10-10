@@ -113,6 +113,18 @@ export default function CartPage() {
             
             {/* Left: Cart Items Grouped by Nursery */}
             <div className="lg:col-span-8 space-y-6">
+              {Object.keys(groupedBySeller).length > 1 && (
+                <div className="bg-emerald-50/90 border border-emerald-200/90 rounded-2xl p-4 text-xs text-emerald-950 flex items-start gap-3 shadow-xs">
+                  <Truck className="w-5 h-5 text-emerald-700 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <strong className="text-emerald-900 block font-bold">Multi-Greenhouse Botanical Shipment</strong>
+                    <p className="text-emerald-800/90 leading-relaxed text-[11px]">
+                      Your order includes live plants from {Object.keys(groupedBySeller).length} specialized partner greenhouses. Each plant is packed in dedicated upright protective cartons and dispatched directly from its grower facility for maximum plant vitality.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {Object.keys(groupedBySeller).map((sellerName) => {
                 const items = groupedBySeller[sellerName]
                 const sellerSubtotal = items.reduce((sum: number, it: any) => sum + it.price * it.quantity, 0)
